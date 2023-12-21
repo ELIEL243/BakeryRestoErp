@@ -1,0 +1,83 @@
+{% extends 'bakery/base_bakery.html' %}
+{% load static %}
+{% block content %}
+    {% include 'bakery/bakery_sidebar.html' %}
+    <div class="nk-wrap">
+        <div class="nk-content">
+            <div class="nk-content align-content-center">
+                <div class="container-fluid">
+                    <div class="nk-content-inner">
+                        <div class="nk-content-body">
+
+                            <div class="nk-block-head">
+                                <div class="nk-block-head-content">
+                                    <h5 class="nk-block-title">Fournisseur</h5>
+                                    <div class="nk-block-des">
+                                        <p>detail sur le fournisseur : {{ fournisseur.libelle }}.</p>
+                                    </div>
+                                </div>
+                            </div><!-- .nk-block-head -->
+                            <div class="nk-block">
+                                <div class="row g-3">
+                                    <form method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="product-title">Nom</label>
+                                                <div class="form-control-wrap">
+                                                    <input type="text" name="name" value="{{ fournisseur.name }}" class="form-control"
+                                                           id="product-title" required>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    <div class="col-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="product-title">Numéro de telephone</label>
+                                                <div class="form-control-wrap">
+                                                    <input type="text" name="phone" value="{{ fournisseur.phone }}" class="form-control"
+                                                           id="product-title" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                    
+                                    <div class="col-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="product-title">Adresse mail</label>
+                                                <div class="form-control-wrap">
+                                                    <input type="email" name="mail" value="{{ fournisseur.email }}" class="form-control"
+                                                           id="product-title" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                    
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="product-title">Adresse</label>
+                                                <div class="form-control-wrap">
+                                                    <textarea name="adresse" class="form-control text-left justify-content-start"
+                                                           id="product-title" style="text-align: left;" required>
+                                                        {{ fournisseur.address }}
+                                                    </textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 mt-5">
+                                            <button type="submit" class="btn btn-primary"><em
+                                                    class="icon ni ni-save"></em><span>Enregistrer</span></button>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div><!-- .nk-block -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

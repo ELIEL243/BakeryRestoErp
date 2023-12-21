@@ -1,0 +1,81 @@
+{% extends 'bakery/base_bakery.html' %}
+{% load static %}
+{% block content %}
+    {% include 'bakery/bakery_sidebar.html' %}
+    <div class="nk-wrap">
+        <div class="nk-content">
+            <div class="nk-content align-content-center">
+                <div class="container-fluid">
+                    <div class="nk-content-inner">
+                        <div class="nk-content-body">
+
+                            <div class="nk-block-head">
+                                <div class="nk-block-head-content">
+                                    <h5 class="nk-block-title">Detail</h5>
+                                    <div class="nk-block-des">
+                                        <p>modifier la quantité ou le prix total.</p>
+                                    </div>
+                                </div>
+                            </div><!-- .nk-block-head -->
+                            <div class="nk-block">
+                                <div class="row g-3">
+                                    <form method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="product-title">Fourniture</label>
+                                                <div class="form-control-wrap">
+                                                    <input type="text" name="name" value="{{ line.fourniture.libelle }}" class="form-control"
+                                                           id="product-title" required readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="product-title">Quantité</label>
+                                                <div class="form-control-wrap">
+                                                    <input type="number" name="qts" value="{{ line.qts }}" min="1"
+                                                               class="form-control" id="regular-price" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="sale-price">Unité</label>
+                                                <div class="form-control-wrap">
+                                                <input type="text" name="unit" value="{{ line.fourniture.unite }}" class="form-control"
+                                                           id="product-title" required readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="product-title">Prix total</label>
+                                                <div class="form-control-wrap">
+                                                    <input type="number" name="price" value="{{ line.get_total }}" min="1"
+                                                               class="form-control" id="regular-price" required>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        
+
+                                        <div class="col-12 mt-5">
+                                            <button type="submit" class="btn btn-primary"><em
+                                                    class="icon ni ni-save"></em><span>Enregistrer</span></button>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div><!-- .nk-block -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

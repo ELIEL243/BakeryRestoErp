@@ -1,0 +1,208 @@
+{% extends 'bakery/base_bakery.html' %}
+{% load static %}
+{% block content %}
+    {% include 'bakery/bakery_sidebar.html' %}
+    <div class="nk-wrap">
+    
+    {% include 'bakery/profile.html' %}
+        <div class="nk-content">
+            <div class="nk-content ">
+                <div class="container-fluid">
+                    <div class="nk-content-inner">
+                        <div class="nk-content-body">
+                        
+                           {% include 'bakery/partials/check_critics.html' %}
+                            <div class="nk-block-head nk-block-head-sm">
+                                <div class="nk-block-between">
+                                    <div class="nk-block-head-content">
+                                        <h3 class="nk-block-title page-title">Sorties des fournitures</h3>
+                                    </div><!-- .nk-block-head-content -->
+                                    <div class="nk-block-head-content">
+
+                                    </div><!-- .nk-block-head-content -->
+                                </div><!-- .nk-block-between -->
+                                <div class="nk-block-content row gy-4 mt-2">
+                                    <form method="post">
+                                        {% csrf_token %}
+
+
+                                        <div class="row">
+                                            <div class="col-lg-2">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="product-title">Fourniture</label>
+                                                    <div class="form-control-wrap">
+                                                        <input autocomplete="off" type="text" list="mps" name="name"
+                                                               class="form-control" id="product-title" required>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <datalist id="mps">
+                                                {% for f in fournitures %}
+                                                    <option value="{{ f.libelle }}"></option>
+                                                {% endfor %}
+                                            </datalist>
+
+                                            <div class="col-lg-2">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="regular-price">Quantité</label>
+                                                    <div class="form-control-wrap">
+                                                        <input type="number" name="qts" value="1" min="1"
+                                                               class="form-control" id="regular-price" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-lg-2">
+                                                <div class="form-group">
+
+                                                    <button type="submit" id="submit-btn" name="submit-entry"
+                                                            class="btn btn-success bg-green-500"
+                                                            style="margin-top: 31px"><em
+                                                            class="icon ni ni-plus"></em><span>valider la sortie</span></button>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        
+                                    </form>
+                                
+                                    <form method="get">
+                                        <div class="row justify-center text-center">
+                                            <div class="col-lg-8">
+                                            <div class="form-group">
+                                                <label class="form-label text-center">Rechercher par date</label>
+                                                <div class="form-control-wrap">
+                                                    <div class="input-daterange input-group">
+                                                        <div class="input-group-addon">Du</div>
+                                                        <input type="date" name="date1" value="{% if date1 %}{{ date1 }}{% endif %}" class="form-control" required/>
+                                                        <div class="input-group-addon">Au</div>
+                                                        <input type="date" name="date2" value="{% if date2 %}{{ date2 }}{% endif %}" class="form-control"/>
+                                                        <div class="input-group-addon">
+                                                            <button type="submit" id="submit-btn" name="search"
+                                                            class="btn btn-primary"><em
+                                                            class="icon ni ni-search"></em><span>Rechercher</span></button>            
+                                                        </div>
+                                                        
+                                                        <div class="input-group-addon">
+                                                            <a id="submit-btn" href="{% url 'sortie-fourniture' %}" class="btn btn-info"><em
+                                                            class="icon ni ni-repeat-fill"></em><span>Rafraichir</span></a>            
+                                                        </div>
+                                                        
+                                                    </div>
+                                                    
+                                                
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div><!-- .nk-block-head -->
+                            <div class="nk-block">
+                                <div class="card card-bordered">
+                                    <div class="card-inner-group">
+                                        <div class="card-inner p-0">
+                                            <table class="datatable-init-export nowrap table table-striped"
+                                                   data-export-title="Export">
+                                                <thead>
+                                                <tr>
+                                                    <th>No</th>
+                                                    <th>Fourniture</th>
+                                                    <th>Quantité</th>
+                                                    <th>Unité</th>
+                                                    <th>Date sortie</th>
+                                                    <th>Heure</th>
+                                                    <th></th>
+
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for out in outs %}
+                                                    <tr>
+                                                        <td>{{ forloop.counter }}</td>
+                                                        <td>{{ out.fourniture.libelle }}</td>
+                                                        <td>{{ out.qts }}</td>
+                                                        <td>{{ out.fourniture.unite.name }}</td>
+                                                        <td>{{ out.date }}</td>
+                                                        <td>{{ out.heure }}</td>
+                                                        <td class="center">
+                                                            <ul class="nk-tb-actions gx-1 my-n1">
+                                                                <li class="me-n1">
+                                                                    <div class="dropdown">
+                                                                        <a href="#"
+                                                                           class="dropdown-toggle btn btn-icon btn-trigger"
+                                                                           data-bs-toggle="dropdown"><em
+                                                                                class="icon ni ni-more-h"></em></a>
+                                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                                            <ul class="link-list-opt no-bdr">
+                                                                                <li>
+                                                                                    <a href="{% url 'delete-sortie-fourniture' out.pk %}"><em
+                                                                                            class="icon ni ni-trash"></em><span
+                                                                                            class="text-danger">Supprimer</span></a>
+                                                                                </li>
+                                                                                
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+
+                                            </table>
+
+                                        </div>
+                                 </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <li><a href="#" class="hidden btn btn-primary eg-swal-av2" id="success" style="display: none">Advanced 02</a></li>
+    <li><a href="#" class="hidden btn btn-primary eg-swal-av22" id="error" style="display: none">Advanced 02</a></li>
+    <li><a href="#" class="hidden btn btn-primary eg-swal-stock" id="error2" style="display: none">Advanced 02</a></li>
+
+
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+                <script>
+                    window.onload = function () {
+                        document.getElementById('success').click();
+                    };
+                </script>
+            {% elif message.tags == 'error' %}
+                {% if message.message == 'echec !' %}
+                <script>
+                    window.onload = function () {
+                        document.getElementById('error').click();
+                    };
+                </script>
+                    {% else %}
+                <script>
+                    window.onload = function () {
+                        document.getElementById('error2').click();
+                    };
+                </script>
+                    
+                    
+                    {% endif %}
+                
+            {% endif %}
+        {% endfor %}
+
+    {% endif %}
+
+{% endblock %}
+

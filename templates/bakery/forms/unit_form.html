@@ -1,0 +1,33 @@
+<div class="nk-add-product toggle-slide toggle-slide-right" data-content="addProduct" data-toggle-screen="any"
+     data-toggle-overlay="true" data-toggle-body="true" data-simplebar>
+    <div class="nk-block-head">
+        <div class="nk-block-head-content">
+            <h5 class="nk-block-title">Nouvelle unité</h5>
+            <div class="nk-block-des">
+                <p>creer une nouvelle unité.</p>
+            </div>
+        </div>
+    </div><!-- .nk-block-head -->
+    <div class="nk-block">
+        <div class="row g-3">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="col-12">
+                    <div class="form-group">
+                        <label class="form-label" for="product-title">Libellé</label>
+                        <div class="form-control-wrap">
+                            <input type="text" name="name" class="form-control" id="product-title" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12 mt-5">
+                    <button type="submit" class="btn btn-primary"><em class="icon ni ni-plus"></em><span>Ajouter</span>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div><!-- .nk-block -->
+</div>

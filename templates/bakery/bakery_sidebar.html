@@ -1,0 +1,162 @@
+{% load static %}
+<div
+        class="nk-sidebar nk-sidebar-fixed is-dark"
+        data-content="sidebarMenu"
+>
+    <div class="nk-sidebar-element nk-sidebar-head">
+        <div class="nk-menu-trigger">
+            <a
+                    href="#"
+                    class="nk-nav-toggle nk-quick-nav-icon d-xl-none"
+                    data-target="sidebarMenu"
+            ><em class="icon ni ni-arrow-left"></em
+            ></a>
+            <a
+                    href="#"
+                    class="nk-nav-compact nk-quick-nav-icon d-none d-xl-inline-flex"
+                    data-target="sidebarMenu"
+            ><em class="icon ni ni-menu"></em
+            ></a>
+        </div>
+        <div class="nk-sidebar-brand">
+            <a href="{% url 'home-bakery' %}" class="logo-link nk-sidebar-logo">
+                <img
+                        class="logo-light logo-img"
+                        src="{% static 'images/pain.png' %}"
+                        alt="logo"
+                />
+                <img
+                        class="logo-dark logo-img"
+                        src="{% static 'images/pain.png' %}"
+                        alt="logo-dark"
+                />
+            </a>
+        </div>
+    </div>
+    <!-- .nk-sidebar-element -->
+    <div class="nk-sidebar-element nk-sidebar-body">
+        <div class="nk-sidebar-content">
+            <div class="nk-sidebar-menu" data-simplebar>
+                <ul class="nk-menu">
+                    <li class="nk-menu-item">
+                        <a href="#" class="nk-menu-link">
+                      <span class="nk-menu-icon"
+                      ><em class="icon ni ni-dashboard"></em
+                      ></span>
+                            <span class="nk-menu-text">Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nk-menu-item">
+                        <a href="{% url 'unit-list' %}" class="nk-menu-link">
+                      <span class="nk-menu-icon"
+                      ><em class="icon ni ni-meter"></em
+                      ></span>
+                            <span class="nk-menu-text">Unités de mesure</span>
+                        </a>
+                    </li>
+
+                    <li class="nk-menu-item has-sub">
+                        <a href="#" class="nk-menu-link nk-menu-toggle">
+                      <span class="nk-menu-icon"
+                      ><em class="icon ni ni-list-fill"></em>
+                      </span>
+                            <span class="nk-menu-text">Matières premières</span>
+                        </a>
+                        
+                        <ul class="nk-menu-sub">
+                            <li class="nk-menu-item">
+                                <a href="{% url 'mp-list' %}" class="nk-menu-link"><span class="nk-menu-text">Liste et stock</span></a>
+                            </li>
+                            <li class="nk-menu-item">
+                                <a href="{% url 'entree-mp' %}" class="nk-menu-link"><span class="nk-menu-text">Entrées</span></a>
+                            </li>
+                            
+                            <li class="nk-menu-item">
+                                <a href="{% url 'sortie-mp' %}" class="nk-menu-link"><span class="nk-menu-text">Sorties</span></a>
+                            </li>
+                            
+                            <li class="nk-menu-item">
+                                <a href="{% url 'cmd-mp' %}" class="nk-menu-link"><span class="nk-menu-text">Commandes</span></a>
+                            </li>
+                        </ul>
+                        
+                    </li>
+
+                    <li class="nk-menu-item has-sub">
+                        <a href="#" class="nk-menu-link nk-menu-toggle">
+                      <span class="nk-menu-icon"
+                      ><em class="icon ni ni-list-fill"></em
+                      ></span>
+                            <span class="nk-menu-text">Produits finis</span>
+                        </a>
+                        
+                        <ul class="nk-menu-sub">
+                            <li class="nk-menu-item">
+                                <a href="{% url 'pf-list' %}" class="nk-menu-link"><span class="nk-menu-text">Liste et stock</span></a>
+                            </li>
+                            <li class="nk-menu-item">
+                                <a href="{% url 'entree-pf' %}" class="nk-menu-link"><span class="nk-menu-text">Entrées</span></a>
+                            </li>
+                            
+                            <li class="nk-menu-item">
+                                <a href="{% url 'sortie-pf' %}" class="nk-menu-link"><span class="nk-menu-text">Sorties</span></a>
+                            </li>
+                            
+                        </ul>
+                    </li>
+
+                    <li class="nk-menu-item has-sub">
+                        <a href="#" class="nk-menu-link nk-menu-toggle">
+                      <span class="nk-menu-icon"
+                      ><em class="icon ni ni-bag"></em
+                      ></span>
+                            <span class="nk-menu-text">Fournitures</span>
+                        </a>
+                        
+                        <ul class="nk-menu-sub">
+                            <li class="nk-menu-item">
+                                <a href="{% url 'fourniture-list' %}" class="nk-menu-link"><span class="nk-menu-text">Liste et stock</span></a>
+                            </li>
+                            <li class="nk-menu-item">
+                                <a href="{% url 'entree-fourniture' %}" class="nk-menu-link"><span class="nk-menu-text">Entrées</span></a>
+                            </li>
+                            
+                            <li class="nk-menu-item">
+                                <a href="{% url 'sortie-fourniture' %}" class="nk-menu-link"><span class="nk-menu-text">Sorties</span></a>
+                            </li>
+                            
+                            <li class="nk-menu-item">
+                                <a href="{% url 'cmd-fourniture' %}" class="nk-menu-link"><span class="nk-menu-text">Commandes</span></a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nk-menu-item">
+                        <a href="{% url 'fournisseur-list' %}" class="nk-menu-link">
+                      <span class="nk-menu-icon"
+                      ><em class="icon ni ni-location"></em
+                      ></span>
+                            <span class="nk-menu-text">Fournisseurs</span>
+                        </a>
+                    </li>
+
+                    
+
+                    <li class="nk-menu-item">
+                        <a href="{% url 'logout' %}" class="nk-menu-link">
+                      <span class="nk-menu-icon"
+                      ><em class="icon ni ni-account-setting"></em
+                      ></span>
+                            <span class="nk-menu-text">Deconnexion</span>
+                        </a>
+                    </li>
+                </ul>
+                <!-- .nk-menu -->
+            </div>
+            <!-- .nk-sidebar-menu -->
+        </div>
+        <!-- .nk-sidebar-content -->
+    </div>
+    <!-- .nk-sidebar-element -->
+</div>

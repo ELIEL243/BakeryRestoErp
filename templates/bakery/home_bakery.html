@@ -1,0 +1,13 @@
+{% extends 'bakery/base_bakery.html' %}
+
+{% block content %}
+    {% include 'bakery/bakery_sidebar.html' %}
+    <div class="nk-wrap">
+    {% include 'bakery/profile.html' %}
+        <div class="nk-content">
+                           {% include 'bakery/partials/check_critics.html' %}
+        
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+{% for c in critic_mps %}
+
+    <div class="example-alert mt-1 mb-1">
+    <div class="alert alert-fill alert-danger alert-dismissible alert-icon">
+        <em class="icon ni ni-cross-circle"></em> <strong>Quantité critique</strong>! la matière première {{ c.libelle }} à atteint sa quantité critique.
+        <button class="close" hx-get="{% url 'stop-critics' %}" hx-trigger="click" hx-swap="outerHTML" hx-target="#critics"></button>
+    </div>
+</div>
+
+{% endfor %}
+
+{% for c in critic_pfs %}
+
+    <div class="example-alert mt-1 mb-1">
+    <div class="alert alert-fill alert-danger alert-dismissible alert-icon">
+        <em class="icon ni ni-cross-circle"></em> <strong>Quantité critique</strong>! le produit fini {{ c.libelle }} à atteint sa quantité critique.
+        <button class="close" hx-get="{% url 'stop-critics' %}" hx-trigger="click" hx-swap="outerHTML" hx-target="#critics"></button>
+    </div>
+</div>
+
+{% endfor %}
+
+{% for c in critic_fournitures %}
+
+    <div class="example-alert mt-1 mb-1">
+    <div class="alert alert-fill alert-danger alert-dismissible alert-icon">
+        <em class="icon ni ni-cross-circle"></em> <strong>Quantité critique</strong>! la fourniture {{ c.libelle }} à atteint sa quantité critique.
+        <button class="close" hx-get="{% url 'stop-critics' %}" hx-trigger="click" hx-swap="outerHTML" hx-target="#critics"></button>
+    </div>
+</div>
+
+{% endfor %}

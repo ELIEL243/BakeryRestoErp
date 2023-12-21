@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link rel="stylesheet" href="{% static 'css/dashlite.css' %}">
+    <link id="skin-default" rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <script src="{% static 'js/htmx.min.js' %}"></script>
+    <title></title>
+</head>
+<body class="nk-body bg-lighter npc-general has-sidebar">
+<div class="nk-app-root">
+      <!-- main @s -->
+      <div class="nk-main">
+      
+    {% block content %}
+    {% endblock %}
+      </div>
+</div>
+
+    <script src="{% static 'js/bundle.js' %}"></script>
+    <script src="{% static 'js/scripts.js' %}"></script>
+    <script src="{% static 'js/libs/datatable-btns.js' %}"></script>
+    <script src="{% static 'js/example-sweetalert.js' %}"></script>
+    <script src="{% static 'js/alerts.js' %}"></script>
+</body>
+</html>
