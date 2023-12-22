@@ -126,7 +126,8 @@ def entree_mp(request):
             entries = EntreeMp.objects.filter(date=date1)
         else:
             entries = EntreeMp.objects.filter(Q(date__gte=date1) & Q(date__lte=date2))
-    return render(request, 'bakery/entree_mp.html', context={'mps': mps, 'entries': entries, 'date1': date1, 'date2': date2})
+    return render(request, 'bakery/entree_mp.html',
+                  context={'mps': mps, 'entries': entries, 'date1': date1, 'date2': date2})
 
 
 def sortie_mp(request):
@@ -225,7 +226,8 @@ def add_cmd_mp(request, ref):
             messages.success(request, "Succes")
         else:
             messages.error(request, "Echec")
-    return render(request, 'bakery/add-line-cmd-mp.html', context={'order': order, 'mps': mps, 'lines': lines, 'fournisseurs': suppliers})
+    return render(request, 'bakery/add-line-cmd-mp.html',
+                  context={'order': order, 'mps': mps, 'lines': lines, 'fournisseurs': suppliers})
 
 
 def delete_line_cmd_mp(request, pk):
@@ -332,7 +334,8 @@ def entree_pf(request):
             entries = EntreePF.objects.filter(date=date1)
         else:
             entries = EntreePF.objects.filter(Q(date__gte=date1) & Q(date__lte=date2))
-    return render(request, 'bakery/entree_pf.html', context={'pfs': pfs, 'entries': entries, 'date1': date1, 'date2': date2})
+    return render(request, 'bakery/entree_pf.html',
+                  context={'pfs': pfs, 'entries': entries, 'date1': date1, 'date2': date2})
 
 
 def sortie_pf(request):
@@ -445,7 +448,8 @@ def entree_fourniture(request):
             entries = EntreeFourniture.objects.filter(date=date1)
         else:
             entries = EntreeFourniture.objects.filter(Q(date__gte=date1) & Q(date__lte=date2))
-    return render(request, 'bakery/entree_fourniture.html', context={'fournitures': fournitures, 'entries': entries, 'date1': date1, 'date2': date2})
+    return render(request, 'bakery/entree_fourniture.html',
+                  context={'fournitures': fournitures, 'entries': entries, 'date1': date1, 'date2': date2})
 
 
 def sortie_fourniture(request):
@@ -473,7 +477,8 @@ def sortie_fourniture(request):
             outs = SortieFourniture.objects.filter(date=date1)
         else:
             outs = SortieFourniture.objects.filter(Q(date__gte=date1) & Q(date__lte=date2))
-    return render(request, 'bakery/sortie_fourniture.html', context={'fournitures': fournitures, 'outs': outs, 'date1': date1, 'date2': date2})
+    return render(request, 'bakery/sortie_fourniture.html',
+                  context={'fournitures': fournitures, 'outs': outs, 'date1': date1, 'date2': date2})
 
 
 def delete_entree_fourniture(request, pk):
@@ -534,7 +539,8 @@ def add_cmd_fourniture(request, ref):
             messages.success(request, "Succes")
         else:
             messages.error(request, "Echec")
-    return render(request, 'bakery/add_line_cmd_fourniture.html', context={'order': order, 'fournitures': fournitures, 'lines': lines, 'fournisseurs': suppliers})
+    return render(request, 'bakery/add_line_cmd_fourniture.html',
+                  context={'order': order, 'fournitures': fournitures, 'lines': lines, 'fournisseurs': suppliers})
 
 
 def delete_line_cmd_fourniture(request, pk):
@@ -572,6 +578,7 @@ def confirm_cmd_fourniture(request, ref):
         messages.success(request, 'good !')
 
     return redirect('cmd-fourniture')
+
 
 # Vues concernant les fournisseurs
 
@@ -617,7 +624,7 @@ def delete_fournisseur(request, pk):
 
 # Vue concernants les alertes
 
-def is_order_mp(mp:MatierePremiere):
+def is_order_mp(mp: MatierePremiere):
     orders = CommandeMp.objects.filter(etat=False)
     for o in orders:
         lines = LigneCommandeMp.objects.filter(commande=o)
@@ -627,7 +634,7 @@ def is_order_mp(mp:MatierePremiere):
     return False
 
 
-def is_order_fourniture(fourniture:Fourniture):
+def is_order_fourniture(fourniture: Fourniture):
     orders = CommandeFourniture.objects.filter(etat=False)
     for o in orders:
         lines = LigneCommandeFourniture.objects.filter(commande=o)
@@ -641,9 +648,50 @@ def check_critics(request):
     mps = MatierePremiere.objects.all()
     pfs = ProduitFini.objects.all()
     fournitures = Fourniture.objects.all()
+    entries = EntreeMp.objects.filter(date_exp__isnull=False)
+    expirations = []
     critic_mps = []
     critic_pfs = []
     critic_fournitures = []
+    count = 0
+    for e in entries:
+        if 30 >= e.get_expiration_days >= 0:
+            expirations.append(e)
+            print(e.matiere_premiere.libelle + " " + str(e.get_expiration_days))
+            count += 1
+
+    for mp in mps:
+        if mp.in_stock <= mp.critic_qts and is_order_mp(mp) is False:
+            critic_mps.append(mp)
+            count += 1
+    for pf in pfs:
+        if pf.in_stock <= pf.critic_qts:
+            critic_pfs.append(pf)
+            count += 1
+    for fo in fournitures:
+        if fo.in_stock <= fo.critic_qts and is_order_fourniture(fo) is False:
+            critic_fournitures.append(fo)
+            count += 1
+    return render(request, 'bakery/partials/alert-critic.html', context={'count': count})
+
+
+def stop_critics(request):
+    return HttpResponse(status=286)
+
+
+def check_notifications(request):
+    mps = MatierePremiere.objects.all()
+    pfs = ProduitFini.objects.all()
+    fournitures = Fourniture.objects.all()
+    entries = EntreeMp.objects.filter(date_exp__isnull=False)
+    critic_mps = []
+    critic_pfs = []
+    critic_fournitures = []
+    expirations = []
+
+    for e in entries:
+        if 30 >= e.get_expiration_days >= 0:
+            expirations.append(e)
 
     for mp in mps:
         if mp.in_stock <= mp.critic_qts and is_order_mp(mp) is False:
@@ -654,9 +702,6 @@ def check_critics(request):
     for fo in fournitures:
         if fo.in_stock <= fo.critic_qts and is_order_fourniture(fo) is False:
             critic_fournitures.append(fo)
-
-    return render(request, 'bakery/partials/alert-critic.html', context={'critic_mps': critic_mps, 'critic_pfs': critic_pfs, 'critic_fournitures': critic_fournitures})
-
-
-def stop_critics(request):
-    return HttpResponse(status=286)
+    return render(request, 'bakery/partials/notifications.html',
+                  context={'critic_mps': critic_mps, 'critic_pfs': critic_pfs,
+                           'critic_fournitures': critic_fournitures, 'expirations': expirations})

@@ -62,6 +62,7 @@ urlpatterns = [
     # Routes des alertes
 
     path('check_critics/', check_critics, name='check-critics'),
+    path('check_notifications/', check_notifications, name='check-notifications'),
     path('stop_critics/', stop_critics, name='stop-critics'),
 
 

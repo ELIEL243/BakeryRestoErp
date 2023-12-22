@@ -4,6 +4,8 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save
 from auth_user.models import Role
 import uuid
+from django.utils import timezone
+import datetime
 # Create your models here.
 
 devises = (
@@ -204,6 +206,14 @@ class EntreeMp(models.Model):
 
     def __str__(self):
         return self.matiere_premiere.libelle + " " + str(self.qts)
+
+    @property
+    def get_expiration_days(self):
+        date_actuelle = datetime.date.today()
+        days = 0
+        if self.date_exp is not None:
+            days = self.date_exp - date_actuelle
+        return days.days
 
 
 class EntreePF(models.Model):
