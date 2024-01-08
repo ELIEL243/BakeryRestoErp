@@ -3,6 +3,7 @@
 {% block content %}
     {% include 'bakery/bakery_sidebar.html' %}
     <div class="nk-wrap">
+    {% include 'bakery/reponsive-sidebar.html' %}
 
         {% include 'bakery/profile.html' %}
         <div class="nk-content">
@@ -48,8 +49,11 @@
                                                     <th>No</th>
                                                     <th>Libellé</th>
                                                     <th>Description</th>
+                                                    <th>Prix</th>
                                                     <th>Quantité en stock</th>
                                                     <th>Unité</th>
+                                                    <th>Qts entrée aujourd'hui</th>
+                                                    <th>Qts sortie aujourd'hui</th>
                                                     <th>Quantité critique</th>
                                                     <th></th>
 
@@ -61,8 +65,16 @@
                                                         <td>{{ forloop.counter }}</td>
                                                         <td>{{ pf.libelle }}</td>
                                                         <td>{{ pf.description }}</td>
-                                                        <td>{{ pf.in_stock }}</td>
+                                                        <td>{{ pf.price }} Fc</td>
+                                                        {% if pf.in_stock > pf.critic_qts %}
+                                                        <td class="bg-success text-black">{{ pf.in_stock }}</td>
+                                                        {% else %}
+                                                        <td class="bg-danger text-white">{{ pf.in_stock }}</td>
+                                                        {% endif %}
+
                                                         <td>{{ pf.unite.name }}</td>
+                                                        <td>{{ pf.qts_enters }} {{ pf.unite.name }}(s)</td>
+                                                        <td>{{ pf.qts_out }} {{ pf.unite.name }}(s)</td>
                                                         <td>{{ pf.critic_qts }} {{ pf.unite.name }}</td>
                                                         <td class="center">
                                                             <ul class="nk-tb-actions gx-1 my-n1">

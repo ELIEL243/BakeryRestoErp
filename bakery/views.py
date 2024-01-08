@@ -1,14 +1,18 @@
 import datetime
+import calendar
 import decimal
 from pathlib import Path
 from time import strftime
-from django.db.models import Q
+from .utils import get_day_name, get_month_name
+from django.db.models import Q, Sum, Count, F, Avg
+from django.db.models.functions import ExtractMonth, ExtractDay, ExtractYear
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
 from django.contrib import messages
 from django.http import HttpResponse
 from .models import *
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 import uuid
 
 
@@ -19,11 +23,319 @@ def generate_unique_uid():
     return uuid.uuid4().hex[:10]
 
 
+def current_taux():
+    taux = 1
+    if Taux.objects.all().count() > 0:
+        taux = Taux.objects.all().last().valeur
+    return taux
+
+
+# Vues Concernant le dashboard
+# Vues Concernant le dashboard
+# Vues Concernant le dashboard
+# Vues Concernant le dashboard
+
+@login_required(login_url='login')
+def main_dashboard(request):
+    chiffre_affaire = 0
+    outs = SortiePF.objects.filter(date=datetime.datetime.today().date())
+    chf_a = ChiffreAffaire.objects.filter(date=datetime.datetime.today().date())
+    cmd_cours = CommandeMp.objects.filter(etat=False).count() + CommandeFourniture.objects.filter(etat=False).count()
+    cmd_liv = CommandeMp.objects.filter(etat=True,
+                                        delivered_at=datetime.datetime.today().date()).count() + CommandeFourniture.objects.filter(
+        etat=True, delivered_at=datetime.datetime.today().date()).count()
+    stock_critics = 0
+
+    for i in MatierePremiere.objects.all():
+        if i.in_stock <= i.critic_qts:
+            stock_critics += 1
+    for i in ProduitFini.objects.all():
+        if i.in_stock <= i.critic_qts:
+            stock_critics += 1
+    for i in Fourniture.objects.all():
+        if i.in_stock <= i.critic_qts:
+            stock_critics += 1
+    if len(chf_a) > 0:
+        chiffre_affaire = chf_a.last().total_price
+    elif len(chf_a) == 0:
+        for out in outs:
+            chiffre_affaire += out.total_cost
+    return render(request, 'bakery/main_dashboard.html',
+                  context={'chiffre_affaires': chiffre_affaire, 'cmd_cours': cmd_cours, 'cmd_liv': cmd_liv,
+                           'stock_critics': stock_critics})
+
+
+# Stats en rapport avec les matières premières
+@login_required(login_url='login')
+def stat_mp(request):
+    default_date = datetime.datetime.today()
+    date1 = default_date.date()
+    date2 = date1 + datetime.timedelta(days=30)
+    first_day = datetime.date(date1.year, 1, 1).strftime("%Y-%m-%d")
+    date1.strftime("%Y-%m-%d")
+    date2.strftime("%Y-%m-%d")
+    actual_year = default_date.year
+    actual_month = default_date.month
+    actual_day = default_date.day
+    years = [i for i in range(2020, 2100)]
+    months = [i for i in range(1, 13)]
+    days = [i for i in range(1, 31)]
+    entries = EntreeMp.objects.filter(date__year=default_date.year, date__month=default_date.month)
+    for i in entries:
+        if i.devise == "USD":
+            i.price = i.price * i.taux
+    entries = entries.annotate(day=ExtractDay('date')).values('day').annotate(total=Sum('price')).order_by('day')
+    for i in entries:
+        i["day"] = f'{i["day"]} {get_month_name(default_date.month)}'
+    nbr_cmd = LigneCommandeMp.objects.filter(commande__date__year=default_date.year, commande__etat=True)
+    for i in nbr_cmd:
+        if i.devise == "USD":
+            i.total_price = i.total_price * i.taux
+    nbr_cmd = nbr_cmd.values('matiere_premiere__libelle').annotate(total=Count('commande__id'), total_price=Sum('total_price'))
+    print(nbr_cmd)
+    mps = MatierePremiere.objects.all()
+    return render(request, 'bakery/stat_mp.html', context={'actual_year': actual_year, 'actual_month': actual_month, 'actual_day': actual_day, 'total_cost': entries, 'nbr_cmd': nbr_cmd, 'mps': mps, 'years': years, 'months': months, 'date1': str(date1), 'date2': date2, 'first_day': first_day})
+
+@login_required(login_url='login')
+def filter_total_cost_mp(request):
+    default_date = datetime.datetime.today()
+    year = request.GET.get('year')
+    month = request.GET.get('month')
+    is_year_only = False
+    entries = None
+    if month is None or month == "Aucun":
+        entries = EntreeMp.objects.filter(date__year=year)
+        for i in entries:
+            if i.devise == "USD":
+                i.price = i.price * i.taux
+
+        entries = entries.annotate(month=ExtractMonth('date')).values('month').annotate(total=Sum('price')).order_by('month')
+        for entry in entries:
+            month_number = entry['month']
+            month_name = get_month_name(month_number)
+            entry['month'] = month_name
+        is_year_only = True
+    else:
+        entries = EntreeMp.objects.filter(date__year=year, date__month=month)
+        for i in entries:
+            if i.devise == "USD":
+                i.price = i.price * i.taux
+
+        entries = entries.annotate(day=ExtractDay('date')).values('day').annotate(total=Sum('price')).order_by('day')
+        for i in entries:
+            i["day"] = f'{i["day"]} {get_month_name(int(month))}'
+
+    return render(request, 'bakery/partials/cost_mp.html', context={'total_cost': entries, 'is_year_only': is_year_only})
+
+@login_required(login_url='login')
+def filter_total_cmd_mp(request):
+    date1 = request.GET.get('date1')
+    date2 = request.GET.get('date2')
+    nbr_cmd = None
+    if date2 == "" or date2 is None:
+        nbr_cmd = LigneCommandeMp.objects.filter(commande__date=date1)
+        for i in nbr_cmd:
+            if i.devise == "USD":
+                i.total_price = i.total_price * i.taux
+        nbr_cmd = nbr_cmd.values(
+            'matiere_premiere__libelle').annotate(total=Count('commande__id'), total_price=Sum('total_price'))
+    else:
+        nbr_cmd = LigneCommandeMp.objects.filter(Q(commande__date__gte=date1) & Q(commande__date__lte=date2))
+        for i in nbr_cmd:
+            if i.devise == "USD":
+                i.total_price = i.total_price * i.taux
+        nbr_cmd = nbr_cmd.values(
+            'matiere_premiere__libelle').annotate(total=Count('commande__id'), total_price=Sum('total_price'))
+
+    return render(request, 'bakery/partials/nbr_cmd_mp.html', context={'nbr_cmd': nbr_cmd})
+
+@login_required(login_url='login')
+def filter_total_entry_out_mp(request):
+    mps = MatierePremiere.objects.all()
+    date1 = request.GET.get('date1')
+    date2 = request.GET.get('date2')
+    for i in mps:
+        i.total_out = i.qts_out_by_date(date1, date2)
+        i.total_entry = i.qts_enter_by_date(date1, date2)
+    for i in mps:
+        print(i.total_out)
+        print(i.total_entry)
+    return render(request, 'bakery/partials/nbr_entry_out_mp.html', context={'mps': mps})
+
+
+#Stat en rapport avec les fourniture
+@login_required(login_url='login')
+def stat_fourniture(request):
+    default_date = datetime.datetime.today()
+    date1 = default_date.date()
+    date2 = date1 + datetime.timedelta(days=30)
+    first_day = datetime.date(date1.year, 1, 1).strftime("%Y-%m-%d")
+    date1.strftime("%Y-%m-%d")
+    date2.strftime("%Y-%m-%d")
+    actual_year = default_date.year
+    actual_month = default_date.month
+    actual_day = default_date.day
+    years = [i for i in range(2020, 2100)]
+    months = [i for i in range(1, 13)]
+    entries = EntreeFourniture.objects.filter(date__year=default_date.year, date__month=default_date.month)
+    for i in entries:
+        if i.devise == "USD":
+            i.price = i.price * i.taux
+    entries = entries.annotate(day=ExtractDay('date')).values('day').annotate(total=Sum('price')).order_by('day')
+    for i in entries:
+        i["day"] = f'{i["day"]} {get_month_name(default_date.month)}'
+    nbr_cmd = LigneCommandeFourniture.objects.filter(commande__date__year=default_date.year)
+    for i in nbr_cmd:
+        if i.devise == "USD":
+            i.total_price = i.total_price * i.taux
+    nbr_cmd = nbr_cmd.values('fourniture__libelle').annotate(total=Count('commande__id'), total_price=Sum('total_price'))
+
+    fournitures = Fourniture.objects.all()
+
+    return render(request, 'bakery/stat-fourniture.html', context={'actual_year': actual_year, 'actual_month': actual_month, 'actual_day': actual_day, 'total_cost': entries, 'nbr_cmd': nbr_cmd, 'fournitures': fournitures, 'years': years, 'months': months, 'date1': str(date1), 'date2': date2, 'first_day': first_day})
+
+@login_required(login_url='login')
+def filter_total_cost_fourniture(request):
+    default_date = datetime.datetime.today()
+    year = request.GET.get('year')
+    month = request.GET.get('month')
+    is_year_only = False
+    entries = None
+    if month is None or month == "Aucun":
+        entries = EntreeFourniture.objects.filter(date__year=year)
+        for i in entries:
+            if i.devise == "USD":
+                i.price = i.price * i.taux
+
+        entries = entries.annotate(month=ExtractMonth('date')).values('month').annotate(total=Sum('price')).order_by('month')
+        for entry in entries:
+            month_number = entry['month']
+            month_name = get_month_name(month_number)
+            entry['month'] = month_name
+        is_year_only = True
+    else:
+        entries = EntreeFourniture.objects.filter(date__year=year, date__month=month)
+        for i in entries:
+            if i.devise == "USD":
+                i.price = i.price * i.taux
+
+        entries = entries.annotate(day=ExtractDay('date')).values('day').annotate(total=Sum('price')).order_by('day')
+        for i in entries:
+            i["day"] = f'{i["day"]} {get_month_name(int(month))}'
+
+    return render(request, 'bakery/partials/cost_fourniture.html', context={'total_cost': entries, 'is_year_only': is_year_only})
+
+@login_required(login_url='login')
+def filter_total_cmd_fourniture(request):
+    date1 = request.GET.get('date1')
+    date2 = request.GET.get('date2')
+    nbr_cmd = None
+    if date2 == "" or date2 is None:
+        nbr_cmd = LigneCommandeFourniture.objects.filter(commande__date=date1)
+        for i in nbr_cmd:
+            if i.devise == "USD":
+                i.total_price = i.total_price * i.taux
+        nbr_cmd = nbr_cmd.values(
+            'fourniture__libelle').annotate(total=Count('commande__id'), total_price=Sum('total_price'))
+    else:
+        nbr_cmd = LigneCommandeFourniture.objects.filter(Q(commande__date__gte=date1) & Q(commande__date__lte=date2))
+        for i in nbr_cmd:
+            if i.devise == "USD":
+                i.total_price = i.total_price * i.taux
+        nbr_cmd = nbr_cmd.values(
+            'fourniture__libelle').annotate(total=Count('commande__id'), total_price=Sum('total_price'))
+
+    return render(request, 'bakery/partials/nbr_cmd_fourniture.html', context={'nbr_cmd': nbr_cmd})
+
+@login_required(login_url='login')
+def filter_total_entry_out_fourniture(request):
+    fournitures = Fourniture.objects.all()
+    date1 = request.GET.get('date1')
+    date2 = request.GET.get('date2')
+    for i in fournitures:
+        i.total_out = i.qts_out_by_date(date1, date2)
+        i.total_entry = i.qts_enter_by_date(date1, date2)
+    return render(request, 'bakery/partials/nbr_entry_out_fourniture.html', context={'fournitures': fournitures})
+
+
+# En rapport avec les produits finis
+@login_required(login_url='login')
+def stat_pf(request):
+    default_date = datetime.datetime.today()
+    date1 = default_date.date()
+    date2 = date1 + datetime.timedelta(days=30)
+    first_day = datetime.date(date1.year, 1, 1).strftime("%Y-%m-%d")
+    last_day = datetime.date(date1.year, 12, 31).strftime("%Y-%m-%d")
+    date1.strftime("%Y-%m-%d")
+    date2.strftime("%Y-%m-%d")
+    actual_year = default_date.year
+    actual_month = default_date.month
+    actual_day = default_date.day
+    years = [i for i in range(2020, 2100)]
+    months = [i for i in range(1, 13)]
+    entries = ChiffreAffaire.objects.filter(date__year=default_date.year, date__month=default_date.month)
+    pfs = ProduitFini.objects.all()
+    for i in pfs:
+        i.total_sale = i.total_sale_by_date(first_day, last_day)
+
+    return render(request, 'bakery/stat_pf.html', context={'actual_year': actual_year, 'actual_month': actual_month, 'actual_day': actual_day, 'total_cost': entries, 'pfs': pfs, 'years': years, 'months': months, 'date1': str(date1), 'date2': date2, 'first_day': first_day})
+
+
+@login_required(login_url='login')
+def filter_chf_pf(request):
+    default_date = datetime.datetime.today()
+    year = request.GET.get('year')
+    month = request.GET.get('month')
+    is_year_only = False
+    entries = None
+    if month is None or month == "Aucun":
+        entries = ChiffreAffaire.objects.filter(date__year=year).annotate(month=ExtractMonth('date')).values('month').annotate(total_price=Sum('total_price')).order_by('month')
+        for entry in entries:
+            month_number = entry['month']
+            month_name = get_month_name(month_number)
+            entry['month'] = month_name
+        is_year_only = True
+    else:
+        entries = ChiffreAffaire.objects.filter(date__year=year, date__month=month)
+
+    return render(request, 'bakery/partials/chf_pf.html', context={'total_cost': entries, 'is_year_only': is_year_only})
+
+
+@login_required(login_url='login')
+def filter_total_sale_pf(request):
+    date1 = request.GET.get('date1')
+    date2 = request.GET.get('date2')
+    pfs = ProduitFini.objects.all()
+    if date2 == "" or date2 is None:
+        for i in pfs:
+            i.total_sale = i.total_sale_by_date(date1, date2)
+    else:
+        for i in pfs:
+            i.total_sale = i.total_sale_by_date(date1, date2)
+    return render(request, 'bakery/partials/total_sale_pf.html', context={'pfs': pfs})
+
+
+@login_required(login_url='login')
+def filter_total_entry_out_pf(request):
+    pfs = ProduitFini.objects.all()
+    date1 = request.GET.get('date1')
+    date2 = request.GET.get('date2')
+    for i in pfs:
+        i.total_out = i.qts_out_by_date(date1, date2)
+        i.total_entry = i.qts_enter_by_date(date1, date2)
+    return render(request, 'bakery/partials/nbr_entry_out_pf.html', context={'pfs': pfs})
+
+
+@login_required(login_url='login')
 def home_bakery(request):
-    print(Path(__file__).resolve().parent.parent)
+    chf_aff = ChiffreAffaire.objects.get_or_create(date=datetime.datetime.today().date())
     return render(request, 'bakery/home_bakery.html', context={})
 
 
+# Vues concernant les unités
+# Vues concernant les unités
+# Vues concernant les unités
+@login_required(login_url='login')
 def unit_list(request):
     units = Unite.objects.all()
     if request.method == 'POST':
@@ -37,6 +349,7 @@ def unit_list(request):
     return render(request, 'bakery/unit_list.html', context={'units': units})
 
 
+@login_required(login_url='login')
 def unit_detail(request, pk):
     unit = Unite.objects.get(pk=pk)
     if request.method == 'POST':
@@ -51,6 +364,7 @@ def unit_detail(request, pk):
     return render(request, 'bakery/forms/unit_detail_form.html', context={'unit': unit})
 
 
+@login_required(login_url='login')
 def delete_unit(request, pk):
     unit = Unite.objects.get(pk=pk)
     unit.delete()
@@ -58,6 +372,10 @@ def delete_unit(request, pk):
     return redirect('unit-list')
 
 
+# Vues concernant les matieres premieres
+# Vues concernant les matieres premieres
+# Vues concernant les matieres premieres
+@login_required(login_url='login')
 def mp_list(request):
     mps = MatierePremiere.objects.all()
     units = Unite.objects.all()
@@ -77,6 +395,7 @@ def mp_list(request):
     return render(request, 'bakery/mp_list.html', context={'mps': mps, 'units': units})
 
 
+@login_required(login_url='login')
 def mp_detail(request, pk):
     units = Unite.objects.all()
     mp = MatierePremiere.objects.get(pk=pk)
@@ -95,6 +414,7 @@ def mp_detail(request, pk):
     return render(request, 'bakery/forms/mp_detail.html', context={'mp': mp, 'units': units})
 
 
+@login_required(login_url='login')
 def delete_mp(request, pk):
     mp = MatierePremiere.objects.get(pk=pk)
     mp.delete()
@@ -102,6 +422,7 @@ def delete_mp(request, pk):
     return redirect('mp-list')
 
 
+@login_required(login_url='login')
 def entree_mp(request):
     mps = MatierePremiere.objects.all()
     entries = EntreeMp.objects.all().order_by('-id')
@@ -114,7 +435,7 @@ def entree_mp(request):
             date_exp = request.POST.get('date_exp')
             price = int(request.POST.get('price'))
             devise = request.POST.get('devise')
-            EntreeMp.objects.create(matiere_premiere=mp, qts=qts, date_exp=date_exp, price=price, devise=devise)
+            EntreeMp.objects.create(matiere_premiere=mp, qts=qts, date_exp=date_exp, price=price, devise=devise, taux=current_taux())
             messages.success(request, 'good !')
             return redirect('entree-mp')
         else:
@@ -130,6 +451,7 @@ def entree_mp(request):
                   context={'mps': mps, 'entries': entries, 'date1': date1, 'date2': date2})
 
 
+@login_required(login_url='login')
 def sortie_mp(request):
     mps = MatierePremiere.objects.all()
     outs = SortieMp.objects.all().order_by('-id')
@@ -158,6 +480,7 @@ def sortie_mp(request):
     return render(request, 'bakery/sortie_mp.html', context={'mps': mps, 'outs': outs, 'date1': date1, 'date2': date2})
 
 
+@login_required(login_url='login')
 def edit_entree_mp(request, pk):
     entry = EntreeMp.objects.get(pk=pk)
     if request.method == 'POST':
@@ -168,24 +491,28 @@ def edit_entree_mp(request, pk):
     return render(request, 'bakery/forms/mp_entree_detail.html', context={'entry': entry})
 
 
+@login_required(login_url='login')
 def delete_entree(request, pk):
     EntreeMp.objects.get(pk=pk).delete()
     messages.success(request, 'good !')
     return redirect('entree-mp')
 
 
+@login_required(login_url='login')
 def delete_sortie(request, pk):
     SortieMp.objects.get(pk=pk).delete()
     messages.success(request, 'good !')
     return redirect('sortie-mp')
 
 
+@login_required(login_url='login')
 def cmd_mp(request):
     orders = CommandeMp.objects.all()
     ref = generate_unique_uid()
     return render(request, 'bakery/bakery_cmd_mp.html', context={'orders': orders, 'ref': ref})
 
 
+@login_required(login_url='login')
 def delete_cmd(request, pk):
     order = CommandeMp.objects.get(pk=pk)
     order.delete()
@@ -193,6 +520,7 @@ def delete_cmd(request, pk):
     return redirect('cmd-mp')
 
 
+@login_required(login_url='login')
 def detail_cmd_mp(request, ref):
     order = CommandeMp.objects.get(ref=ref)
     lines = LigneCommandeMp.objects.filter(commande=order)
@@ -200,6 +528,7 @@ def detail_cmd_mp(request, ref):
     return render(request, 'bakery/detail_cmd_mp.html', context={'lines': lines, 'order': order})
 
 
+@login_required(login_url='login')
 def add_cmd_mp(request, ref):
     order, created = CommandeMp.objects.get_or_create(ref=ref)
     lines = LigneCommandeMp.objects.filter(commande=order)
@@ -221,6 +550,7 @@ def add_cmd_mp(request, ref):
             line, created = LigneCommandeMp.objects.get_or_create(commande=order, matiere_premiere=mp)
             line.qts += int(qts)
             line.total_price += int(total_price)
+            line.taux = current_taux()
             line.devise = devise
             line.save()
             messages.success(request, "Succes")
@@ -230,6 +560,7 @@ def add_cmd_mp(request, ref):
                   context={'order': order, 'mps': mps, 'lines': lines, 'fournisseurs': suppliers})
 
 
+@login_required(login_url='login')
 def delete_line_cmd_mp(request, pk):
     line = LigneCommandeMp.objects.get(pk=pk)
     line.delete()
@@ -237,6 +568,7 @@ def delete_line_cmd_mp(request, pk):
     return redirect('add-cmd-mp', line.commande.ref)
 
 
+@login_required(login_url='login')
 def edit_line_cmd_mp(request, pk):
     line = LigneCommandeMp.objects.get(pk=pk)
     if request.method == 'POST':
@@ -250,9 +582,11 @@ def edit_line_cmd_mp(request, pk):
     return render(request, 'bakery/forms/line_cmd_mp.html', context={'line': line})
 
 
+@login_required(login_url='login')
 def confirm_cmd_mp(request, ref):
     order = CommandeMp.objects.get(ref=ref)
     order.etat = True
+    order.delivered_at = datetime.datetime.today().date()
     order.save()
     lines = LigneCommandeMp.objects.filter(commande=order)
 
@@ -261,15 +595,17 @@ def confirm_cmd_mp(request, ref):
         qts = line.qts
         price = line.total_price
         devise = order.devise
-        EntreeMp.objects.create(matiere_premiere=mp, qts=qts, price=price, devise=devise)
+        EntreeMp.objects.create(matiere_premiere=mp, qts=qts, price=price, devise=devise, taux=current_taux())
         messages.success(request, 'good !')
 
     return redirect('cmd-mp')
 
 
 # Vues concernant les produits finis
+# Vues concernant les produits finis
+# Vues concernant les produits finis
 
-
+@login_required(login_url='login')
 def pf_list(request):
     pfs = ProduitFini.objects.all()
     units = Unite.objects.all()
@@ -279,8 +615,9 @@ def pf_list(request):
             desc = request.POST.get('desc')
             unit_name = request.POST.get('unit')
             critic_qts = int(request.POST.get('qts'))
+            price = int(request.POST.get('price'))
             unit = Unite.objects.get(name=unit_name)
-            ProduitFini.objects.create(libelle=name, description=desc, unite=unit, critic_qts=critic_qts)
+            ProduitFini.objects.create(libelle=name, description=desc, price=price, unite=unit, critic_qts=critic_qts)
             messages.success(request, 'good !')
             return redirect('pf-list')
         else:
@@ -289,6 +626,7 @@ def pf_list(request):
     return render(request, 'bakery/pf_list.html', context={'pfs': pfs, 'units': units})
 
 
+@login_required(login_url='login')
 def pf_detail(request, pk):
     units = Unite.objects.all()
     pf = ProduitFini.objects.get(pk=pk)
@@ -297,6 +635,7 @@ def pf_detail(request, pk):
             pf.libelle = request.POST.get('name')
             pf.description = request.POST.get('desc')
             pf.critic_qts = int(request.POST.get('qts'))
+            pf.price = int(request.POST.get('price'))
             pf.unit = Unite.objects.get(name=request.POST.get('unit'))
             pf.save()
             messages.success(request, 'good !')
@@ -306,6 +645,7 @@ def pf_detail(request, pk):
     return render(request, 'bakery/forms/pf_detail.html', context={'pf': pf, 'units': units})
 
 
+@login_required(login_url='login')
 def delete_pf(request, pk):
     pf = ProduitFini.objects.get(pk=pk)
     pf.delete()
@@ -313,6 +653,48 @@ def delete_pf(request, pk):
     return redirect('pf-list')
 
 
+@login_required(login_url='login')
+def invendu_pf(request):
+    pfs = ProduitFini.objects.all()
+    invendus = InvenduPf.objects.all().order_by('-id')
+    total_chf = 0
+    chiffre_affaire, create = ChiffreAffaire.objects.get_or_create(date=datetime.datetime.today().date())
+    outs = SortiePF.objects.filter(date=datetime.datetime.today().date())
+
+    for o in outs:
+        total_chf += o.total_cost
+    if request.method == 'POST':
+        if ProduitFini.objects.filter(libelle=request.POST.get('name')).exists():
+            pf = ProduitFini.objects.get(libelle=request.POST.get('name'))
+            qts = int(request.POST.get('qts'))
+            invendu, create = InvenduPf.objects.get_or_create(produit_fini=pf, date=datetime.datetime.today().date())
+            invendu.qts += qts
+            invendu.price = invendu.qts * pf.price
+            invendu.save()
+            total_chf -= invendu.price
+            chiffre_affaire.total_price = total_chf
+            chiffre_affaire.save()
+            messages.success(request, 'good !')
+            return redirect('invendu-pf')
+        else:
+            messages.error(request, 'echec !')
+
+    return render(request, 'bakery/invendu_pf.html',
+                  context={'pfs': pfs, 'invendus': invendus})
+
+
+@login_required(login_url='login')
+def delete_invendu_pf(request, pk):
+    chiffre_affaire = ChiffreAffaire.objects.get_or_create(date=datetime.datetime.today().date())
+    invendu = InvenduPf.objects.get(pk=pk)
+    chiffre_affaire.total_price -= invendu.price
+    invendu.delete()
+    chiffre_affaire.save()
+    messages.success(request, 'good !')
+    return redirect('invendu-pf')
+
+
+@login_required(login_url='login')
 def entree_pf(request):
     pfs = ProduitFini.objects.all()
     entries = EntreePF.objects.all().order_by('-id')
@@ -338,6 +720,7 @@ def entree_pf(request):
                   context={'pfs': pfs, 'entries': entries, 'date1': date1, 'date2': date2})
 
 
+@login_required(login_url='login')
 def sortie_pf(request):
     pfs = ProduitFini.objects.all()
     outs = SortiePF.objects.all().order_by('-id')
@@ -348,7 +731,7 @@ def sortie_pf(request):
             pf = ProduitFini.objects.get(libelle=request.POST.get('name'))
             qts = int(request.POST.get('qts'))
             if pf.in_stock >= qts:
-                SortiePF.objects.create(produit_fini=pf, qts=qts)
+                SortiePF.objects.create(produit_fini=pf, qts=qts, price=pf.price)
                 messages.success(request, 'good !')
                 return redirect('sortie-pf')
             else:
@@ -366,12 +749,14 @@ def sortie_pf(request):
     return render(request, 'bakery/sortie_pf.html', context={'pfs': pfs, 'outs': outs, 'date1': date1, 'date2': date2})
 
 
+@login_required(login_url='login')
 def delete_entree_pf(request, pk):
     EntreePF.objects.get(pk=pk).delete()
     messages.success(request, 'good !')
     return redirect('entree-pf')
 
 
+@login_required(login_url='login')
 def delete_sortie_pf(request, pk):
     SortiePF.objects.get(pk=pk).delete()
     messages.success(request, 'good !')
@@ -379,8 +764,10 @@ def delete_sortie_pf(request, pk):
 
 
 # Vues concernant les fournitures
+# Vues concernant les fournitures
+# Vues concernant les fournitures
 
-
+@login_required(login_url='login')
 def fourniture_list(request):
     fournitures = Fourniture.objects.all()
     units = Unite.objects.all()
@@ -400,6 +787,7 @@ def fourniture_list(request):
     return render(request, 'bakery/fourniture_list.html', context={'fournitures': fournitures, 'units': units})
 
 
+@login_required(login_url='login')
 def fourniture_detail(request, pk):
     units = Unite.objects.all()
     fourniture = Fourniture.objects.get(pk=pk)
@@ -418,6 +806,7 @@ def fourniture_detail(request, pk):
     return render(request, 'bakery/forms/fourniture_detail.html', context={'fourniture': fourniture, 'units': units})
 
 
+@login_required(login_url='login')
 def delete_fourniture(request, pk):
     fourniture = Fourniture.objects.get(pk=pk)
     fourniture.delete()
@@ -425,6 +814,7 @@ def delete_fourniture(request, pk):
     return redirect('mp-list')
 
 
+@login_required(login_url='login')
 def entree_fourniture(request):
     fournitures = Fourniture.objects.all()
     entries = EntreeFourniture.objects.all().order_by('-id')
@@ -436,7 +826,7 @@ def entree_fourniture(request):
             qts = int(request.POST.get('qts'))
             price = int(request.POST.get('price'))
             devise = request.POST.get('devise')
-            EntreeFourniture.objects.create(fourniture=fourniture, qts=qts, price=price, devise=devise)
+            EntreeFourniture.objects.create(fourniture=fourniture, qts=qts, price=price, devise=devise, taux=current_taux())
             messages.success(request, 'good !')
             return redirect('entree-fourniture')
         else:
@@ -452,6 +842,7 @@ def entree_fourniture(request):
                   context={'fournitures': fournitures, 'entries': entries, 'date1': date1, 'date2': date2})
 
 
+@login_required(login_url='login')
 def sortie_fourniture(request):
     fournitures = Fourniture.objects.all()
     outs = SortieFourniture.objects.all().order_by('-id')
@@ -481,24 +872,28 @@ def sortie_fourniture(request):
                   context={'fournitures': fournitures, 'outs': outs, 'date1': date1, 'date2': date2})
 
 
+@login_required(login_url='login')
 def delete_entree_fourniture(request, pk):
     EntreeFourniture.objects.get(pk=pk).delete()
     messages.success(request, 'good !')
     return redirect('entree-fourniture')
 
 
+@login_required(login_url='login')
 def delete_sortie_fourniture(request, pk):
     SortieFourniture.objects.get(pk=pk).delete()
     messages.success(request, 'good !')
     return redirect('sortie-fourniture')
 
 
+@login_required(login_url='login')
 def cmd_fourniture(request):
     orders = CommandeFourniture.objects.all()
     ref = generate_unique_uid()
     return render(request, 'bakery/cmd_fourniture.html', context={'orders': orders, 'ref': ref})
 
 
+@login_required(login_url='login')
 def delete_cmd_fourniture(request, pk):
     order = CommandeFourniture.objects.get(pk=pk)
     order.delete()
@@ -506,6 +901,7 @@ def delete_cmd_fourniture(request, pk):
     return redirect('cmd-fourniture')
 
 
+@login_required(login_url='login')
 def detail_cmd_fourniture(request, ref):
     order = CommandeFourniture.objects.get(ref=ref)
     lines = LigneCommandeFourniture.objects.filter(commande=order)
@@ -513,6 +909,7 @@ def detail_cmd_fourniture(request, ref):
     return render(request, 'bakery/detail_cmd_fourniture.html', context={'lines': lines, 'order': order})
 
 
+@login_required(login_url='login')
 def add_cmd_fourniture(request, ref):
     order, created = CommandeFourniture.objects.get_or_create(ref=ref)
     lines = LigneCommandeFourniture.objects.filter(commande=order)
@@ -535,6 +932,7 @@ def add_cmd_fourniture(request, ref):
             line.qts += int(qts)
             line.total_price += int(total_price)
             line.devise = devise
+            line.taux = current_taux()
             line.save()
             messages.success(request, "Succes")
         else:
@@ -543,6 +941,7 @@ def add_cmd_fourniture(request, ref):
                   context={'order': order, 'fournitures': fournitures, 'lines': lines, 'fournisseurs': suppliers})
 
 
+@login_required(login_url='login')
 def delete_line_cmd_fourniture(request, pk):
     line = LigneCommandeFourniture.objects.get(pk=pk)
     line.delete()
@@ -550,6 +949,7 @@ def delete_line_cmd_fourniture(request, pk):
     return redirect('add-cmd-fourniture', line.commande.ref)
 
 
+@login_required(login_url='login')
 def edit_line_cmd_fourniture(request, pk):
     line = LigneCommandeFourniture.objects.get(pk=pk)
     if request.method == 'POST':
@@ -563,9 +963,11 @@ def edit_line_cmd_fourniture(request, pk):
     return render(request, 'bakery/forms/line_cmd_fourniture.html', context={'line': line})
 
 
+@login_required(login_url='login')
 def confirm_cmd_fourniture(request, ref):
     order = CommandeFourniture.objects.get(ref=ref)
     order.etat = True
+    order.delivered_at = datetime.datetime.today().date()
     order.save()
     lines = LigneCommandeFourniture.objects.filter(commande=order)
 
@@ -574,7 +976,7 @@ def confirm_cmd_fourniture(request, ref):
         qts = line.qts
         price = line.total_price
         devise = order.devise
-        EntreeFourniture.objects.create(fourniture=fourniture, qts=qts, price=price, devise=devise)
+        EntreeFourniture.objects.create(fourniture=fourniture, qts=qts, price=price, devise=devise, taux=current_taux())
         messages.success(request, 'good !')
 
     return redirect('cmd-fourniture')
@@ -583,6 +985,7 @@ def confirm_cmd_fourniture(request, ref):
 # Vues concernant les fournisseurs
 
 
+@login_required(login_url='login')
 def fournisseur_list(request):
     fournisseurs = Fournisseur.objects.all()
     if request.method == 'POST':
@@ -599,6 +1002,7 @@ def fournisseur_list(request):
     return render(request, 'bakery/fournisseur_list.html', context={'fournisseurs': fournisseurs})
 
 
+@login_required(login_url='login')
 def fournisseur_detail(request, pk):
     fournisseur = Fournisseur.objects.get(pk=pk)
     if request.method == 'POST':
@@ -615,6 +1019,7 @@ def fournisseur_detail(request, pk):
     return render(request, 'bakery/forms/fournisseur_detail.html', context={'fournisseur': fournisseur})
 
 
+@login_required(login_url='login')
 def delete_fournisseur(request, pk):
     fournisseur = Fournisseur.objects.get(pk=pk)
     fournisseur.delete()
@@ -623,7 +1028,8 @@ def delete_fournisseur(request, pk):
 
 
 # Vue concernants les alertes
-
+# Vue concernants les alertes
+# Vue concernants les alertes
 def is_order_mp(mp: MatierePremiere):
     orders = CommandeMp.objects.filter(etat=False)
     for o in orders:
@@ -644,6 +1050,7 @@ def is_order_fourniture(fourniture: Fourniture):
     return False
 
 
+@login_required(login_url='login')
 def check_critics(request):
     mps = MatierePremiere.objects.all()
     pfs = ProduitFini.objects.all()
@@ -675,15 +1082,17 @@ def check_critics(request):
     return render(request, 'bakery/partials/alert-critic.html', context={'count': count})
 
 
+@login_required(login_url='login')
 def stop_critics(request):
     return HttpResponse(status=286)
 
 
+@login_required(login_url='login')
 def check_notifications(request):
     mps = MatierePremiere.objects.all()
     pfs = ProduitFini.objects.all()
     fournitures = Fourniture.objects.all()
-    entries = EntreeMp.objects.filter(date_exp__isnull=False)
+    entries = EntreeMp.objects.filter(date_exp__isnull=False, is_read_expired=False)
     critic_mps = []
     critic_pfs = []
     critic_fournitures = []
@@ -705,3 +1114,11 @@ def check_notifications(request):
     return render(request, 'bakery/partials/notifications.html',
                   context={'critic_mps': critic_mps, 'critic_pfs': critic_pfs,
                            'critic_fournitures': critic_fournitures, 'expirations': expirations})
+
+
+@login_required(login_url='login')
+def notification_has_read(request, pk):
+    e = EntreeMp.objects.get(pk=pk)
+    e.is_read_expired = True
+    e.save()
+    return HttpResponse("")

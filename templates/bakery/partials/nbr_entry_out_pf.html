@@ -1,0 +1,22 @@
+<table class="datatable-init-export nowrap table table-striped bordered"
+                                           data-export-title="Export">
+                                        <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Produit fini</th>
+                                            <th>Quantité entrée</th>
+                                            <th>Quantité sortie</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for pf in pfs %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ pf.libelle }}</td>
+                                                <td>{{ pf.total_entry }} {{ pf.unite.name }}(s)</td>
+                                                <td>{{ pf.total_out }} {{ pf.unite.name }}(s)</td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+
+                                    </table>

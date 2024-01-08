@@ -1,6 +1,26 @@
 from django.urls import path
 from .views import *
 urlpatterns = [
+    # Routes des dashboards
+    # Routes des dashboards
+    # Routes des dashboards
+    path('main_dashboard/', main_dashboard, name='main-dashboard'),
+    # En rapport avec les matieres premieres
+    path('stat_mp/', stat_mp, name='stat-mp'),
+    path('filter_cost_mp/', filter_total_cost_mp, name='filter-cost-mp'),
+    path('filter_cmd_mp/', filter_total_cmd_mp, name='filter-cmd-mp'),
+    path('filter_entry_out_mp/', filter_total_entry_out_mp, name='filter-entry-out-mp'),
+    # En rapport avec les fournitures
+    path('stat_fourniture/', stat_fourniture, name='stat-fourniture'),
+    path('filter_cost_fourniture/', filter_total_cost_fourniture, name='filter-cost-fourniture'),
+    path('filter_cmd_fourniture/', filter_total_cmd_fourniture, name='filter-cmd-fourniture'),
+    path('filter_entry_out_fourniture/', filter_total_entry_out_fourniture, name='filter-entry-out-fourniture'),
+    # En rapport avec les produits finis
+    path('stat_pf/', stat_pf, name='stat-pf'),
+    path('filter_chf_pf/', filter_chf_pf, name='filter-chf-pf'),
+    path('filter_sale_pf/', filter_total_sale_pf, name='filter-total-sale-pf'),
+    path('filter_entry_out_pf/', filter_total_entry_out_pf, name='filter-entry-out-pf'),
+
     # Rootes des unités
     path('home_bakery/', home_bakery, name='home-bakery'),
     path('unit_list/', unit_list, name='unit-list'),
@@ -30,8 +50,10 @@ urlpatterns = [
     path('pf_detail/<str:pk>/', pf_detail, name='pf-detail'),
     path('delete_pf/<str:pk>/', delete_pf, name='delete-pf'),
     path('entree_pf/', entree_pf, name='entree-pf'),
+    path('invendu_pf/', invendu_pf, name='invendu-pf'),
     #path('edit_entree_pf/<str:pk>/', edit_entree_pf, name='edit-entree-pf'),
     path('delete_entree_pf/<str:pk>/', delete_entree_pf, name='delete-entree-pf'),
+    path('delete_invendu_pf/<str:pk>/', delete_invendu_pf, name='delete-invendu-pf'),
     path('sortie_pf/', sortie_pf, name='sortie-pf'),
     path('delete_sortie_pf/<str:pk>/', delete_sortie_pf, name='delete-sortie-pf'),
 
@@ -64,6 +86,7 @@ urlpatterns = [
     path('check_critics/', check_critics, name='check-critics'),
     path('check_notifications/', check_notifications, name='check-notifications'),
     path('stop_critics/', stop_critics, name='stop-critics'),
+    path('notification_hasread/<str:pk>/', notification_has_read, name='notification-hasread'),
 
 
 ]

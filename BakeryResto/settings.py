@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
-    'jazzmin',
+    #'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -92,18 +92,7 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth_user.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth_user.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth_user.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth_user.password_validation.NumericPasswordValidator',
-    },
+
 ]
 
 
@@ -138,8 +127,8 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 JAZZMIN_SETTINGS = {
-    "site_title": "Bakery Resto Admin",
-    "site_header": "Bakery Resto",
-    "site_brand": "Bakery Resto",
+    "site_title": "Iclass Admin",
+    "site_header": "Iclass",
+    "site_brand": "Iclass",
     "site_logo": "images/pain.png",
 }

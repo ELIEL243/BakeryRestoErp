@@ -1,0 +1,22 @@
+                                        <table class="datatable-init-export nowrap table table-striped bordered"
+                                               data-export-title="Export">
+                                            <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Matière première</th>
+                                                <th>Quantité entrée</th>
+                                                <th>Quantité sortie</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for mp in mps %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ mp.libelle }}</td>
+                                                    <td>{{ mp.total_entry }} {{ mp.unite.name }}(s)</td>
+                                                    <td>{{ mp.total_out }} {{ mp.unite.name }}(s)</td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+
+                                        </table>

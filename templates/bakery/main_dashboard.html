@@ -1,0 +1,178 @@
+{% extends 'bakery/base_bakery.html' %}
+{% load static %}
+
+{% block content %}
+    
+    {% include 'bakery/bakery_sidebar.html' %}
+    
+    <div class="nk-wrap">
+        
+        {% include 'bakery/reponsive-sidebar.html' %}
+        {% include 'bakery/profile.html' %}
+        <div class="nk-content">
+            {% include 'bakery/partials/check_critics.html' %}
+
+            <div class="container-fluid">
+                <div class="nk-content-inner">
+                    <div class="nk-content-body">
+                        <div class="nk-block-head nk-block-head-sm">
+                            <div class="nk-block-between">
+                                <div class="nk-block-head-content">
+                                    <h3 class="nk-block-title page-title">Dashboard</h3>
+                                </div><!-- .nk-block-head-content -->
+                                <div class="nk-block-head-content">
+                                    <div class="toggle-wrap nk-block-tools-toggle">
+                                        <a href="#" class="btn btn-icon btn-trigger toggle-expand me-n1"
+                                           data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+                                        <div class="toggle-expand-content" data-content="pageMenu">
+                                            <ul class="nk-block-tools g-3">
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div><!-- .nk-block-head-content -->
+                            </div><!-- .nk-block-between -->
+                        </div><!-- .nk-block-head -->
+                        <div class="nk-block">
+                            <div class="row">
+                                <div class="col-md-3 h-25">
+                                    <div class="card card-bordered card-full bg-indigo">
+                                        <div class="card-inner">
+                                            <div class="card-title-group align-start mb-0">
+                                                <div class="card-title">
+                                                    <h6 class="title text-white">Chiffre d'affaires journalier</h6>
+
+                                                </div>
+                                            </div>
+                                            <div class="card-amount">
+                                                <span class="amount text-white text-bold">{{ chiffre_affaires }} Fc</span>
+                                                
+                                            </div>
+                                            <div class="invest-data">
+                                                <div class="invest-data-ck">
+                                                    <canvas
+                                                            class="iv-data-chart"
+                                                            id="totalBooking"
+                                                    ></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- .card -->
+                                </div>
+
+                                <div class="col-md-3 h-25">
+                                    <div class="card card-bordered card-full bg-dark">
+                                        <div class="card-inner">
+                                            <div class="card-title-group align-start mb-0">
+                                                <div class="card-title">
+                                                    <h6 class="title text-white">Commandes en cours</h6>
+                                                </div>
+                                            </div>
+                                            <div class="card-amount">
+                                                <span class="amount text-white">{{ cmd_cours }}</span>
+
+                                            </div>
+                                            <div class="invest-data">
+                                                <div class="invest-data-ck">
+                                                    <canvas
+                                                            class="iv-data-chart"
+                                                            id="totalBooking"
+                                                    ></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- .card -->
+                                </div>
+
+
+                                <div class="col-md-3 h-25">
+                                    <div class="card card-bordered card-full bg-secondary">
+                                        <div class="card-inner">
+                                            <div class="card-title-group align-start mb-0">
+                                                <div class="card-title">
+                                                    <h6 class="title text-white">Commandes livrées</h6>
+                                                </div>
+                                            </div>
+                                            <div class="card-amount">
+                                                <span class="amount text-white">{{ cmd_liv }}</span>
+
+                                            </div>
+                                            <div class="invest-data">
+                                                <div class="invest-data-ck">
+                                                    <canvas
+                                                            class="iv-data-chart"
+                                                            id="totalBooking"
+                                                    ></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- .card -->
+                                </div>
+
+                                <div class="col-md-3 h-25">
+                                    <div class="card card-bordered card-full bg-danger">
+                                        <div class="card-inner">
+                                            <div class="card-title-group align-start mb-0">
+                                                <div class="card-title">
+                                                    <h6 class="title text-white">Stock critiques</h6>
+                                                </div>
+                                            </div>
+                                            <div class="card-amount">
+                                                <span class="amount text-white">{{ stock_critics }}</span>
+
+                                            </div>
+                                            <div class="invest-data">
+                                                <div class="invest-data-ck">
+                                                    <canvas
+                                                            class="iv-data-chart"
+                                                            id="totalBooking"
+                                                    ></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- .card -->
+                                </div>
+                            </div>
+
+                            <ul class="nav nav-tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#mp1" hx-get="{% url 'stat-mp' %}" hx-target="#mp" hx-swap="innerHTML"><em
+                                            class="icon ni ni-waves"></em><span>Matières premières</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#mp1" hx-get="{% url 'stat-pf' %}" hx-target="#mp" hx-swap="innerHTML"><em
+                                            class="icon ni ni-article"></em><span>Produit finis</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#mp1" hx-get="{% url 'stat-fourniture' %}" hx-target="#mp" hx-swap="innerHTML"><em
+                                            class="icon ni ni-bag"></em><span>Fournitures</span></a>
+                                </li>
+                            </ul>
+                            <div class="tab-content bg-white">
+                                <div class="tab-pane active bg-white" href="mp1">
+                                   <div class="nk-content" id="mp">
+                                       
+                                   </div>
+                                </div>
+                                <div class="tab-pane bg-white" id="pf">
+                                </div>
+                                <div class="tab-pane bg-white" id="fourniture">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    
+    
+    
+
+{% endblock %}

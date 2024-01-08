@@ -1,0 +1,57 @@
+{% if is_year_only == False %}
+    <canvas id="sales-chart">
+    </canvas>
+
+    <script>
+        var sales_mth = document.getElementById('sales-chart');
+        new Chart(sales_mth, {
+            type: 'bar',
+            data: {
+                labels: [{% for data in total_cost %}'{{ data.day }}',{% endfor %}],
+                datasets: [{
+                    label: 'Cout total',
+                    backgroundColor: rand_color(),
+                    data: [{% for data in total_cost %}{{ data.total }}, {% endfor %}],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+    
+    {% else %}
+    <canvas id="sales-chart">
+    </canvas>
+
+    <script>
+        var sales_mth = document.getElementById('sales-chart');
+        new Chart(sales_mth, {
+            type: 'bar',
+            data: {
+                labels: [{% for data in total_cost %}'{{ data.month }}',{% endfor %}],
+                datasets: [{
+                    label: 'Cout total',
+                    backgroundColor: rand_color(),
+                    data: [{% for data in total_cost %}{{ data.total }}, {% endfor %}],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+    
+    
+
+{% endif %}

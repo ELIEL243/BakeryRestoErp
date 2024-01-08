@@ -3,6 +3,7 @@
 {% block content %}
     {% include 'bakery/bakery_sidebar.html' %}
     <div class="nk-wrap">
+    {% include 'bakery/reponsive-sidebar.html' %}
     
     {% include 'bakery/profile.html' %}
         <div class="nk-content">
@@ -116,6 +117,7 @@
                                                     <th>Unité</th>
                                                     <th>Date sortie</th>
                                                     <th>Heure</th>
+                                                    <th>Stock</th>
                                                     <th></th>
 
                                                 </tr>
@@ -129,6 +131,7 @@
                                                         <td>{{ out.fourniture.unite.name }}</td>
                                                         <td>{{ out.date }}</td>
                                                         <td>{{ out.heure }}</td>
+                                                        <td>{{ out.in_stock }}</td>
                                                         <td class="center">
                                                             <ul class="nk-tb-actions gx-1 my-n1">
                                                                 <li class="me-n1">

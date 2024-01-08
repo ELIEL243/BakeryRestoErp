@@ -3,6 +3,8 @@
 {% block content %}
     {% include 'bakery/bakery_sidebar.html' %}
     <div class="nk-wrap">
+    {% include 'bakery/reponsive-sidebar.html' %}
+    
         <div class="nk-content">
             <div class="nk-content align-content-center">
                 <div class="container-fluid">
@@ -42,6 +44,16 @@
                                                               id="product-title" style="text-align: left;" required>
                                                         {{ pf.description }}
                                                     </textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="product-title">Prix de vente</label>
+                                                <div class="form-control-wrap">
+                                                    <input type="number" name="price" value="{{ pf.get_price }}" class="form-control"
+                                                           id="product-title" required>
                                                 </div>
                                             </div>
                                         </div>

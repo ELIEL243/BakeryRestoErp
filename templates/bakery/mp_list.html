@@ -4,6 +4,7 @@
     {% include 'bakery/bakery_sidebar.html' %}
     <div class="nk-wrap">
         
+    {% include 'bakery/reponsive-sidebar.html' %}
     {% include 'bakery/profile.html' %}
         <div class="nk-content">
             <div class="nk-content ">
@@ -51,6 +52,8 @@
                                                     <th>Description</th>
                                                     <th>Quantité en stock</th>
                                                     <th>Unité</th>
+                                                    <th>Qts entrée aujourd'hui</th>
+                                                    <th>Qts sortie aujourd'hui</th>
                                                     <th>Quantité critique</th>
                                                     <th></th>
                                                     
@@ -62,8 +65,14 @@
                                                         <td>{{ forloop.counter }}</td>
                                                         <td>{{ mp.libelle }}</td>
                                                         <td>{{ mp.description }}</td>
-                                                        <td>{{ mp.in_stock }}</td>
+                                                        {% if mp.in_stock > mp.critic_qts %}
+                                                        <td class="bg-success text-black">{{ mp.in_stock }}</td>
+                                                        {% else %}
+                                                        <td class="bg-danger text-white">{{ mp.in_stock }}</td>
+                                                        {% endif %}
                                                         <td>{{ mp.unite.name }}</td>
+                                                        <td>{{ mp.qts_enters }} {{ mp.unite.name }}(s)</td>
+                                                        <td>{{ mp.qts_out }} {{ mp.unite.name }}(s)</td>
                                                         <td>{{ mp.critic_qts }} {{ mp.unite.name }}</td>
                                                     <td class="center">
                                                             <ul class="nk-tb-actions gx-1 my-n1">

@@ -51,11 +51,15 @@
             <div class="nk-notification-text">
                 {% if e.get_expiration_days > 0 %}
                     <strong>Le stock de la matière première <i>{{ e.matiere_premiere.libelle }}</i> entré le {{ e.date }} expire dans {{ e.get_expiration_days }} jours !</strong>
-                {% elif e.get_expiration_days == 0 %}
+                {% elif e.get_expiration_days <= 0 %}
                     <strong>Le stock de la matière première <i>{{ e.matiere_premiere.libelle }}</i> entré le {{ e.date }} à expiré !</strong>
 
                 {% endif %}
             </div>
+            <button hx-get="{% url 'notification-hasread' e.id %}" hx-swap="outerHTML" id="submit-btn" name="submit-entry"
+                                                            class="btn btn-success bg-green-500"
+                                                            style="margin-top: 31px"><em
+                                                            class="icon ni ni-book-read"></em><span>signaler comme lue</span></button>
 
         </div>
     </div>

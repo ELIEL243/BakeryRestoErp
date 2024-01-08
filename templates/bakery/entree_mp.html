@@ -4,6 +4,7 @@
     {% include 'bakery/bakery_sidebar.html' %}
     <div class="nk-wrap">
     
+    {% include 'bakery/reponsive-sidebar.html' %}
     {% include 'bakery/profile.html' %}
         <div class="nk-content">
             <div class="nk-content ">
@@ -157,6 +158,7 @@
                                                     <th>Date expiration</th>
                                                     <th>Date entrée</th>
                                                     <th>Heure</th>
+                                                    <th>Stock</th>
                                                     <th></th>
 
                                                 </tr>
@@ -173,6 +175,7 @@
                                                         <td>{{ entry.date_exp }}</td>
                                                         <td>{{ entry.date }}</td>
                                                         <td>{{ entry.heure }}</td>
+                                                        <td>{{ entry.in_stock }}</td>
                                                         <td class="center">
                                                             <ul class="nk-tb-actions gx-1 my-n1">
                                                                 <li class="me-n1">

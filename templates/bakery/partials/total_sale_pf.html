@@ -1,0 +1,25 @@
+<canvas id="sales-pv-chart">
+                        </canvas>
+
+                        <script>
+                                var sales_pv_jr = document.getElementById('sales-pv-chart');
+                                new Chart(sales_pv_jr, {
+                                    type: 'doughnut',
+                                    data: {
+                                        labels: [{% for data in pfs %}'{{ data.libelle }}',{% endfor %}],
+                                        datasets: [{
+                                            label: 'Total des ventes',
+                                            backgroundColor: rand_color(),
+                                            data: [{% for data in pfs %}{{ data.total_sale }}, {% endfor %}],
+                                            borderWidth: 1
+                                        }]
+                                    },
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true
+                                            }
+                                        }
+                                    }
+                                });
+                            </script>
