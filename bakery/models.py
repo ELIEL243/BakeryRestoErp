@@ -1,3 +1,4 @@
+import django.utils.timezone
 from django.contrib.auth.models import User
 from django.db import models
 from django.dispatch import receiver
@@ -332,7 +333,7 @@ class LigneCommandeMp(models.Model):
     matiere_premiere = models.ForeignKey(MatierePremiere, on_delete=models.CASCADE, null=True)
     qts = models.IntegerField(default=0)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0)
-    devise = models.CharField(max_length=25, choices=devises, default=devises[1])
+    devise = models.CharField(max_length=25, choices=devises, default=devises[1][0])
     taux = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0)
 
     def __str__(self):
@@ -348,7 +349,7 @@ class LigneCommandeFourniture(models.Model):
     fourniture = models.ForeignKey(Fourniture, on_delete=models.CASCADE)
     qts = models.IntegerField(default=0)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0)
-    devise = models.CharField(max_length=25, choices=devises, default=devises[1])
+    devise = models.CharField(max_length=25, choices=devises, default=devises[1][0])
     taux = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0)
 
     def __str__(self):
@@ -368,7 +369,7 @@ class EntreeMp(models.Model):
     heure = models.TimeField(auto_now_add=True, null=True)
     date_exp = models.DateField(null=True, blank=True, verbose_name="date expiration")
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, verbose_name="cout total")
-    devise = models.CharField(max_length=25, choices=devises, default=devises[1])
+    devise = models.CharField(max_length=25, choices=devises, default=devises[1][0])
     completed = models.BooleanField(default=False)
     added_at = models.DateTimeField(auto_now_add=True, null=True)
     is_read_expired = models.BooleanField(default=False)
@@ -430,7 +431,7 @@ class EntreeFourniture(models.Model):
     date = models.DateField(auto_now_add=True, null=True)
     heure = models.TimeField(auto_now_add=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, verbose_name="cout total")
-    devise = models.CharField(max_length=25, choices=devises, default=devises[1])
+    devise = models.CharField(max_length=25, choices=devises, default=devises[1][0])
     completed = models.BooleanField(default=False)
     added_at = models.DateTimeField(auto_now_add=True, null=True)
     taux = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0)
@@ -508,7 +509,7 @@ class SortiePF(models.Model):
     date = models.DateField(auto_now_add=True, null=True)
     heure = models.TimeField(auto_now_add=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="prix")
-    devise = models.CharField(max_length=25, choices=devises, default=devises[1])
+    devise = models.CharField(max_length=25, choices=devises, default=devises[1][0])
     completed = models.BooleanField(default=False)
     added_at = models.DateTimeField(auto_now_add=True, null=True)
 
@@ -535,12 +536,12 @@ class SortiePF(models.Model):
 class InvenduPf(models.Model):
     class Meta:
         verbose_name = "Invendus de produit fini"
-    produit_fini = models.ForeignKey(ProduitFini, on_delete=models.CASCADE, null=True)
+    produit_fini = models.ForeignKey(ProduitFini, on_delete=models.CASCADE, null=True, verbose_name="Produit fini")
     qts = models.IntegerField(null=True, blank=True, default=0)
-    date = models.DateField(auto_now_add=True, null=True)
-    heure = models.TimeField(auto_now_add=True, null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    devise = models.CharField(max_length=25, choices=devises, default=devises[1])
+    date = models.DateField(null=True, editable=True)
+    heure = models.TimeField(null=True, editable=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="cout total")
+    devise = models.CharField(max_length=25, choices=devises, default=devises[1][0])
 
     def __str__(self):
         return self.produit_fini.libelle + " " + str(self.qts)
@@ -548,7 +549,7 @@ class InvenduPf(models.Model):
 
 class ChiffreAffaire(models.Model):
     total_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0)
-    devise = models.CharField(max_length=25, choices=devises, default=devises[1])
+    devise = models.CharField(max_length=25, choices=devises, default=devises[1][0])
     date = models.DateField(auto_now_add=True, null=True)
     heure = models.TimeField(auto_now_add=True, null=True)
 
@@ -561,7 +562,7 @@ class Paiement(models.Model):
     agent_pai = models.ForeignKey(Agent, on_delete=models.CASCADE, null=True, related_name='agent_pai')
     total = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField(auto_now_add=True, null=True)
-    devise = models.CharField(max_length=25, choices=devises, default=devises[1])
+    devise = models.CharField(max_length=25, choices=devises, default=devises[1][0])
     heure = models.TimeField(auto_now_add=True, null=True)
 
     def __str__(self):
@@ -572,7 +573,7 @@ class PfHasPrice(models.Model):
     produit_fini = models.ForeignKey(ProduitFini, on_delete=models.CASCADE, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     date_updated = models.DateField(auto_now_add=True, null=True)
-    devise = models.CharField(max_length=25, choices=devises, default=devises[1])
+    devise = models.CharField(max_length=25, choices=devises, default=devises[1][0])
     heure_updated = models.TimeField(auto_now_add=True, null=True)
 
     def __str__(self):

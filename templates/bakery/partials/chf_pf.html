@@ -7,7 +7,7 @@
         new Chart(sales_mth, {
             type: 'bar',
             data: {
-                labels: [{% for data in total_cost %}'{{ data.date }}',{% endfor %}],
+                labels: [{% for data in total_cost %}'{{ data.day }}',{% endfor %}],
                 datasets: [{
                     label: "Chiffre d'affaires",
                     backgroundColor: rand_color(),

@@ -99,6 +99,12 @@ class SortiePfAdmin(admin.ModelAdmin):
     list_filter = ('produit_fini', 'date',)
 
 
+class InvenduAdmin(admin.ModelAdmin):
+    list_display = ('produit_fini', 'qts', 'date', 'heure', 'price', 'devise',)
+    search_fields = ('produit_fini', 'date',)
+    list_filter = ('produit_fini', 'date',)
+
+
 admin.site.register(Role)
 admin.site.register(Agent, AgentAdmin)
 admin.site.register(Unite, UnitAdmin)
@@ -115,6 +121,8 @@ admin.site.register(SortiePF, SortiePfAdmin)
 admin.site.register(SortieMp, SortieMpAdmin)
 admin.site.register(SortieFourniture, SortieFournitureAdmin)
 admin.site.register(Taux, TauxAdmin)
+admin.site.register(InvenduPf, InvenduAdmin)
+admin.site.register(ChiffreAffaire)
 
 admin.site.site_title = _("BOULANGERIE ICLASS")
 admin.site.site_header = _("BOULANGERIE ICLASS")

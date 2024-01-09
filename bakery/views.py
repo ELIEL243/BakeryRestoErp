@@ -87,14 +87,19 @@ def stat_mp(request):
     entries = entries.annotate(day=ExtractDay('date')).values('day').annotate(total=Sum('price')).order_by('day')
     for i in entries:
         i["day"] = f'{i["day"]} {get_month_name(default_date.month)}'
-    nbr_cmd = LigneCommandeMp.objects.filter(commande__date__year=default_date.year, commande__etat=True)
+    nbr_cmd = LigneCommandeMp.objects.filter(commande__date__year=default_date.year)
     for i in nbr_cmd:
         if i.devise == "USD":
             i.total_price = i.total_price * i.taux
-    nbr_cmd = nbr_cmd.values('matiere_premiere__libelle').annotate(total=Count('commande__id'), total_price=Sum('total_price'))
+    nbr_cmd = nbr_cmd.values('matiere_premiere__libelle').annotate(total=Count('commande__id'),
+                                                                   total_price=Sum('total_price'))
     print(nbr_cmd)
     mps = MatierePremiere.objects.all()
-    return render(request, 'bakery/stat_mp.html', context={'actual_year': actual_year, 'actual_month': actual_month, 'actual_day': actual_day, 'total_cost': entries, 'nbr_cmd': nbr_cmd, 'mps': mps, 'years': years, 'months': months, 'date1': str(date1), 'date2': date2, 'first_day': first_day})
+    return render(request, 'bakery/stat_mp.html',
+                  context={'actual_year': actual_year, 'actual_month': actual_month, 'actual_day': actual_day,
+                           'total_cost': entries, 'nbr_cmd': nbr_cmd, 'mps': mps, 'years': years, 'months': months,
+                           'date1': str(date1), 'date2': date2, 'first_day': first_day})
+
 
 @login_required(login_url='login')
 def filter_total_cost_mp(request):
@@ -109,7 +114,8 @@ def filter_total_cost_mp(request):
             if i.devise == "USD":
                 i.price = i.price * i.taux
 
-        entries = entries.annotate(month=ExtractMonth('date')).values('month').annotate(total=Sum('price')).order_by('month')
+        entries = entries.annotate(month=ExtractMonth('date')).values('month').annotate(total=Sum('price')).order_by(
+            'month')
         for entry in entries:
             month_number = entry['month']
             month_name = get_month_name(month_number)
@@ -125,7 +131,9 @@ def filter_total_cost_mp(request):
         for i in entries:
             i["day"] = f'{i["day"]} {get_month_name(int(month))}'
 
-    return render(request, 'bakery/partials/cost_mp.html', context={'total_cost': entries, 'is_year_only': is_year_only})
+    return render(request, 'bakery/partials/cost_mp.html',
+                  context={'total_cost': entries, 'is_year_only': is_year_only})
+
 
 @login_required(login_url='login')
 def filter_total_cmd_mp(request):
@@ -149,6 +157,7 @@ def filter_total_cmd_mp(request):
 
     return render(request, 'bakery/partials/nbr_cmd_mp.html', context={'nbr_cmd': nbr_cmd})
 
+
 @login_required(login_url='login')
 def filter_total_entry_out_mp(request):
     mps = MatierePremiere.objects.all()
@@ -163,7 +172,7 @@ def filter_total_entry_out_mp(request):
     return render(request, 'bakery/partials/nbr_entry_out_mp.html', context={'mps': mps})
 
 
-#Stat en rapport avec les fourniture
+# Stat en rapport avec les fourniture
 @login_required(login_url='login')
 def stat_fourniture(request):
     default_date = datetime.datetime.today()
@@ -188,11 +197,16 @@ def stat_fourniture(request):
     for i in nbr_cmd:
         if i.devise == "USD":
             i.total_price = i.total_price * i.taux
-    nbr_cmd = nbr_cmd.values('fourniture__libelle').annotate(total=Count('commande__id'), total_price=Sum('total_price'))
+    nbr_cmd = nbr_cmd.values('fourniture__libelle').annotate(total=Count('commande__id'),
+                                                             total_price=Sum('total_price'))
 
     fournitures = Fourniture.objects.all()
 
-    return render(request, 'bakery/stat-fourniture.html', context={'actual_year': actual_year, 'actual_month': actual_month, 'actual_day': actual_day, 'total_cost': entries, 'nbr_cmd': nbr_cmd, 'fournitures': fournitures, 'years': years, 'months': months, 'date1': str(date1), 'date2': date2, 'first_day': first_day})
+    return render(request, 'bakery/stat-fourniture.html',
+                  context={'actual_year': actual_year, 'actual_month': actual_month, 'actual_day': actual_day,
+                           'total_cost': entries, 'nbr_cmd': nbr_cmd, 'fournitures': fournitures, 'years': years,
+                           'months': months, 'date1': str(date1), 'date2': date2, 'first_day': first_day})
+
 
 @login_required(login_url='login')
 def filter_total_cost_fourniture(request):
@@ -207,7 +221,8 @@ def filter_total_cost_fourniture(request):
             if i.devise == "USD":
                 i.price = i.price * i.taux
 
-        entries = entries.annotate(month=ExtractMonth('date')).values('month').annotate(total=Sum('price')).order_by('month')
+        entries = entries.annotate(month=ExtractMonth('date')).values('month').annotate(total=Sum('price')).order_by(
+            'month')
         for entry in entries:
             month_number = entry['month']
             month_name = get_month_name(month_number)
@@ -223,7 +238,9 @@ def filter_total_cost_fourniture(request):
         for i in entries:
             i["day"] = f'{i["day"]} {get_month_name(int(month))}'
 
-    return render(request, 'bakery/partials/cost_fourniture.html', context={'total_cost': entries, 'is_year_only': is_year_only})
+    return render(request, 'bakery/partials/cost_fourniture.html',
+                  context={'total_cost': entries, 'is_year_only': is_year_only})
+
 
 @login_required(login_url='login')
 def filter_total_cmd_fourniture(request):
@@ -246,6 +263,7 @@ def filter_total_cmd_fourniture(request):
             'fourniture__libelle').annotate(total=Count('commande__id'), total_price=Sum('total_price'))
 
     return render(request, 'bakery/partials/nbr_cmd_fourniture.html', context={'nbr_cmd': nbr_cmd})
+
 
 @login_required(login_url='login')
 def filter_total_entry_out_fourniture(request):
@@ -273,12 +291,18 @@ def stat_pf(request):
     actual_day = default_date.day
     years = [i for i in range(2020, 2100)]
     months = [i for i in range(1, 13)]
-    entries = ChiffreAffaire.objects.filter(date__year=default_date.year, date__month=default_date.month)
+    entries = ChiffreAffaire.objects.filter(date__year=default_date.year, date__month=default_date.month).annotate(day=ExtractDay('date')).values(
+        'day').annotate(total_price=Sum('total_price')).order_by('day')
+    for i in entries:
+        i["day"] = f'{i["day"]} {get_month_name(int(default_date.month))}'
     pfs = ProduitFini.objects.all()
     for i in pfs:
         i.total_sale = i.total_sale_by_date(first_day, last_day)
 
-    return render(request, 'bakery/stat_pf.html', context={'actual_year': actual_year, 'actual_month': actual_month, 'actual_day': actual_day, 'total_cost': entries, 'pfs': pfs, 'years': years, 'months': months, 'date1': str(date1), 'date2': date2, 'first_day': first_day})
+    return render(request, 'bakery/stat_pf.html',
+                  context={'actual_year': actual_year, 'actual_month': actual_month, 'actual_day': actual_day,
+                           'total_cost': entries, 'pfs': pfs, 'years': years, 'months': months, 'date1': str(date1),
+                           'date2': date2, 'first_day': first_day})
 
 
 @login_required(login_url='login')
@@ -289,15 +313,17 @@ def filter_chf_pf(request):
     is_year_only = False
     entries = None
     if month is None or month == "Aucun":
-        entries = ChiffreAffaire.objects.filter(date__year=year).annotate(month=ExtractMonth('date')).values('month').annotate(total_price=Sum('total_price')).order_by('month')
+        entries = ChiffreAffaire.objects.filter(date__year=year).annotate(month=ExtractMonth('date')).values(
+            'month').annotate(total_price=Sum('total_price')).order_by('month')
         for entry in entries:
             month_number = entry['month']
             month_name = get_month_name(month_number)
             entry['month'] = month_name
         is_year_only = True
     else:
-        entries = ChiffreAffaire.objects.filter(date__year=year, date__month=month)
-
+        entries = ChiffreAffaire.objects.filter(date__year=year, date__month=month).annotate(day=ExtractDay('date')).values('day').annotate(total_price=Sum('total_price')).order_by('day')
+        for i in entries:
+            i["day"] = f'{i["day"]} {get_month_name(int(month))}'
     return render(request, 'bakery/partials/chf_pf.html', context={'total_cost': entries, 'is_year_only': is_year_only})
 
 
@@ -435,7 +461,8 @@ def entree_mp(request):
             date_exp = request.POST.get('date_exp')
             price = int(request.POST.get('price'))
             devise = request.POST.get('devise')
-            EntreeMp.objects.create(matiere_premiere=mp, qts=qts, date_exp=date_exp, price=price, devise=devise, taux=current_taux())
+            EntreeMp.objects.create(matiere_premiere=mp, qts=qts, date_exp=date_exp, price=price, devise=devise,
+                                    taux=current_taux())
             messages.success(request, 'good !')
             return redirect('entree-mp')
         else:
@@ -667,9 +694,11 @@ def invendu_pf(request):
         if ProduitFini.objects.filter(libelle=request.POST.get('name')).exists():
             pf = ProduitFini.objects.get(libelle=request.POST.get('name'))
             qts = int(request.POST.get('qts'))
+            date = request.POST.get('date')
             invendu, create = InvenduPf.objects.get_or_create(produit_fini=pf, date=datetime.datetime.today().date())
             invendu.qts += qts
             invendu.price = invendu.qts * pf.price
+            invendu.date = date
             invendu.save()
             total_chf -= invendu.price
             chiffre_affaire.total_price = total_chf
@@ -826,7 +855,8 @@ def entree_fourniture(request):
             qts = int(request.POST.get('qts'))
             price = int(request.POST.get('price'))
             devise = request.POST.get('devise')
-            EntreeFourniture.objects.create(fourniture=fourniture, qts=qts, price=price, devise=devise, taux=current_taux())
+            EntreeFourniture.objects.create(fourniture=fourniture, qts=qts, price=price, devise=devise,
+                                            taux=current_taux())
             messages.success(request, 'good !')
             return redirect('entree-fourniture')
         else:
