@@ -297,7 +297,7 @@ def stat_pf(request):
         i["day"] = f'{i["day"]} {get_month_name(int(default_date.month))}'
     pfs = ProduitFini.objects.all()
     for i in pfs:
-        i.total_sale = i.total_sale_by_date(first_day, last_day)
+        i.total_sale = int(i.total_sale_by_date(first_day, last_day))
 
     return render(request, 'bakery/stat_pf.html',
                   context={'actual_year': actual_year, 'actual_month': actual_month, 'actual_day': actual_day,
@@ -334,10 +334,10 @@ def filter_total_sale_pf(request):
     pfs = ProduitFini.objects.all()
     if date2 == "" or date2 is None:
         for i in pfs:
-            i.total_sale = i.total_sale_by_date(date1, date2)
+            i.total_sale = int(i.total_sale_by_date(date1, date2))
     else:
         for i in pfs:
-            i.total_sale = i.total_sale_by_date(date1, date2)
+            i.total_sale = int(i.total_sale_by_date(date1, date2))
     return render(request, 'bakery/partials/total_sale_pf.html', context={'pfs': pfs})
 
 

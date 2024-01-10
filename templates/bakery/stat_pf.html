@@ -139,11 +139,11 @@
                                 new Chart(sales_pv_jr, {
                                     type: 'doughnut',
                                     data: {
-                                        labels: [{% for data in pfs %}'{{ data.libelle }}',{% endfor %}],
+                                        labels: [{% for i in pfs %}'{{ i.libelle }}',{% endfor %}],
                                         datasets: [{
-                                            label: 'Total des ventes',
+                                            label: 'Total vente',
                                             backgroundColor: rand_color(),
-                                            data: [{% for data in pfs %}{{ data.total_sale }}, {% endfor %}],
+                                            data: [{% for d in pfs %}{{ d.total_sale }},{% endfor %}],
                                             borderWidth: 1
                                         }]
                                     },

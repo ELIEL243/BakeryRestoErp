@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 
 def Logout(request):
     logout(request)
-    return redirect('login')
+    return redirect('home-bakery')
 
 
 def LogoutAdmin(request):
