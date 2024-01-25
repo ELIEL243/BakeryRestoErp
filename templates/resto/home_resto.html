@@ -1,0 +1,15 @@
+{% extends 'resto/base_resto.html' %}
+
+{% block content %}
+    {% include 'resto/resto_sidebar.html' %}
+    <div class="nk-wrap">
+    
+    {% include 'resto/reponsive-sidebar.html' %}
+    {% include 'resto/profile.html' %}
+        <div class="nk-content">
+                           {% include 'resto/partials/check_critics.html' %}
+        
+        </div>
+    </div>
+
+{% endblock %}

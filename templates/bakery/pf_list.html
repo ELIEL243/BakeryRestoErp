@@ -49,6 +49,7 @@
                                                     <th>No</th>
                                                     <th>Libellé</th>
                                                     <th>Description</th>
+                                                    <th>Type de produit</th>
                                                     <th>Prix</th>
                                                     <th>Quantité en stock</th>
                                                     <th>Unité</th>
@@ -65,6 +66,7 @@
                                                         <td>{{ forloop.counter }}</td>
                                                         <td>{{ pf.libelle }}</td>
                                                         <td>{{ pf.description }}</td>
+                                                        <td>{{ pf.type_produit }}</td>
                                                         <td>{{ pf.price }} Fc</td>
                                                         {% if pf.in_stock > pf.critic_qts %}
                                                         <td class="bg-success text-black">{{ pf.in_stock }}</td>

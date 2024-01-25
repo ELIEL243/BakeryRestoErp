@@ -14,7 +14,7 @@ from .models import *
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 import uuid
-
+from auth_user.decorators import allowed_users
 
 # Create your views here.
 
@@ -36,6 +36,7 @@ def current_taux():
 # Vues Concernant le dashboard
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def main_dashboard(request):
     chiffre_affaire = 0
     outs = SortiePF.objects.filter(date=datetime.datetime.today().date())
@@ -67,6 +68,7 @@ def main_dashboard(request):
 
 # Stats en rapport avec les matières premières
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def stat_mp(request):
     default_date = datetime.datetime.today()
     date1 = default_date.date()
@@ -102,6 +104,7 @@ def stat_mp(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def filter_total_cost_mp(request):
     default_date = datetime.datetime.today()
     year = request.GET.get('year')
@@ -136,6 +139,7 @@ def filter_total_cost_mp(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def filter_total_cmd_mp(request):
     date1 = request.GET.get('date1')
     date2 = request.GET.get('date2')
@@ -159,6 +163,7 @@ def filter_total_cmd_mp(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def filter_total_entry_out_mp(request):
     mps = MatierePremiere.objects.all()
     date1 = request.GET.get('date1')
@@ -174,6 +179,7 @@ def filter_total_entry_out_mp(request):
 
 # Stat en rapport avec les fourniture
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def stat_fourniture(request):
     default_date = datetime.datetime.today()
     date1 = default_date.date()
@@ -209,6 +215,7 @@ def stat_fourniture(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def filter_total_cost_fourniture(request):
     default_date = datetime.datetime.today()
     year = request.GET.get('year')
@@ -243,6 +250,7 @@ def filter_total_cost_fourniture(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def filter_total_cmd_fourniture(request):
     date1 = request.GET.get('date1')
     date2 = request.GET.get('date2')
@@ -266,6 +274,7 @@ def filter_total_cmd_fourniture(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def filter_total_entry_out_fourniture(request):
     fournitures = Fourniture.objects.all()
     date1 = request.GET.get('date1')
@@ -278,6 +287,7 @@ def filter_total_entry_out_fourniture(request):
 
 # En rapport avec les produits finis
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def stat_pf(request):
     default_date = datetime.datetime.today()
     date1 = default_date.date()
@@ -306,6 +316,7 @@ def stat_pf(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def filter_chf_pf(request):
     default_date = datetime.datetime.today()
     year = request.GET.get('year')
@@ -328,6 +339,7 @@ def filter_chf_pf(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def filter_total_sale_pf(request):
     date1 = request.GET.get('date1')
     date2 = request.GET.get('date2')
@@ -342,6 +354,7 @@ def filter_total_sale_pf(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def filter_total_entry_out_pf(request):
     pfs = ProduitFini.objects.all()
     date1 = request.GET.get('date1')
@@ -353,6 +366,7 @@ def filter_total_entry_out_pf(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def home_bakery(request):
     chf_aff = ChiffreAffaire.objects.get_or_create(date=datetime.datetime.today().date())
     return render(request, 'bakery/home_bakery.html', context={})
@@ -362,6 +376,7 @@ def home_bakery(request):
 # Vues concernant les unités
 # Vues concernant les unités
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def unit_list(request):
     units = Unite.objects.all()
     if request.method == 'POST':
@@ -376,6 +391,7 @@ def unit_list(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def unit_detail(request, pk):
     unit = Unite.objects.get(pk=pk)
     if request.method == 'POST':
@@ -391,6 +407,7 @@ def unit_detail(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def delete_unit(request, pk):
     unit = Unite.objects.get(pk=pk)
     unit.delete()
@@ -402,6 +419,7 @@ def delete_unit(request, pk):
 # Vues concernant les matieres premieres
 # Vues concernant les matieres premieres
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def mp_list(request):
     mps = MatierePremiere.objects.all()
     units = Unite.objects.all()
@@ -422,6 +440,7 @@ def mp_list(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def mp_detail(request, pk):
     units = Unite.objects.all()
     mp = MatierePremiere.objects.get(pk=pk)
@@ -441,6 +460,7 @@ def mp_detail(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def delete_mp(request, pk):
     mp = MatierePremiere.objects.get(pk=pk)
     mp.delete()
@@ -449,6 +469,7 @@ def delete_mp(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def entree_mp(request):
     mps = MatierePremiere.objects.all()
     entries = EntreeMp.objects.all().order_by('-id')
@@ -479,6 +500,7 @@ def entree_mp(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def sortie_mp(request):
     mps = MatierePremiere.objects.all()
     outs = SortieMp.objects.all().order_by('-id')
@@ -508,6 +530,7 @@ def sortie_mp(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def edit_entree_mp(request, pk):
     entry = EntreeMp.objects.get(pk=pk)
     if request.method == 'POST':
@@ -519,6 +542,7 @@ def edit_entree_mp(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def delete_entree(request, pk):
     EntreeMp.objects.get(pk=pk).delete()
     messages.success(request, 'good !')
@@ -526,6 +550,7 @@ def delete_entree(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def delete_sortie(request, pk):
     SortieMp.objects.get(pk=pk).delete()
     messages.success(request, 'good !')
@@ -533,6 +558,7 @@ def delete_sortie(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def cmd_mp(request):
     orders = CommandeMp.objects.all()
     ref = generate_unique_uid()
@@ -540,6 +566,7 @@ def cmd_mp(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def delete_cmd(request, pk):
     order = CommandeMp.objects.get(pk=pk)
     order.delete()
@@ -548,6 +575,7 @@ def delete_cmd(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def detail_cmd_mp(request, ref):
     order = CommandeMp.objects.get(ref=ref)
     lines = LigneCommandeMp.objects.filter(commande=order)
@@ -556,6 +584,7 @@ def detail_cmd_mp(request, ref):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def add_cmd_mp(request, ref):
     order, created = CommandeMp.objects.get_or_create(ref=ref)
     lines = LigneCommandeMp.objects.filter(commande=order)
@@ -588,6 +617,7 @@ def add_cmd_mp(request, ref):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def delete_line_cmd_mp(request, pk):
     line = LigneCommandeMp.objects.get(pk=pk)
     line.delete()
@@ -596,6 +626,7 @@ def delete_line_cmd_mp(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def edit_line_cmd_mp(request, pk):
     line = LigneCommandeMp.objects.get(pk=pk)
     if request.method == 'POST':
@@ -610,6 +641,7 @@ def edit_line_cmd_mp(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def confirm_cmd_mp(request, ref):
     order = CommandeMp.objects.get(ref=ref)
     order.etat = True
@@ -633,6 +665,7 @@ def confirm_cmd_mp(request, ref):
 # Vues concernant les produits finis
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def pf_list(request):
     pfs = ProduitFini.objects.all()
     units = Unite.objects.all()
@@ -644,7 +677,8 @@ def pf_list(request):
             critic_qts = int(request.POST.get('qts'))
             price = int(request.POST.get('price'))
             unit = Unite.objects.get(name=unit_name)
-            ProduitFini.objects.create(libelle=name, description=desc, price=price, unite=unit, critic_qts=critic_qts)
+            type_prod = request.POST.get('type')
+            ProduitFini.objects.create(libelle=name, description=desc, price=price, unite=unit, critic_qts=critic_qts, type_produit=type_prod)
             messages.success(request, 'good !')
             return redirect('pf-list')
         else:
@@ -654,6 +688,7 @@ def pf_list(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def pf_detail(request, pk):
     units = Unite.objects.all()
     pf = ProduitFini.objects.get(pk=pk)
@@ -663,6 +698,7 @@ def pf_detail(request, pk):
             pf.description = request.POST.get('desc')
             pf.critic_qts = int(request.POST.get('qts'))
             pf.price = int(request.POST.get('price'))
+            pf.type_produit = request.POST.get('type')
             pf.unit = Unite.objects.get(name=request.POST.get('unit'))
             pf.save()
             messages.success(request, 'good !')
@@ -673,6 +709,7 @@ def pf_detail(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def delete_pf(request, pk):
     pf = ProduitFini.objects.get(pk=pk)
     pf.delete()
@@ -681,6 +718,7 @@ def delete_pf(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def invendu_pf(request):
     pfs = ProduitFini.objects.all()
     invendus = InvenduPf.objects.all().order_by('-id')
@@ -713,6 +751,7 @@ def invendu_pf(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def delete_invendu_pf(request, pk):
     chiffre_affaire = ChiffreAffaire.objects.get_or_create(date=datetime.datetime.today().date())
     invendu = InvenduPf.objects.get(pk=pk)
@@ -724,6 +763,7 @@ def delete_invendu_pf(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def entree_pf(request):
     pfs = ProduitFini.objects.all()
     entries = EntreePF.objects.all().order_by('-id')
@@ -750,6 +790,7 @@ def entree_pf(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def sortie_pf(request):
     pfs = ProduitFini.objects.all()
     outs = SortiePF.objects.all().order_by('-id')
@@ -779,6 +820,7 @@ def sortie_pf(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def delete_entree_pf(request, pk):
     EntreePF.objects.get(pk=pk).delete()
     messages.success(request, 'good !')
@@ -786,6 +828,7 @@ def delete_entree_pf(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def delete_sortie_pf(request, pk):
     SortiePF.objects.get(pk=pk).delete()
     messages.success(request, 'good !')
@@ -797,6 +840,7 @@ def delete_sortie_pf(request, pk):
 # Vues concernant les fournitures
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def fourniture_list(request):
     fournitures = Fourniture.objects.all()
     units = Unite.objects.all()
@@ -817,6 +861,7 @@ def fourniture_list(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def fourniture_detail(request, pk):
     units = Unite.objects.all()
     fourniture = Fourniture.objects.get(pk=pk)
@@ -836,6 +881,7 @@ def fourniture_detail(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def delete_fourniture(request, pk):
     fourniture = Fourniture.objects.get(pk=pk)
     fourniture.delete()
@@ -844,6 +890,7 @@ def delete_fourniture(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def entree_fourniture(request):
     fournitures = Fourniture.objects.all()
     entries = EntreeFourniture.objects.all().order_by('-id')
@@ -873,6 +920,7 @@ def entree_fourniture(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def sortie_fourniture(request):
     fournitures = Fourniture.objects.all()
     outs = SortieFourniture.objects.all().order_by('-id')
@@ -903,6 +951,7 @@ def sortie_fourniture(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def delete_entree_fourniture(request, pk):
     EntreeFourniture.objects.get(pk=pk).delete()
     messages.success(request, 'good !')
@@ -910,6 +959,7 @@ def delete_entree_fourniture(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def delete_sortie_fourniture(request, pk):
     SortieFourniture.objects.get(pk=pk).delete()
     messages.success(request, 'good !')
@@ -917,6 +967,7 @@ def delete_sortie_fourniture(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def cmd_fourniture(request):
     orders = CommandeFourniture.objects.all()
     ref = generate_unique_uid()
@@ -924,6 +975,7 @@ def cmd_fourniture(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def delete_cmd_fourniture(request, pk):
     order = CommandeFourniture.objects.get(pk=pk)
     order.delete()
@@ -932,6 +984,7 @@ def delete_cmd_fourniture(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def detail_cmd_fourniture(request, ref):
     order = CommandeFourniture.objects.get(ref=ref)
     lines = LigneCommandeFourniture.objects.filter(commande=order)
@@ -940,6 +993,7 @@ def detail_cmd_fourniture(request, ref):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def add_cmd_fourniture(request, ref):
     order, created = CommandeFourniture.objects.get_or_create(ref=ref)
     lines = LigneCommandeFourniture.objects.filter(commande=order)
@@ -972,6 +1026,7 @@ def add_cmd_fourniture(request, ref):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def delete_line_cmd_fourniture(request, pk):
     line = LigneCommandeFourniture.objects.get(pk=pk)
     line.delete()
@@ -980,6 +1035,7 @@ def delete_line_cmd_fourniture(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def edit_line_cmd_fourniture(request, pk):
     line = LigneCommandeFourniture.objects.get(pk=pk)
     if request.method == 'POST':
@@ -994,6 +1050,7 @@ def edit_line_cmd_fourniture(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def confirm_cmd_fourniture(request, ref):
     order = CommandeFourniture.objects.get(ref=ref)
     order.etat = True
@@ -1016,6 +1073,7 @@ def confirm_cmd_fourniture(request, ref):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def fournisseur_list(request):
     fournisseurs = Fournisseur.objects.all()
     if request.method == 'POST':
@@ -1033,6 +1091,7 @@ def fournisseur_list(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def fournisseur_detail(request, pk):
     fournisseur = Fournisseur.objects.get(pk=pk)
     if request.method == 'POST':
@@ -1050,6 +1109,7 @@ def fournisseur_detail(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
 def delete_fournisseur(request, pk):
     fournisseur = Fournisseur.objects.get(pk=pk)
     fournisseur.delete()

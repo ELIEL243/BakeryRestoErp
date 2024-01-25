@@ -1,0 +1,9 @@
+{% if count > 0 %}
+
+    <div class="alert alert-pro alert-warning alert-dismissible alert-icon mb-1">
+        
+        <em class="icon icon-circle bg-warning-dim ni ni-info"></em><h4><strong>Vous avez des nouvelles notifications </strong>!</h4>
+        <button class="close" hx-get="{% url 'stop-critics' %}" hx-trigger="click" hx-swap="outerHTML" hx-target="#critics"></button>
+    </div>
+
+{% endif %}

@@ -1,0 +1,48 @@
+<div class="modal fade" tabindex="-1" id="modalAlert">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <a href="#" class="close" data-bs-dismiss="modal"><em class="icon ni ni-cross"></em></a>
+            <div class="modal-body modal-body-lg text-center">
+                <div class="nk-modal">
+                    <em class="nk-modal-icon icon icon-circle icon-circle-xxl ni ni-money bg-success"></em>
+                    <h4 class="nk-modal-title">Voulez-vous confimer la vente ?</h4>
+                    <div class="nk-modal-text">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label class="form-label" for="product-title">Type de paiement</label>
+                                    <div class="form-control-wrap">
+                                        <select name="type" class="form-control" id="sale-price" hx-get="{% url 'change-type-paiement' order.pk %}"
+                          hx-target="#client" hx-swap="innerHTML" hx-trigger="change" required>
+                                            <option>Cash</option>
+                                            <option>A crédit</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-12" id="client">
+
+                            </div>
+
+                            <div class="col-12 mt-5">
+                                <button type="submit" class="btn btn-primary" name="confirm"><em
+                                        class="icon ni ni-check"></em><span>confirmer</span></button>
+                            </div>
+                        </form>
+
+                    </div>
+
+                </div>
+            </div><!-- .modal-body -->
+            <div class="modal-footer bg-lighter">
+                <div class="text-center w-100">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    

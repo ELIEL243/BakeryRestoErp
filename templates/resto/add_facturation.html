@@ -1,0 +1,215 @@
+{% extends 'resto/base_resto.html' %}
+{% load static %}
+{% block content %}
+    {% include 'resto/facturation_sidebar.html' %}
+    <div class="nk-wrap">
+
+        {% include 'resto/reponsive-sidebar.html' %}
+        {% include 'resto/profile_facturation.html' %}
+        <div class="nk-content">
+            <div class="container-fluid">
+                <div class="nk-content-inner">
+                    <div class="nk-content-body">
+                        <div class="nk-block-head nk-block-head-sm">
+                            <div class="nk-block-between">
+                                <div class="nk-block-head-content">
+                                    <h3 class="nk-block-title page-title">Facturation</h3>
+                                </div><!-- .nk-block-head-content -->
+                                <div class="nk-block-head-content">
+
+                                </div><!-- .nk-block-head-content -->
+                            </div><!-- .nk-block-between -->
+                            <div class="nk-block-content row gy-4 mt-2">
+                                <form method="post">
+                                    {% csrf_token %}
+
+                                    <div class="row">
+
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="form-label" for="product-title">Produit</label>
+                                                <div class="form-control-wrap text-lg text-bold">
+                                                    <input autocomplete="off" type="text" list="pfs" name="name"
+                                                           class="form-control" id="product-title" required
+                                                           style="font-size: 20px;height: 50px">
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <datalist id="pfs">
+                                            {% for pf in pfs %}
+                                                <option value="{{ pf.libelle }}"></option>
+                                            {% endfor %}
+                                        </datalist>
+
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="form-label" for="regular-price">Quantité</label>
+                                                <div class="form-control-wrap">
+                                                    <input type="number" name="qts" value="1" min="1"
+                                                           class="form-control text-lg text-bold" id="regular-price"
+                                                           required
+                                                           style="height: 50px;font-size: 15px;font-weight: bold">
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+
+                                                <button type="submit" id="submit-btn" name="add"
+                                                        class="btn btn-success bg-green-500"
+                                                        style="margin-top: 31px;height: 50px"><em
+                                                        class="icon ni ni-plus"></em><span>Ajouter</span></button>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-2">
+                                            <div class="">
+
+                                                <button class="btn btn-primary" data-bs-toggle="modal"
+                                                        data-bs-target="#modalAlert"
+                                                        style="margin-top: 31px;height: 50px;display: inline-flex"><em
+                                                        class="icon ni ni-check"></em><span>Continuer</span></button>
+
+                                            </div>
+
+                                        </div>
+
+
+                                    </div>
+                                    <hr>
+
+                                </form>
+
+
+                            </div>
+                        </div><!-- .nk-block-head -->
+                        <div class="nk-block" id="facturation">
+                            <div class="card card-bordered">
+                                <div class="card-inner-group">
+                                    <div class="card-inner p-0">
+                                        <table class="datatable-init-export nowrap table table-striped table-bordered"
+                                               data-export-title="Export" style="border: 1px solid black;border-collapse: collapse">
+                                            <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Libellé</th>
+                                                <th>Prix</th>
+                                                <th>Quantité</th>
+                                                <th>Total</th>
+                                                <th>Action</th>
+
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for line in lines %}
+                                                <tr class="align-content-center justify-content-center"
+                                                    style="height: 50px;font-size: 20px;font-weight: bold">
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ line.produit_fini.libelle }}</td>
+                                                    <td>{{ line.price }}</td>
+                                                    <td><input type="number" name="qts" value="{{ line.qts }}" min="1"
+                                                               class="form-control" id="regular-price" required
+                                                               style="width: 60px;height: 50px;font-size: 20px;font-weight: bold"
+                                                               hx-get="{% url 'change-qts-pf' line.pk %}"
+                                                               hx-target="#facturation" hx-swap="innerHTML"
+                                                               hx-trigger="keyup changed delay:0.9s">
+                                                    </td>
+                                                    <td>{{ line.get_total }} {{ line.devise }}</td>
+                                                    <td>
+                                                        <a href="{% url 'delete-line-pf' line.pk %}"
+                                                           class="btn btn-icon btn-lg"><img
+                                                                src="{% static 'images/supprimer.png' %}" alt=""
+                                                                style="height: 40px;width: 40px"></a>
+                                                    </td>
+
+                                                </tr>
+                                            {% endfor %}
+                                            
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td><h4 class="text-bold" style="color: #4B527E">Montant HT</h4></td>
+                                                <td style="background-color: #FDFFAB"><h4 class="text-bold" style="color: #4B527E">{{ order.get_subtotal }} FC</h4></td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td><h4 class="text-bold" style="color: #4B527E">Taxes</h4></td>
+                                                <td style="background-color: #FDFFAB"><h4 class="text-bold" style="color: #4B527E">{{ order.get_total_tax }} FC</h4></td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td><h4 class="text-bold" style="color: #4B527E">Total à payé</h4></td>
+                                                <td style="background-color: #FDFFAB"><h4 class="text-bold" style="color: #4B527E">{{ order.get_total }} FC</h4></td>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    {% if lines.count > 0 %}
+    {% include 'resto/partials/confirm-modal.html' %}
+    {% endif %}
+    <li><a href="#" class="hidden btn btn-primary eg-swal-av2" id="success" style="display: none">Advanced 02</a></li>
+    <li><a href="#" class="hidden btn btn-primary eg-swal-av22" id="error" style="display: none">Advanced 02</a></li>
+
+
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+                <script>
+                    window.onload = function () {
+                        document.getElementById('success').click();
+                    };
+                </script>
+            {% else %}
+                <script>
+                    window.onload = function () {
+                        document.getElementById('error').click();
+                    };
+                </script>
+            {% endif %}
+        {% endfor %}
+
+    {% endif %}
+
+
+{% endblock %}

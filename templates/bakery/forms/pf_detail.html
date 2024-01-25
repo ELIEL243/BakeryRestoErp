@@ -3,8 +3,8 @@
 {% block content %}
     {% include 'bakery/bakery_sidebar.html' %}
     <div class="nk-wrap">
-    {% include 'bakery/reponsive-sidebar.html' %}
-    
+        {% include 'bakery/reponsive-sidebar.html' %}
+
         <div class="nk-content">
             <div class="nk-content align-content-center">
                 <div class="container-fluid">
@@ -47,12 +47,36 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    
+                      
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="sale-price">Type de produit</label>
+                                                <div class="form-control-wrap">
+                                                    <select name="type" class="form-control" id="sale-price" required>
+                                                        {% if pf.type_produit == "BOULANGERIE" %}
+                                                        <option selected>BOULANGERIE</option>
+                                                        <option>RESTAURANT</option>
+                                                        <option>BOULANGERIE ET RESTAURANT</option>
+                                                        {% elif pf.type_produit == "RESTAURANT" %}
+                                                            <option>BOULANGERIE</option>
+                                                        <option selected>RESTAURANT</option>
+                                                        <option>BOULANGERIE ET RESTAURANT</option>
+                                                            {% else %}
+                                                            <option>BOULANGERIE</option>
+                                                        <option>RESTAURANT</option>
+                                                        <option selected>BOULANGERIE ET RESTAURANT</option>
+                                                        {% endif %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label class="form-label" for="product-title">Prix de vente</label>
                                                 <div class="form-control-wrap">
-                                                    <input type="number" name="price" value="{{ pf.get_price }}" class="form-control"
+                                                    <input type="number" name="price" value="{{ pf.get_price }}"
+                                                           class="form-control"
                                                            id="product-title" required>
                                                 </div>
                                             </div>
@@ -80,7 +104,8 @@
                                             <div class="form-group">
                                                 <label class="form-label" for="product-title">Quantité critique</label>
                                                 <div class="form-control-wrap">
-                                                    <input type="number" name="qts" value="{{ pf.critic_qts }}" class="form-control"
+                                                    <input type="number" name="qts" value="{{ pf.critic_qts }}"
+                                                           class="form-control"
                                                            id="product-title" required>
                                                 </div>
                                             </div>

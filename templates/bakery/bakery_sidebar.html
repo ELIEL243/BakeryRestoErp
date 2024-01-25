@@ -144,6 +144,16 @@
                             <span class="nk-menu-text">Fournisseurs</span>
                         </a>
                     </li>
+                    {% if request.user.userhasrole.role.name == "grand stock et boulangerie" %}
+                     <li class="nk-menu-item">
+                        <a href="{% url 'admin:index' %}" class="nk-menu-link" target="_blank">
+                      <span class="nk-menu-icon"
+                      ><em class="icon ni ni-user"></em
+                      ></span>
+                            <span class="nk-menu-text">Administration</span>
+                        </a>
+                    </li>
+                    {% endif %}
 
                     
 

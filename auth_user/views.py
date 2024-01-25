@@ -26,9 +26,14 @@ def LoginView(request):
         if user is not None:
             login(request, user)
             user = User.objects.get(username=username)
-            if user.userhasrole.role.name == 'bakery':
+            if user.userhasrole.role.name == 'grand stock et boulangerie':
                 return redirect('home-bakery')
-
+            elif user.userhasrole.role.name == 'petit stock restaurant':
+                return redirect('home-resto')
+            elif user.userhasrole.role.name == 'caisse restaurant':
+                return redirect('home-facturation')
+            elif user.userhasrole.role.name == 'livraison de pack':
+                return redirect('home-foodpack')
         else:
             messages.error(request, "echec conn")
             return redirect('login')

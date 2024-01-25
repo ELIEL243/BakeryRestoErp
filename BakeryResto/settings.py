@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'resto',
     'bakery_api',
     'resto_api',
+    'foodpack',
 ]
 
 MIDDLEWARE = [

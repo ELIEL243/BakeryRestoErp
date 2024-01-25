@@ -15,6 +15,11 @@ devises = (
     ('FC', 'FC'),
 )
 
+types_produit = (
+    ('BOULANGERIE', 'BOULANGERIE'),
+    ('RESTAURANT', 'RESTAURANT'),
+    ('BOULANGERIE ET RESTAURANT', 'BOULANGERIE ET RESTAURANT'),
+)
 
 def generate_unique_uid():
     return uuid.uuid4().hex[:10]
@@ -74,6 +79,7 @@ class MatierePremiere(models.Model):
     critic_qts = models.IntegerField(default=0, blank=True, null=True)
     total_entry = models.IntegerField(default=0, blank=True, null=True)
     total_out = models.IntegerField(default=0, blank=True, null=True)
+    type_mp = models.CharField(choices=types_produit, max_length=100, null=True, blank=True, verbose_name="type de matière")
 
     def __str__(self):
         return self.libelle
@@ -90,6 +96,17 @@ class MatierePremiere(models.Model):
         return total
 
     @property
+    def in_stock_pt(self):
+        total = 0
+        entries = EntreeMpPt.objects.filter(matiere_premiere=self)
+        outs = SortieMpPt.objects.filter(matiere_premiere=self)
+        for entry in entries:
+            total += entry.qts
+        for out in outs:
+            total -= out.qts
+        return total
+
+    @property
     def qts_out(self):
         total = 0
         outs = SortieMp.objects.filter(matiere_premiere=self, date=datetime.datetime.today().date())
@@ -98,9 +115,25 @@ class MatierePremiere(models.Model):
         return total
 
     @property
+    def qts_out_pt(self):
+        total = 0
+        outs = SortieMpPt.objects.filter(matiere_premiere=self, date=datetime.datetime.today().date())
+        for out in outs:
+            total += out.qts
+        return total
+
+    @property
     def qts_enters(self):
         total = 0
         entries = EntreeMp.objects.filter(matiere_premiere=self, date=datetime.datetime.today().date())
+        for entry in entries:
+            total += entry.qts
+        return total
+
+    @property
+    def qts_enters_pt(self):
+        total = 0
+        entries = EntreeMpPt.objects.filter(matiere_premiere=self, date=datetime.datetime.today().date())
         for entry in entries:
             total += entry.qts
         return total
@@ -116,6 +149,17 @@ class MatierePremiere(models.Model):
             total += out.qts
         return total
 
+    def qts_out_by_date_pt(self, date1, date2):
+        total = 0
+        outs = None
+        if date2 == "" or date2 is None:
+            outs = SortieMpPt.objects.filter(matiere_premiere=self, date=date1)
+        else:
+            outs = SortieMpPt.objects.filter(matiere_premiere=self).filter(Q(date__gte=date1) & Q(date__lte=date2))
+        for out in outs:
+            total += out.qts
+        return total
+
     def qts_enter_by_date(self, date1, date2):
         total = 0
         entries = None
@@ -123,6 +167,17 @@ class MatierePremiere(models.Model):
             entries = EntreeMp.objects.filter(matiere_premiere=self, date=date1)
         else:
             entries = EntreeMp.objects.filter(matiere_premiere=self).filter(Q(date__gte=date1) & Q(date__lte=date2))
+        for entry in entries:
+            total += entry.qts
+        return total
+
+    def qts_enter_by_date_pt(self, date1, date2):
+        total = 0
+        entries = None
+        if date2 == "" or date2 is None:
+            entries = EntreeMpPt.objects.filter(matiere_premiere=self, date=date1)
+        else:
+            entries = EntreeMpPt.objects.filter(matiere_premiere=self).filter(Q(date__gte=date1) & Q(date__lte=date2))
         for entry in entries:
             total += entry.qts
         return total
@@ -136,6 +191,7 @@ class ProduitFini(models.Model):
     unite = models.ForeignKey(Unite, on_delete=models.CASCADE)
     critic_qts = models.IntegerField(default=0, blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0, verbose_name="prix")
+    type_produit = models.CharField(choices=types_produit, max_length=100, null=True, blank=True, verbose_name="type de produit")
     total_entry = models.IntegerField(default=0, blank=True, null=True)
     total_out = models.IntegerField(default=0, blank=True, null=True)
     total_sale = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0)
@@ -159,6 +215,17 @@ class ProduitFini(models.Model):
         return total
 
     @property
+    def in_stock_pt(self):
+        total = 0
+        entries = EntreePfPt.objects.filter(produit_fini=self)
+        outs = SortiePfPt.objects.filter(produit_fini=self)
+        for entry in entries:
+            total += entry.qts
+        for out in outs:
+            total -= out.qts
+        return total
+
+    @property
     def qts_out(self):
         total = 0
         outs = SortiePF.objects.filter(produit_fini=self, date=datetime.datetime.today().date())
@@ -167,9 +234,25 @@ class ProduitFini(models.Model):
         return total
 
     @property
+    def qts_out_pt(self):
+        total = 0
+        outs = SortiePfPt.objects.filter(produit_fini=self, date=datetime.datetime.today().date())
+        for out in outs:
+            total += out.qts
+        return total
+
+    @property
     def qts_enters(self):
         total = 0
         entries = EntreePF.objects.filter(produit_fini=self, date=datetime.datetime.today().date())
+        for entry in entries:
+            total += entry.qts
+        return total
+
+    @property
+    def qts_enters_pt(self):
+        total = 0
+        entries = EntreePfPt.objects.filter(produit_fini=self, date=datetime.datetime.today().date())
         for entry in entries:
             total += entry.qts
         return total
@@ -185,6 +268,17 @@ class ProduitFini(models.Model):
             total += out.qts
         return total
 
+    def qts_out_by_date_pt(self, date1, date2):
+        total = 0
+        outs = None
+        if date2 == "" or date2 is None:
+            outs = SortiePfPt.objects.filter(produit_fini=self, date=date1)
+        else:
+            outs = SortiePfPt.objects.filter(produit_fini=self).filter(Q(date__gte=date1) & Q(date__lte=date2))
+        for out in outs:
+            total += out.qts
+        return total
+
     def qts_enter_by_date(self, date1, date2):
         total = 0
         entries = None
@@ -192,6 +286,17 @@ class ProduitFini(models.Model):
             entries = EntreePF.objects.filter(produit_fini=self, date=date1)
         else:
             entries = EntreePF.objects.filter(produit_fini=self).filter(Q(date__gte=date1) & Q(date__lte=date2))
+        for entry in entries:
+            total += entry.qts
+        return total
+
+    def qts_enter_by_date_pt(self, date1, date2):
+        total = 0
+        entries = None
+        if date2 == "" or date2 is None:
+            entries = EntreePfPt.objects.filter(produit_fini=self, date=date1)
+        else:
+            entries = EntreePfPt.objects.filter(produit_fini=self).filter(Q(date__gte=date1) & Q(date__lte=date2))
         for entry in entries:
             total += entry.qts
         return total
@@ -214,6 +319,19 @@ class ProduitFini(models.Model):
                 total_sale += o.total_cost
             for i in invendus:
                 total_sale -= i.price
+        return total_sale
+
+    def total_sale_by_date_pt(self, date1, date2):
+        total_sale = 0
+        outs = None
+        if date2 == "" or date2 is None:
+            outs = SortiePfPt.objects.filter(produit_fini=self, date=date1)
+            for o in outs:
+                total_sale += o.total_cost
+        else:
+            outs = SortiePfPt.objects.filter(produit_fini=self).filter(Q(date__gte=date1) & Q(date__lte=date2))
+            for o in outs:
+                total_sale += o.total_cost
         return total_sale
 
 
@@ -328,6 +446,35 @@ class CommandeFourniture(models.Model):
         return total
 
 
+class CommandePf(models.Model):
+    class Meta:
+        ordering = ["date"]
+        verbose_name = "Ventes de produit finis"
+    ref = models.CharField(max_length=10, default=generate_unique_uid(), verbose_name="réference")
+    date = models.DateField(auto_now_add=True, null=True, verbose_name="date de commande")
+    heure = models.TimeField(auto_now_add=True, null=True)
+    etat = models.BooleanField(default=False)
+    paid = models.BooleanField(default=False)
+    devise = models.CharField(max_length=25, null=True, blank=True)
+    client = models.CharField(max_length=255, null=True, blank=True)
+
+    @property
+    def get_total(self):
+        lines = LigneCommandePf.objects.filter(commande=self)
+        total = 0
+        for line in lines:
+            total += line.get_total
+        return total
+
+    @property
+    def get_subtotal(self):
+        return self.get_total - (self.get_total * 16)/100
+
+    @property
+    def get_total_tax(self):
+        return (self.get_total * 16)/100
+
+
 class LigneCommandeMp(models.Model):
     commande = models.ForeignKey(CommandeMp, on_delete=models.CASCADE, null=True)
     matiere_premiere = models.ForeignKey(MatierePremiere, on_delete=models.CASCADE, null=True)
@@ -341,7 +488,7 @@ class LigneCommandeMp(models.Model):
 
     @property
     def get_total(self):
-        return str(round(total_price, 0))
+        return str(round(self.total_price, 0))
 
 
 class LigneCommandeFourniture(models.Model):
@@ -358,6 +505,22 @@ class LigneCommandeFourniture(models.Model):
     @property
     def get_total(self):
         return str(self.total_price)
+
+
+class LigneCommandePf(models.Model):
+    commande = models.ForeignKey(CommandePf, on_delete=models.CASCADE, null=True)
+    produit_fini = models.ForeignKey(ProduitFini, on_delete=models.CASCADE)
+    qts = models.IntegerField(default=0)
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0)
+    devise = models.CharField(max_length=25, choices=devises, default=devises[1][0])
+    taux = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0)
+
+    def __str__(self):
+        return self.produit_fini.libelle + " " + str(self.qts)
+
+    @property
+    def get_total(self):
+        return self.qts * self.price
 
 
 class EntreeMp(models.Model):
@@ -391,6 +554,41 @@ class EntreeMp(models.Model):
         total = 0
         entries = EntreeMp.objects.filter(added_at__lt=self.added_at, matiere_premiere=self.matiere_premiere)
         outs = SortieMp.objects.filter(added_at__lt=self.added_at, matiere_premiere=self.matiere_premiere)
+        for entry in entries:
+            total += entry.qts
+        for o in outs:
+            total -= o.qts
+        return total + self.qts
+
+
+class EntreeMpPt(models.Model):
+    class Meta:
+        verbose_name = "Entrées de matière première"
+    matiere_premiere = models.ForeignKey(MatierePremiere, on_delete=models.CASCADE, null=True, verbose_name="matière première")
+    qts = models.IntegerField()
+    date = models.DateField(auto_now_add=True, null=True)
+    heure = models.TimeField(auto_now_add=True, null=True)
+    date_exp = models.DateField(null=True, blank=True, verbose_name="date expiration")
+    completed = models.BooleanField(default=False)
+    added_at = models.DateTimeField(auto_now_add=True, null=True)
+    is_read_expired = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.matiere_premiere.libelle + " " + str(self.qts)
+
+    @property
+    def get_expiration_days(self):
+        date_actuelle = datetime.date.today()
+        days = 0
+        if self.date_exp is not None:
+            days = self.date_exp - date_actuelle
+        return days.days
+
+    @property
+    def in_stock(self):
+        total = 0
+        entries = EntreeMpPt.objects.filter(added_at__lt=self.added_at, matiere_premiere=self.matiere_premiere)
+        outs = SortieMpPt.objects.filter(added_at__lt=self.added_at, matiere_premiere=self.matiere_premiere)
         for entry in entries:
             total += entry.qts
         for o in outs:
@@ -451,6 +649,31 @@ class EntreeFourniture(models.Model):
         return total + self.qts
 
 
+class EntreePfPt(models.Model):
+    class Meta:
+        verbose_name = "Entrées de produit fini du petit stock"
+    produit_fini = models.ForeignKey(ProduitFini, on_delete=models.CASCADE, null=True, verbose_name="produit fini")
+    qts = models.IntegerField()
+    date = models.DateField(auto_now_add=True, null=True)
+    heure = models.TimeField(auto_now_add=True, null=True)
+    completed = models.BooleanField(default=False)
+    added_at = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return self.produit_fini.libelle + " " + str(self.qts)
+
+    @property
+    def in_stock(self):
+        total = 0
+        entries = EntreePfPt.objects.filter(added_at__lt=self.added_at, produit_fini=self.produit_fini)
+        outs = SortiePfPt.objects.filter(added_at__lt=self.added_at, produit_fini=self.produit_fini)
+        for entry in entries:
+            total += entry.qts
+        for o in outs:
+            total -= o.qts
+        return total + self.qts
+
+
 class SortieMp(models.Model):
     class Meta:
         verbose_name = "Sortie de matière première"
@@ -469,6 +692,31 @@ class SortieMp(models.Model):
         total = 0
         entries = EntreeMp.objects.filter(added_at__lt=self.added_at, matiere_premiere=self.matiere_premiere)
         outs = SortieMp.objects.filter(added_at__lt=self.added_at, matiere_premiere=self.matiere_premiere)
+        for entry in entries:
+            total += entry.qts
+        for o in outs:
+            total -= o.qts
+        return total - self.qts
+
+
+class SortieMpPt(models.Model):
+    class Meta:
+        verbose_name = "Sortie de matière première du petit stock"
+    matiere_premiere = models.ForeignKey(MatierePremiere, on_delete=models.CASCADE, null=True)
+    qts = models.IntegerField()
+    date = models.DateField(auto_now_add=True, null=True)
+    heure = models.TimeField(auto_now_add=True, null=True)
+    completed = models.BooleanField(default=False)
+    added_at = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return self.matiere_premiere.libelle + " " + str(self.qts)
+
+    @property
+    def in_stock(self):
+        total = 0
+        entries = EntreeMpPt.objects.filter(added_at__lt=self.added_at, matiere_premiere=self.matiere_premiere)
+        outs = SortieMpPt.objects.filter(added_at__lt=self.added_at, matiere_premiere=self.matiere_premiere)
         for entry in entries:
             total += entry.qts
         for o in outs:
@@ -533,6 +781,38 @@ class SortiePF(models.Model):
         return total
 
 
+class SortiePfPt(models.Model):
+    class Meta:
+        verbose_name = "Sortie de produit fini du petit stock"
+    produit_fini = models.ForeignKey(ProduitFini, on_delete=models.CASCADE, null=True)
+    qts = models.IntegerField()
+    date = models.DateField(auto_now_add=True, null=True)
+    heure = models.TimeField(auto_now_add=True, null=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="prix")
+    devise = models.CharField(max_length=25, choices=devises, default=devises[1][0])
+    completed = models.BooleanField(default=False)
+    added_at = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return self.produit_fini.libelle + " " + str(self.qts)
+
+    @property
+    def in_stock(self):
+        total = 0
+        entries = EntreePfPt.objects.filter(added_at__lt=self.added_at, produit_fini=self.produit_fini)
+        outs = SortiePfPt.objects.filter(added_at__lt=self.added_at, produit_fini=self.produit_fini)
+        for entry in entries:
+            total += entry.qts
+        for o in outs:
+            total -= o.qts
+        return total - self.qts
+
+    @property
+    def total_cost(self):
+        total = self.qts * self.price
+        return total
+
+
 class InvenduPf(models.Model):
     class Meta:
         verbose_name = "Invendus de produit fini"
@@ -580,6 +860,7 @@ class PfHasPrice(models.Model):
         return self.produit_fini.libelle + " " + str(self.price) + " " + str(self.date_updated)
 
 
+
 # Signaux Pour les matieres premieres
 
 
@@ -587,3 +868,4 @@ class PfHasPrice(models.Model):
 def create_agent(sender, instance, created, **kwargs):
     if created:
         Agent.objects.create(user=instance)
+
