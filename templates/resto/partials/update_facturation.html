@@ -18,23 +18,23 @@
                                             <tbody>
                                             {% for line in lines %}
                                                 <tr class="align-content-center justify-content-center"
-                                                    style="height: 50px;font-size: 20px;font-weight: bold">
+                                                    style="height: 30px;font-size: 15px;font-weight: bold">
                                                     <td>{{ forloop.counter }}</td>
                                                     <td>{{ line.produit_fini.libelle }}</td>
                                                     <td>{{ line.price }}</td>
                                                     <td><input type="number" name="qts" value="{{ line.qts }}" min="1"
                                                                class="form-control" id="regular-price" required
-                                                               style="width: 60px;height: 50px;font-size: 20px;font-weight: bold"
+                                                               style="width: 60px;height: 30px;font-size: 20px;font-weight: bold"
                                                                hx-get="{% url 'change-qts-pf' line.pk %}"
                                                                hx-target="#facturation" hx-swap="innerHTML"
-                                                               hx-trigger="keyup changed delay:0.9s">
+                                                               hx-trigger="keyup changed delay:0.9s" autofocus>
                                                     </td>
                                                     <td>{{ line.get_total }} {{ line.devise }}</td>
                                                     <td>
                                                         <a href="{% url 'delete-line-pf' line.pk %}"
                                                            class="btn btn-icon btn-lg"><img
                                                                 src="{% static 'images/supprimer.png' %}" alt=""
-                                                                style="height: 40px;width: 40px"></a>
+                                                                style="height: 30px;width: 30px"></a>
                                                     </td>
 
                                                 </tr>
@@ -65,7 +65,8 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td><h4 class="text-bold" style="color: #4B527E">Montant HT</h4></td>
-                                                <td style="background-color: #FDFFAB"><h4 class="text-bold" style="color: #4B527E">{{ order.get_subtotal }} FC</h4></td>
+                                                <td style="background-color: #FFF59D
+"><h4 class="text-bold text-dark" style="color: #4B527E">{{ order.get_subtotal }} FC</h4></td>
                                             </tr>
                                             <tr>
                                                 <td></td>
@@ -73,7 +74,7 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td><h4 class="text-bold" style="color: #4B527E">Taxes</h4></td>
-                                                <td style="background-color: #FDFFAB"><h4 class="text-bold" style="color: #4B527E">{{ order.get_total_tax }} FC</h4></td>
+                                                <td style="background-color: #FFCC80"><h4 class="text-bold text-dark" style="color: #4B527E">{{ order.get_total_tax }} FC</h4></td>
                                             </tr>
                                             <tr>
                                                 <td></td>
@@ -81,7 +82,7 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td><h4 class="text-bold" style="color: #4B527E">Total à payé</h4></td>
-                                                <td style="background-color: #FDFFAB"><h4 class="text-bold" style="color: #4B527E">{{ order.get_total }} FC</h4></td>
+                                                <td style="background-color: #EF9A9A"><h4 class="text-bold text-dark" style="color: #4B527E">{{ order.get_total }} FC</h4></td>
                                             </tr>
                                             </tfoot>
                                         </table>
@@ -90,3 +91,5 @@
 
                                 </div>
                             </div>
+                          
+                            

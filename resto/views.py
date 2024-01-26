@@ -250,7 +250,7 @@ def pf_detail_pt(request, pk):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['petit stock restaurant'])
 def cmd_pf(request):
-    orders = CommandePf.objects.all()
+    orders = CommandePf.objects.all().order_by('-date')
     ref = generate_unique_uid()
     date1 = None
     date2 = None
@@ -267,8 +267,8 @@ def cmd_pf(request):
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['petit stock restaurant'])
-def detail_cmd_pf(request, ref):
-    order = CommandePf.objects.get(ref=ref)
+def detail_cmd_pf(request, pk):
+    order = CommandePf.objects.get(pk=pk)
     lines = LigneCommandePf.objects.filter(commande=order)
 
     return render(request, 'resto/forms/detail_cmd_pf.html', context={'lines': lines, 'order': order})
@@ -289,6 +289,9 @@ def delete_cmd_pf(request, pk):
 @allowed_users(allowed_roles=['caisse restaurant'])
 def add_cmd_pf(request):
     order, created = CommandePf.objects.get_or_create(etat=False)
+    if created:
+        order.ref = generate_unique_uid()
+        order.save()
     lines = LigneCommandePf.objects.filter(commande=order)
     pfs = ProduitFini.objects.filter(type_produit__in=['BOULANGERIE ET RESTAURANT', 'RESTAURANT'])
     if request.method == 'POST':
@@ -398,8 +401,13 @@ def confirm_paiement(request, pk):
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['caisse restaurant'])
-def detail_cmd_pf_facturation(request, ref):
-    order = CommandePf.objects.get(ref=ref)
+def detail_cmd_pf_facturation(request, pk):
+    order = CommandePf.objects.get(pk=pk)
     lines = LigneCommandePf.objects.filter(commande=order)
 
     return render(request, 'resto/forms/detail_cmd_pf_fact.html', context={'lines': lines, 'order': order})
+
+
+def confirm_order(request):
+    messages.success(request, "good !")
+    return redirect('add-facturation')

@@ -112,7 +112,7 @@
                                                                         <div class="dropdown-menu dropdown-menu-end">
                                                                             <ul class="link-list-opt no-bdr">
                                                                                 <li>
-                                                                                    <a href="{% url 'detail-cmd-pf' order.ref %}"><em
+                                                                                    <a href="{% url 'detail-cmd-pf' order.pk %}"><em
                                                                                             class="icon ni ni-eye"></em><span
                                                                                             class="text-info">Detail</span></a>
                                                                                 </li>
@@ -133,6 +133,40 @@
                                                     </tr>
                                                 {% endfor %}
                                                 </tbody>
+                                                <tfoot>
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <!--
+                                                    <td><h4 class="text-bold" style="color: #4B527E">Total des ventes</h4></td>
+                                                <td style="background-color: #FDFFAB"><h4 class="text-bold" style="color: #4B527E">{{ order.get_total }} FC</h4></td>
+                                                -->
+                                                </tr>
+                                                </tfoot>
 
                                             </table>
 

@@ -13,7 +13,7 @@ urlpatterns = [
     # Routes concernant les Pf
     path('pf_list_pt/', pf_pt_list, name='pf-pt-list'),
     path('cmd_pf/', cmd_pf, name='cmd-pf'),
-    path('detail_cmd_pf/<str:ref>/', detail_cmd_pf, name='detail-cmd-pf'),
+    path('detail_cmd_pf/<str:pk>/', detail_cmd_pf, name='detail-cmd-pf'),
     path('delete_cmd_pf/<str:pk>/', delete_cmd_pf, name='delete-cmd-pf'),
     path('pf_detail_pt/<str:pk>/', pf_detail_pt, name='pf-detail-pt'),
     path('entree_pf_pt/', entree_pf_pt, name='entree-pf-pt'),
@@ -30,6 +30,7 @@ urlpatterns = [
     path('detail-print-pf/<str:pk>/', detail_print_pf, name='detail-print-pf'),
     path('ventes-fact/', cmd_pf_facturation, name='cmd-pf-fact'),
     path('confirm-paiement/<str:pk>/', confirm_paiement, name='confirm-paiement'),
-    path('detail_cmd_pf_fact/<str:ref>/', detail_cmd_pf_facturation, name='detail-cmd-pf-fact'),
+    path('detail_cmd_pf_fact/<str:pk>/', detail_cmd_pf_facturation, name='detail-cmd-pf-fact'),
+    path('confirm_order/', confirm_order, name='confirm-order')
 
 ]
