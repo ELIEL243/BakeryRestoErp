@@ -8,6 +8,7 @@
             content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <link rel="stylesheet" href="{% static 'css/dashlite.css' %}">
+    <link rel="stylesheet" href="{% static 'css/setyle.css' %}">
     <link id="skin-default" rel="stylesheet" href="{% static 'css/theme.css' %}">
     <script src="{% static 'js/htmx.min.js' %}"></script>
     <title></title>
@@ -19,8 +20,13 @@
 
         {% block content %}
         {% endblock %}
+    <div class="loader">
+
     </div>
+    </div>
+    
 </div>
+
 
 <script src="{% static 'js/bundle.js' %}"></script>
 <script src="{% static 'js/scripts.js' %}"></script>
@@ -33,6 +39,7 @@
 
 
 <script>
+
     function melangerTableau(tableau) {
         var currentIndex = tableau.length;
         var temporaryValue, randomIndex;
