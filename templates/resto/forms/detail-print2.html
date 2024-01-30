@@ -416,30 +416,7 @@
 </table>
 
 <script>
-    function printWithPageCount(pageCount) {
-        // Crée un objet d'options d'impression
-        var printParams = {
-            pageCount: pageCount
-        };
-
-        // Vérifie si l'API d'impression est disponible dans le navigateur
-        if (window.matchMedia) {
-            var mediaQueryList = window.matchMedia('print');
-            if (mediaQueryList.matches) {
-                // Le mode d'impression est activé, donc utilise directement l'objet window.print()
-                window.print();
-            } else {
-                // Le mode d'impression n'est pas activé, donc utilise l'API d'impression
-                window.print(printParams);
-            }
-        } else {
-            // L'API d'impression n'est pas prise en charge dans ce navigateur, utilise l'objet window.print()
-            window.print();
-        }
-    }
-
-    // Exemple d'utilisation avec un nombre de pages spécifié (par exemple 3)
-    printWithPageCount(1);
+    window.print()
     window.onafterprint = function () {
         window.location.href = "{% url 'confirm-order' %}";
     };
