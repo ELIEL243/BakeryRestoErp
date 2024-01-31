@@ -27,20 +27,17 @@
 
                                         <div class="col-lg-2">
                                             <div class="form-group">
-                                                <label class="form-label" for="product-title">Produit</label>
-                                                <div class="form-control-wrap text-lg text-bold">
-                                                    <input autocomplete="off" type="text" list="pfs" name="name"
-                                                           class="form-control" id="product-title" required
-                                                           style="font-size: 15px;height: 50px">
-                                                </div>
+                                                            <label class="form-label">Produit</label>
+                                                            <div class="form-control-wrap">
+                                                                <select class="form-control text-lg form-select js-select2" data-ui="xl" data-search="on" name="name" style="font-size: 15px;height: 100px;" required>
 
-                                            </div>
+                                                                    {% for pf in pfs %}
+                                                                        <option class="bg-primary" value="{{ pf.libelle }}" style="height: 50px">{{ pf.libelle }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                        </div>
                                         </div>
-                                        <datalist id="pfs">
-                                            {% for pf in pfs %}
-                                                <option value="{{ pf.libelle }}"></option>
-                                            {% endfor %}
-                                        </datalist>
 
                                         <div class="col-lg-2">
                                             <div class="form-group">
@@ -65,26 +62,25 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-lg-2">
-                                            <div class="">
+                                        
 
-                                                <button class="btn btn-primary" data-bs-toggle="modal"
+
+                                    </div>
+                                    
+
+                                </form>
+
+                                                
+
+                            </div>
+                            <div class="col-2 justify-content-end">
+                                <button class="btn btn-primary btn-lg" data-bs-toggle="modal"
                                                         data-bs-target="#modalAlert"
                                                         style="margin-top: 31px;height: 50px;display: inline-flex"><em
                                                         class="icon ni ni-check"></em><span>Continuer</span></button>
 
-                                            </div>
-
-                                        </div>
-
-
-                                    </div>
-                                    <hr>
-
-                                </form>
-
-
                             </div>
+                        <hr>
                         </div><!-- .nk-block-head -->
                         <div class="nk-block" id="facturation">
                             <div class="card card-bordered">
