@@ -5,14 +5,14 @@
     <div class="nk-wrap">
 
         {% include 'resto/reponsive-sidebar.html' %}
-    
+
         {% include 'resto/profile_facturation.html' %}
         <div class="nk-content">
             <div class="nk-content ">
                 <div class="container-fluid">
                     <div class="nk-content-inner">
                         <div class="nk-content-body">
-                    <div class="nk-block-head nk-block-head-sm">
+                            <div class="nk-block-head nk-block-head-sm">
                                 <div class="nk-block-between">
                                     <div class="nk-block-head-content">
                                         <h3 class="nk-block-title page-title">Commandes du restaurant</h3>
@@ -29,43 +29,137 @@
                                         </div>
                                     </div><!-- .nk-block-head-content -->
                                 </div><!-- .nk-block-between -->
-                            <div class="nk-block-content row gy-4 mt-2">
-                            <form method="get">
-                                        <div class="row justify-center text-center">
-                                            <div class="col-lg-8">
-                                            <div class="form-group">
-                                                <label class="form-label text-center">Rechercher par date</label>
-                                                <div class="form-control-wrap">
-                                                    <div class="input-daterange input-group">
-                                                        <div class="input-group-addon">Du</div>
-                                                        <input type="date" name="date1" value="{% if date1 %}{{ date1 }}{% endif %}" class="form-control" required/>
-                                                        <div class="input-group-addon">Au</div>
-                                                        <input type="date" name="date2" value="{% if date2 %}{{ date2 }}{% endif %}" class="form-control"/>
-                                                        <div class="input-group-addon">
-                                                            <button type="submit" id="submit-btn" name="search"
-                                                            class="btn btn-primary"><em
-                                                            class="icon ni ni-search"></em><span>Rechercher</span></button>            
-                                                        </div>
-                                                        
-                                                        <div class="input-group-addon">
-                                                            <a id="submit-btn" href="{% url 'cmd-pf' %}" class="btn btn-info"><em
-                                                            class="icon ni ni-repeat-fill"></em><span>Rafraichir</span></a>            
-                                                        </div>
-                                                        
-                                                    </div>
-                                                    
-                                                
-                                                </div>
-                                            </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                            </div>
-                                
+
                             </div><!-- .nk-block-head -->
                             <div class="nk-block">
                                 <div class="card card-bordered">
                                     <div class="card-inner-group">
+                                        <div class="nk-block-head-content">
+                                            <h3 class="nk-block-title page-title text-center text-danger"><i>Commandes en cours</i></h3>
+                                        </div>
+                                        <div class="card-inner p-0">
+                                            <table class="datatable-init-export nowrap table table-striped"
+                                                   data-export-title="Export">
+                                                <thead>
+                                                <tr>
+                                                    <th>No</th>
+                                                    <th>Ref</th>
+                                                    <th>Client</th>
+                                                    <th>Total</th>
+                                                    <th>Devise</th>
+                                                    <th>Table</th>
+                                                    <th>Date</th>
+                                                    <th>Heure</th>
+                                                    <th></th>
+
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for order in orders %}
+                                                    <tr>
+                                                        <td>{{ forloop.counter }}</td>
+                                                        <td>#{{ order.ref }}</td>
+                                                        <td>{% if order.client %}{{ order.client }}{% else %}
+                                                            -----{% endif %}</td>
+                                                        <td>{{ order.get_total }}</td>
+                                                        <td>{{ order.devise }}</td>
+                                                        <td>{{ order.table_number }}</td>
+                                                        <td>{{ order.date }}</td>
+                                                        <td>{{ order.heure }}</td>
+                                                        <td class="center">
+                                                            <ul class="nk-tb-actions gx-1 my-n1">
+                                                                <li class="me-n1">
+                                                                    <div class="dropdown">
+                                                                        <a href="#"
+                                                                           class="dropdown-toggle btn btn-icon btn-trigger"
+                                                                           data-bs-toggle="dropdown"><em
+                                                                                class="icon ni ni-more-h"></em></a>
+                                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                                            <ul class="link-list-opt no-bdr">
+                                                                                <li>
+                                                                                    <a href="{% url 'detail-cmd-pf-uncloture' order.pk %}"><em
+                                                                                            class="icon ni ni-edit"></em><span
+                                                                                            class="text-info">Modifier</span></a>
+                                                                                </li>
+                                                                                <li>
+                                                                                    <a href="{% url 'detail-print-pf' order.pk %}"><em
+                                                                                            class="icon ni ni-printer"></em><span
+                                                                                            class="text-success">Cloturer & Imprimer</span></a>
+                                                                                </li>
+
+                                                                                <li>
+                                                                                    <a href="{% url 'delete-cmd-pf' order.pk %}"><em
+                                                                                            class="icon ni ni-trash"></em><span
+                                                                                            class="text-danger">Supprimer</span></a>
+                                                                                </li>
+
+
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+
+                                            </table>
+
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="nk-block">
+                                <div class="card card-bordered">
+                                    <div class="card-inner-group">
+                                        <div class="nk-block-head-content">
+                                            <h3 class="nk-block-title page-title text-center text-success"><i>Commandes cloturées</i></h3>
+                                        </div>
+                                        <div class="nk-block-content row gy-4 mt-2">
+                                            <form method="get">
+                                                <div class="row justify-center text-center">
+                                                    <div class="col-lg-8">
+                                                        <div class="form-group">
+                                                            <label class="form-label text-center">Rechercher par
+                                                                date</label>
+                                                            <div class="form-control-wrap">
+                                                                <div class="input-daterange input-group">
+                                                                    <div class="input-group-addon">Du</div>
+                                                                    <input type="date" name="date1"
+                                                                           value="{% if date1 %}{{ date1 }}{% endif %}"
+                                                                           class="form-control" required/>
+                                                                    <div class="input-group-addon">Au</div>
+                                                                    <input type="date" name="date2"
+                                                                           value="{% if date2 %}{{ date2 }}{% endif %}"
+                                                                           class="form-control"/>
+                                                                    <div class="input-group-addon">
+                                                                        <button type="submit" id="submit-btn"
+                                                                                name="search"
+                                                                                class="btn btn-primary"><em
+                                                                                class="icon ni ni-search"></em><span>Rechercher</span>
+                                                                        </button>
+                                                                    </div>
+
+                                                                    <div class="input-group-addon">
+                                                                        <a id="submit-btn" href="{% url 'cmd-pf' %}"
+                                                                           class="btn btn-info"><em
+                                                                                class="icon ni ni-repeat-fill"></em><span>Rafraichir</span></a>
+                                                                    </div>
+
+                                                                </div>
+
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
                                         <div class="card-inner p-0">
                                             <table class="datatable-init-export nowrap table table-striped"
                                                    data-export-title="Export">
@@ -84,7 +178,7 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                {% for order in orders %}
+                                                {% for order in orders1 %}
                                                     <tr>
                                                         <td>#{{ order.ref }}</td>
                                                         <td>{% if order.client %}{{ order.client }}{% else %}
@@ -117,12 +211,17 @@
                                                                                             class="icon ni ni-eye"></em><span
                                                                                             class="text-info">Detail</span></a>
                                                                                 </li>
+                                                                                 <li>
+                                                                                    <a href="{% url 'detail-print-pf' order.pk %}"><em
+                                                                                            class="icon ni ni-printer"></em><span
+                                                                                            class="text-success">Imprimer la facture</span></a>
+                                                                                </li>
                                                                                 <li>
                                                                                     <a href="{% url 'confirm-paiement' order.pk %}"><em
                                                                                             class="icon ni ni-money"></em><span
                                                                                             class="text-success">Regler le paiement</span></a>
                                                                                 </li>
-                                                                                
+
                                                                                 <li>
                                                                                     <a href="{% url 'delete-cmd-pf' order.pk %}"><em
                                                                                             class="icon ni ni-trash"></em><span
@@ -145,6 +244,7 @@
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>

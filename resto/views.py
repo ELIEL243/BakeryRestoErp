@@ -327,7 +327,9 @@ def add_cmd_pf(request):
                 order.paid = True
             order.etat = True
             order.save()
-            return redirect('detail-print-pf', pk=order.pk)
+            messages.success(request, "good")
+            return redirect('add-facturation')
+            #return redirect('detail-print-pf', pk=order.pk)
 
     return render(request, 'resto/add_facturation.html',
                   context={'order': order, 'pfs': pfs, 'lines': lines, 'table': table})
@@ -372,6 +374,8 @@ def change_type_paiement(request, pk):
 @allowed_users(allowed_roles=['caisse restaurant'])
 def detail_print_pf(request, pk):
     order = CommandePf.objects.get(pk=pk)
+    order.cloture = True
+    order.save()
     lines = LigneCommandePf.objects.filter(commande=order)
 
     return render(request, 'resto/forms/detail-print2.html', context={'lines': lines, 'order': order})
@@ -380,7 +384,8 @@ def detail_print_pf(request, pk):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['caisse restaurant'])
 def cmd_pf_facturation(request):
-    orders = CommandePf.objects.all().order_by('date')
+    orders = CommandePf.objects.filter(cloture=False).order_by('date')
+    orders1 = CommandePf.objects.filter(cloture=True).order_by('date')
     ord1 = orders.filter(devise__isnull=True)
     for i in ord1:
         i.delete()
@@ -396,7 +401,7 @@ def cmd_pf_facturation(request):
             orders = orders.filter(Q(date__gte=date1) & Q(date__lte=date2))
 
     return render(request, 'resto/ventes_facturation.html',
-                  context={'orders': orders, 'ref': ref, 'date1': date1, 'date2': date2})
+                  context={'orders': orders, 'orders1': orders1, 'ref': ref, 'date1': date1, 'date2': date2})
 
 
 @login_required(login_url='login')
@@ -420,3 +425,47 @@ def detail_cmd_pf_facturation(request, pk):
 def confirm_order(request):
     messages.success(request, "good !")
     return redirect('add-facturation')
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['caisse restaurant'])
+def detail_cmd_pf_uncloture(request, pk):
+    order = CommandePf.objects.get(pk=pk)
+    table = None
+    lines = LigneCommandePf.objects.filter(commande=order)
+    pfs = ProduitFini.objects.filter(type_produit__in=['BOULANGERIE ET RESTAURANT', 'RESTAURANT'])
+    if request.method == 'POST':
+        if request.POST.get('add') is not None:
+            name = request.POST.get('name')
+            client_name = request.POST.get('client')
+            order.client = client_name
+            table = int(request.POST.get('table'))
+            order.table_number = table
+            order.devise = "FC"
+            order.save()
+            qts = request.POST.get('qts')
+            if ProduitFini.objects.filter(libelle=name).count() > 0:
+                pf = ProduitFini.objects.get(libelle=name)
+                line, created = LigneCommandePf.objects.get_or_create(commande=order, produit_fini=pf)
+                line.qts += int(qts)
+                line.price = pf.price
+
+                line.save()
+                messages.success(request, "Succes")
+            else:
+                messages.error(request, "Echec")
+        elif request.POST.get('confirm') is not None:
+            type_p = request.POST.get('type')
+            if type_p == "A crédit":
+                order.paid = False
+                order.client = request.POST.get('client')
+            else:
+                order.paid = True
+            order.etat = True
+            order.save()
+            messages.success(request, "good !")
+            return redirect('cmd-pf-fact')
+
+    return render(request, 'resto/add_facturation.html',
+                  context={'order': order, 'pfs': pfs, 'lines': lines, 'table': table})
+

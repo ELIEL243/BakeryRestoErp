@@ -458,6 +458,8 @@ class CommandePf(models.Model):
     devise = models.CharField(max_length=25, null=True, blank=True)
     client = models.CharField(max_length=255, null=True, blank=True)
     table_number = models.IntegerField(default=1)
+    date_time = models.DateTimeField(auto_now_add=True, null=True)
+    cloture = models.BooleanField(default=False)
 
     @property
     def get_total(self):

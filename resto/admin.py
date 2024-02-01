@@ -9,7 +9,7 @@ class LineItemPfAdmin(admin.TabularInline):
 
 
 class CommandePfAdmin(admin.ModelAdmin):
-    list_display = ('ref', 'client', 'date', 'heure', 'etat', 'get_total', 'devise')
+    list_display = ('ref', 'client', 'date', 'heure', 'etat', 'cloture', 'get_total', 'devise')
     search_fields = ('ref', 'client', 'date', 'heure', 'etat', )
     list_filter = ('ref', 'client', 'date', 'heure', 'etat', )
     inlines = [LineItemPfAdmin, ]
