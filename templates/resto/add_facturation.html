@@ -27,16 +27,19 @@
 
                                         <div class="col-lg-2">
                                             <div class="form-group">
-                                                            <label class="form-label">Produit</label>
-                                                            <div class="form-control-wrap">
-                                                                <select class="form-control text-lg form-select js-select2" data-ui="xl" data-search="on" name="name" style="font-size: 15px;height: 100px;" required>
+                                                <label class="form-label">Produit</label>
+                                                <div class="form-control-wrap">
+                                                    <select class="form-control text-lg form-select js-select2"
+                                                            data-ui="xl" data-search="on" name="name"
+                                                            style="font-size: 15px;height: 100px;" required>
 
-                                                                    {% for pf in pfs %}
-                                                                        <option class="bg-primary" value="{{ pf.libelle }}" style="height: 50px">{{ pf.libelle }}</option>
-                                                                    {% endfor %}
-                                                                </select>
-                                                            </div>
-                                                        </div>
+                                                        {% for pf in pfs %}
+                                                            <option class="bg-primary" value="{{ pf.libelle }}"
+                                                                    style="height: 50px">{{ pf.libelle }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <div class="col-lg-2">
@@ -44,6 +47,18 @@
                                                 <label class="form-label" for="regular-price">Quantité</label>
                                                 <div class="form-control-wrap">
                                                     <input type="number" name="qts" value="1" min="1"
+                                                           class="form-control text-lg text-bold" id="regular-price"
+                                                           required
+                                                           style="height: 50px;font-size: 15px;font-weight: bold">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="form-label" for="regular-price">N° table</label>
+                                                <div class="form-control-wrap">
+                                                    <input type="number" name="table" value="{% if table %}{{ table }}{% else %}1{% endif %}" min="1" max="100"
                                                            class="form-control text-lg text-bold" id="regular-price"
                                                            required
                                                            style="height: 50px;font-size: 15px;font-weight: bold">
@@ -62,32 +77,30 @@
                                             </div>
                                         </div>
 
-                                        
-
 
                                     </div>
-                                    
+
 
                                 </form>
 
-                                                
 
                             </div>
                             <div class="col-lg-2 justify-content-end">
                                 <button class="btn btn-primary btn-lg" data-bs-toggle="modal"
-                                                        data-bs-target="#modalAlert"
-                                                        style="margin-top: 31px;height: 50px;display: inline-flex"><em
-                                                        class="icon ni ni-check"></em><span>Continuer</span></button>
+                                        data-bs-target="#modalAlert"
+                                        style="margin-top: 31px;height: 50px;display: inline-flex"><em
+                                        class="icon ni ni-check"></em><span>Continuer</span></button>
 
                             </div>
-                        <hr>
+                            <hr>
                         </div><!-- .nk-block-head -->
                         <div class="nk-block" id="facturation">
                             <div class="card card-bordered">
                                 <div class="card-inner-group">
                                     <div class="card-inner p-0">
                                         <table class="datatable-init-export nowrap table table-striped table-bordered"
-                                               data-export-title="Export" style="border: 1px solid black;border-collapse: collapse">
+                                               data-export-title="Export"
+                                               style="border: 1px solid black;border-collapse: collapse">
                                             <thead>
                                             <tr>
                                                 <th>No</th>
@@ -123,7 +136,7 @@
 
                                                 </tr>
                                             {% endfor %}
-                                            
+
                                             </tbody>
                                             <tfoot>
                                             <tr>
@@ -134,7 +147,7 @@
                                                 <td></td>
                                                 <td></td>
                                             </tr>
-                                            
+
                                             <tr>
                                                 <td></td>
                                                 <td></td>
@@ -158,7 +171,9 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td><h4 class="text-bold" style="color: #4B527E">Taxes</h4></td>
-                                                <td style="background-color: #FFCC80"><h4 class="text-bold text-dark" style="color: #4B527E">{{ order.get_total_tax }} FC</h4></td>
+                                                <td style="background-color: #FFCC80"><h4 class="text-bold text-dark"
+                                                                                          style="color: #4B527E">{{ order.get_total_tax }}
+                                                    FC</h4></td>
                                             </tr>
                                             <tr>
                                                 <td></td>
@@ -166,7 +181,9 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td><h4 class="text-bold" style="color: #4B527E">Total à payé</h4></td>
-                                                <td style="background-color: #EF9A9A"><h4 class="text-bold text-dark" style="color: #4B527E">{{ order.get_total }} FC</h4></td>
+                                                <td style="background-color: #EF9A9A"><h4 class="text-bold text-dark"
+                                                                                          style="color: #4B527E">{{ order.get_total }}
+                                                    FC</h4></td>
                                             </tr>
                                             </tfoot>
                                         </table>
@@ -183,7 +200,7 @@
         </div>
     </div>
     {% if lines.count > 0 %}
-    {% include 'resto/partials/confirm-modal.html' %}
+        {% include 'resto/partials/confirm-modal.html' %}
     {% endif %}
     <li><a href="#" class="hidden btn btn-primary eg-swal-av2" id="success" style="display: none">Advanced 02</a></li>
     <li><a href="#" class="hidden btn btn-primary eg-swal-av22" id="error" style="display: none">Advanced 02</a></li>

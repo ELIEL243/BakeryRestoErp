@@ -251,6 +251,9 @@ def pf_detail_pt(request, pk):
 @allowed_users(allowed_roles=['petit stock restaurant'])
 def cmd_pf(request):
     orders = CommandePf.objects.all().order_by('-date')
+    ord1 = orders.filter(devise__isnull=True)
+    for i in ord1:
+        i.delete()
     ref = generate_unique_uid()
     date1 = None
     date2 = None
@@ -275,7 +278,7 @@ def detail_cmd_pf(request, pk):
 
 
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['petit stock restaurant'])
+#@allowed_users(allowed_roles=['petit stock restaurant', 'caisse restaurant'])
 def delete_cmd_pf(request, pk):
     order = CommandePf.objects.get(pk=pk)
     order.delete()
@@ -289,9 +292,10 @@ def delete_cmd_pf(request, pk):
 @allowed_users(allowed_roles=['caisse restaurant'])
 def add_cmd_pf(request):
     order, created = CommandePf.objects.get_or_create(etat=False)
+    table = None
     if created:
         order.ref = generate_unique_uid()
-        order.save()
+
     lines = LigneCommandePf.objects.filter(commande=order)
     pfs = ProduitFini.objects.filter(type_produit__in=['BOULANGERIE ET RESTAURANT', 'RESTAURANT'])
     if request.method == 'POST':
@@ -299,15 +303,17 @@ def add_cmd_pf(request):
             name = request.POST.get('name')
             client_name = request.POST.get('client')
             order.client = client_name
+            table = int(request.POST.get('table'))
+            order.table_number = table
             order.devise = "FC"
             order.save()
             qts = request.POST.get('qts')
-
             if ProduitFini.objects.filter(libelle=name).count() > 0:
                 pf = ProduitFini.objects.get(libelle=name)
                 line, created = LigneCommandePf.objects.get_or_create(commande=order, produit_fini=pf)
                 line.qts += int(qts)
                 line.price = pf.price
+
                 line.save()
                 messages.success(request, "Succes")
             else:
@@ -324,7 +330,7 @@ def add_cmd_pf(request):
             return redirect('detail-print-pf', pk=order.pk)
 
     return render(request, 'resto/add_facturation.html',
-                  context={'order': order, 'pfs': pfs, 'lines': lines})
+                  context={'order': order, 'pfs': pfs, 'lines': lines, 'table': table})
 
 
 @login_required(login_url='login')
@@ -375,6 +381,9 @@ def detail_print_pf(request, pk):
 @allowed_users(allowed_roles=['caisse restaurant'])
 def cmd_pf_facturation(request):
     orders = CommandePf.objects.all().order_by('date')
+    ord1 = orders.filter(devise__isnull=True)
+    for i in ord1:
+        i.delete()
     ref = generate_unique_uid()
     date1 = None
     date2 = None
