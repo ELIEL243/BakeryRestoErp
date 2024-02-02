@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import *
 from django.utils.translation import gettext_lazy as _
+from import_export.admin import ImportExportModelAdmin
 # Register your models here.
 
 
@@ -14,98 +15,102 @@ class LineItemFournitureAdmin(admin.TabularInline):
     exclude = ('taux', )
 
 
-class AgentAdmin(admin.ModelAdmin):
+class AgentAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('name', 'email', 'phone',)
     search_fields = ('name', 'email', 'phone',)
 
 
-class UnitAdmin(admin.ModelAdmin):
+class UnitAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
 
 
-class TauxAdmin(admin.ModelAdmin):
+class TauxAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('valeur', 'date', 'heure',)
     search_fields = ('date', )
 
 
-class MatierePremierAdmin(admin.ModelAdmin):
+class MatierePremierAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('libelle', 'description', 'unite', 'critic_qts', 'in_stock')
     search_fields = ('libelle', 'description', 'unite', )
 
 
-class ProduitFiniAdmin(admin.ModelAdmin):
+class ProduitFiniAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('libelle', 'description', 'unite', 'price', 'critic_qts', 'in_stock', )
     search_fields = ('libelle', 'description', 'unite', )
 
 
-class FournitureAdmin(admin.ModelAdmin):
+class FournitureAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('libelle', 'description', 'unite', 'critic_qts', 'in_stock', )
     search_fields = ('libelle', 'description')
 
 
-class FournisseurAdmin(admin.ModelAdmin):
+class FournisseurAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('name', 'phone', 'email', 'address',)
     search_fields = ('name', 'phone', 'email',)
 
 
-class CommandeMpAdmin(admin.ModelAdmin):
+class CommandeMpAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('ref', 'fournisseur', 'date', 'heure', 'etat', 'delivered_at', 'get_total', 'devise')
     search_fields = ('ref', 'fournisseur', 'date', 'heure', 'etat', )
     list_filter = ('ref', 'fournisseur', 'date', 'heure', 'etat', )
     inlines = [LineItemMpAdmin, ]
 
 
-class CommandeFournitureAdmin(admin.ModelAdmin):
+class CommandeFournitureAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('ref', 'fournisseur', 'date', 'heure', 'etat', 'delivered_at', 'get_total', 'devise')
     search_fields = ('ref', 'fournisseur', 'date', 'heure', 'etat',)
     list_filter = ('ref', 'fournisseur', 'date', 'heure', 'etat',)
     inlines = [LineItemFournitureAdmin, ]
 
 
-class EntreeMpAdmin(admin.ModelAdmin):
+class EntreeMpAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('matiere_premiere', 'qts', 'date', 'heure', 'date_exp', 'price', 'devise')
     list_filter = ('matiere_premiere', 'date')
     search_fields = ('matiere_premiere', 'date')
 
 
-class EntreeFournitureAdmin(admin.ModelAdmin):
+class EntreeFournitureAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('fourniture', 'qts', 'date', 'heure', 'price', 'devise')
     list_filter = ('fourniture', 'date')
     search_fields = ('fourniture', 'date')
 
 
-class EntrePfAdmin(admin.ModelAdmin):
+class EntrePfAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('produit_fini', 'qts', 'date', 'heure',)
     list_filter = ('produit_fini', 'date')
     search_fields = ('produit_fini', 'date')
 
 
-class SortieMpAdmin(admin.ModelAdmin):
+class SortieMpAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('matiere_premiere', 'qts', 'date', 'heure',)
     search_fields = ('matiere_premiere', 'date',)
     list_filter = ('matiere_premiere', 'date',)
 
 
-class SortieFournitureAdmin(admin.ModelAdmin):
+class SortieFournitureAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('fourniture', 'qts', 'date', 'heure',)
     search_fields = ('fourniture', 'date',)
     list_filter = ('fourniture', 'date',)
 
 
-class SortiePfAdmin(admin.ModelAdmin):
+class SortiePfAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('produit_fini', 'qts', 'date', 'heure', 'price', 'devise',)
     search_fields = ('produit_fini', 'date',)
     list_filter = ('produit_fini', 'date',)
 
 
-class InvenduAdmin(admin.ModelAdmin):
+class InvenduAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('produit_fini', 'qts', 'date', 'heure', 'price', 'devise',)
     search_fields = ('produit_fini', 'date',)
     list_filter = ('produit_fini', 'date',)
 
 
-admin.site.register(Role)
+class RoleAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ('name',)
+
+
+admin.site.register(Role, RoleAdmin)
 admin.site.register(Agent, AgentAdmin)
 admin.site.register(Unite, UnitAdmin)
 admin.site.register(MatierePremiere, MatierePremierAdmin)
