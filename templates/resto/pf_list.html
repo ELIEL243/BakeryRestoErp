@@ -49,11 +49,11 @@
                                                     <th>Libellé</th>
                                                     <th>Description</th>
                                                     <th>Prix</th>
-                                                   <!-- <th>Quantité en stock</th> -->
+                                                   <th>Quantité en stock</th>
                                                     <th>Unité</th>
-                                                    <!-- <th>Qts entrée aujourd'hui</th> -->
+                                                    <th>Qts entrée aujourd'hui</th>
                                                     <th>Qts sortie aujourd'hui</th>
-                                                    <!-- <th>Quantité critique</th> -->
+                                                    
                                                     <th></th>
 
                                                 </tr>
@@ -65,17 +65,12 @@
                                                         <td>{{ pf.libelle }}</td>
                                                         <td>{{ pf.description }}</td>
                                                         <td>{{ pf.price }} Fc</td>
-                                                        <!--
-                                                        {% if pf.in_stock_pt > pf.critic_qts %}
-                                                        <td class="bg-success text-black">{{ pf.in_stock_pt }}</td>
-                                                        {% else %}
-                                                        <td class="bg-danger text-white">{{ pf.in_stock_pt }}</td>
-                                                        {% endif %}
-                                                        -->
+                                                        <td>{{ pf.in_stock_pt }}</td>
+                                                       
                                                         <td>{{ pf.unite.name }}</td>
-                                                        <!--
+                                                        
                                                         <td>{{ pf.qts_enters_pt }} {{ pf.unite.name }}(s)</td>
-                                                        -->
+                                                        
                                                         <td>{{ pf.qts_out_pt }} {{ pf.unite.name }}(s)</td>
                                                         <!--
                                                         <td>{{ pf.critic_qts }} {{ pf.unite.name }}</td>
