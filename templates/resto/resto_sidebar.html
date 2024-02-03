@@ -96,6 +96,17 @@
                             <span class="nk-menu-text">Ventes</span>
                         </a>
                     </li>
+                    
+                    {% if roles > 1 %}
+                        <li class="nk-menu-item">
+                        <a href="{% url 'module-spaces' %}" class="nk-menu-link">
+                      <span class="nk-menu-icon"
+                      ><em class="icon ni ni-home"></em
+                      ></span>
+                            <span class="nk-menu-text">Mes modules</span>
+                        </a>
+                    </li>
+                    {% endif %}
 
                     <li class="nk-menu-item">
                         <a href="{% url 'logout' %}" class="nk-menu-link">

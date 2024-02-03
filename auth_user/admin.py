@@ -9,4 +9,4 @@ class UserHasRoleAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
 
 admin.site.register(UserHasRole, UserHasRoleAdmin)
-
+admin.site.register(AffectedRoles, UserHasRoleAdmin)

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link rel="stylesheet" href="{% static 'css/dashlite.css' %}">
+    <link rel="stylesheet" href="{% static 'css/setyle.css' %}">
+    <link id="skin-default" rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <script src="{% static 'js/htmx.min.js' %}"></script>
+    <title></title>
+</head>
+<body class="nk-body bg-lighter npc-general has-sidebar">
+<div class="nk-app-root">
+    <!-- main @s -->
+    <div class="nk-main container justify-content-center align-content-center align-items-center">
+
+        <div class="nk-fmg-quick-list nk-block mt-4">
+            <div class="nk-block-head-xs">
+                <div class="nk-block-between g-2">
+                    <div class="nk-block-head-content text-start">
+                        <h3 class="nk-block-title title text-start">Mes modules</h3>
+                    </div>
+                    <div class="nk-block-head-content">
+
+                    </div>
+                </div>
+            </div><!-- .nk-block-head -->
+            <div class="toggle-expand-content expanded" data-content="quick-access">
+                <div class="nk-files nk-files-view-grid">
+                    <div class="nk-files-list">
+                        {% for r in roles %}
+                            {% if r.role.name == "grand stock et boulangerie" %}
+                            <div class="nk-file-item nk-file">
+
+                                <div class="nk-file-info">
+                                    <a href="{% url 'home-bakery' %}" class="nk-file-link">
+                                        <div class="nk-file-title">
+                                            <div class="nk-file-icon">
+                                            <span class="nk-file-icon-type">
+                                                <img src="{% static 'images/grand-stock.png' %}" alt="">
+                                            </span>
+                                            </div>
+                                            <div class="nk-file-name">
+                                                <div class="nk-file-name-text">
+                                                    <span class="title">Grand stock</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+
+                            </div>
+                            {% elif r.role.name == "petit stock restaurant" %}
+                            <div class="nk-file-item nk-file">
+
+                                <div class="nk-file-info">
+                                    <a href="{% url 'home-resto' %}" class="nk-file-link">
+                                        <div class="nk-file-title">
+                                            <div class="nk-file-icon">
+                                            <span class="nk-file-icon-type">
+                                                <img src="{% static 'images/petit-stock.png' %}" alt="">
+                                            </span>
+                                            </div>
+                                            <div class="nk-file-name">
+                                                <div class="nk-file-name-text">
+                                                    <span class="title">Petit stock</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+
+                            </div>
+                            {% elif r.role.name == "caisse restaurant" %}
+                            <div class="nk-file-item nk-file">
+
+                                <div class="nk-file-info">
+                                    <a href="{% url 'home-facturation' %}" class="nk-file-link">
+                                        <div class="nk-file-title">
+                                            <div class="nk-file-icon">
+                                            <span class="nk-file-icon-type">
+                                                <img src="{% static 'images/caisse-enregistreuse.png' %}" alt="">
+                                            </span>
+                                            </div>
+                                            <div class="nk-file-name">
+                                                <div class="nk-file-name-text">
+                                                    <span class="title">Caisse</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+
+                            </div>
+                            
+                            {% elif r.role.name == "livraison de pack" %}
+                            
+                            <div class="nk-file-item nk-file">
+                            
+                            <div class="nk-file-info">
+                                <a href="{% url 'home-foodpack' %}" class="nk-file-link">
+                                    <div class="nk-file-title">
+                                        <div class="nk-file-icon">
+                                            <span class="nk-file-icon-type">
+                                                <img src="{% static 'images/pack.png' %}" alt="">
+                                            </span>
+                                        </div>
+                                        <div class="nk-file-name">
+                                            <div class="nk-file-name-text">
+                                                <span class="title">Pack à livré</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            
+                        </div>
+                        {% endif %}
+
+
+                        {% endfor %}
+
+                    </div>
+                </div><!-- .nk-files -->
+            </div>
+
+        </div>
+
+        <div class="loader">
+
+        </div>
+    </div>
+
+</div>
+
+
+<script src="{% static 'js/bundle.js' %}"></script>
+<script src="{% static 'js/scripts.js' %}"></script>
+<script src="{% static 'js/libs/datatable-btns.js' %}"></script>
+<script src="{% static 'js/example-sweetalert.js' %}"></script>
+<script src="{% static 'js/alerts.js' %}"></script>
+
+<script src="{% static 'js/charts/chart-ecommerce.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+
+    function melangerTableau(tableau) {
+        var currentIndex = tableau.length;
+        var temporaryValue, randomIndex;
+
+        while (0 !== currentIndex) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            temporaryValue = tableau[currentIndex];
+            tableau[currentIndex] = tableau[randomIndex];
+            tableau[randomIndex] = temporaryValue;
+        }
+
+        return tableau;
+    }
+
+    var rand_color = function getRandomColor() {
+        color = ["#FAEF5D", "#30A2FF", "#7E2553", "#9ADE7B", "#FF004D", "#1D2B53", "#9A031E", "#5F0F40", "#4C3A51", "#774360", "#B25068", "#E7AB79"]
+        return melangerTableau(color);
+    }
+</script>
+
+
+</body>
+</html>
+

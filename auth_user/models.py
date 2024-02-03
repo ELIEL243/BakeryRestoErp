@@ -24,6 +24,15 @@ class UserHasRole(models.Model):
         return self.user.username + " - " + self.role.name
 
 
+class AffectedRoles(models.Model):
+    class Meta:
+        verbose_name = "Roles utilisateur2"
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user.username + " - " + self.role.name
+
 @receiver(post_save, sender=UserHasRole)
 def create_role_agent(sender, instance, created, **kwargs):
     if created:
