@@ -313,8 +313,8 @@ def add_cmd_pf(request):
                 line, created = LigneCommandePf.objects.get_or_create(commande=order, produit_fini=pf)
                 line.qts += int(qts)
                 line.price = pf.price
-
                 line.save()
+                SortiePfPt.objects.create(produit_fini=line.produit_fini, qts=line.qts, price=line.price, completed=True)
                 messages.success(request, "Succes")
             else:
                 messages.error(request, "Echec")
@@ -327,6 +327,7 @@ def add_cmd_pf(request):
                 order.paid = True
             order.etat = True
             order.save()
+
             messages.success(request, "good")
             return redirect('add-facturation')
             #return redirect('detail-print-pf', pk=order.pk)
@@ -396,9 +397,9 @@ def cmd_pf_facturation(request):
         date1 = request.GET.get('date1')
         date2 = request.GET.get('date2')
         if date2 == "" or date2 is None:
-            orders = orders.filter(date=date1)
+            orders1 = orders.filter(date=date1)
         else:
-            orders = orders.filter(Q(date__gte=date1) & Q(date__lte=date2))
+            orders1 = orders.filter(Q(date__gte=date1) & Q(date__lte=date2))
 
     return render(request, 'resto/ventes_facturation.html',
                   context={'orders': orders, 'orders1': orders1, 'ref': ref, 'date1': date1, 'date2': date2})
