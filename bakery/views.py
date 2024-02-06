@@ -452,7 +452,7 @@ def mp_detail(request, pk):
             mp.description = request.POST.get('desc')
             mp.critic_qts = int(request.POST.get('qts'))
             mp.unit = Unite.objects.get(name=request.POST.get('unit'))
-            mp.type = request.POST.get('type')
+            mp.type_mp = request.POST.get('type')
             mp.save()
             messages.success(request, 'good !')
             return redirect('mp-list')
