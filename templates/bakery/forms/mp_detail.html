@@ -52,9 +52,19 @@
                                                 <label class="form-label" for="sale-price">Type de matière première</label>
                                                 <div class="form-control-wrap">
                                                     <select name="type" class="form-control" id="sale-price" required>
-                                                        <option>BOULANGERIE</option>
+                                                        {% if mp.type_mp == "BOULANGERIE" %}
+                                                        <option selected>BOULANGERIE</option>
                                                         <option>RESTAURANT</option>
                                                         <option>BOULANGERIE ET RESTAURANT</option>
+                                                        {% elif mp.type_mp == "RESTAURANT" %}
+                                                            <option>BOULANGERIE</option>
+                                                        <option selected>RESTAURANT</option>
+                                                        <option>BOULANGERIE ET RESTAURANT</option>
+                                                            {% else %}
+                                                            <option>BOULANGERIE</option>
+                                                        <option>RESTAURANT</option>
+                                                        <option selected>BOULANGERIE ET RESTAURANT</option>
+                                                        {% endif %}
                                                     </select>
                                                 </div>
                                             </div>
