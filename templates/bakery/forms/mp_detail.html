@@ -3,8 +3,8 @@
 {% block content %}
     {% include 'bakery/bakery_sidebar.html' %}
     <div class="nk-wrap">
-    {% include 'bakery/reponsive-sidebar.html' %}
-    
+        {% include 'bakery/reponsive-sidebar.html' %}
+
         <div class="nk-content">
             <div class="nk-content align-content-center">
                 <div class="container-fluid">
@@ -28,7 +28,8 @@
                                             <div class="form-group">
                                                 <label class="form-label" for="product-title">Libellé</label>
                                                 <div class="form-control-wrap">
-                                                    <input type="text" name="name" value="{{ mp.libelle }}" class="form-control"
+                                                    <input type="text" name="name" value="{{ mp.libelle }}"
+                                                           class="form-control"
                                                            id="product-title" required>
                                                 </div>
                                             </div>
@@ -38,13 +39,27 @@
                                             <div class="form-group">
                                                 <label class="form-label" for="product-title">Description</label>
                                                 <div class="form-control-wrap">
-                                                    <textarea type="text" name="desc" class="form-control text-left justify-content-start"
-                                                           id="product-title" style="text-align: left;" required>
+                                                    <textarea type="text" name="desc"
+                                                              class="form-control text-left justify-content-start"
+                                                              id="product-title" style="text-align: left;" required>
                                                         {{ mp.description }}
                                                     </textarea>
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="sale-price">Type de matière première</label>
+                                                <div class="form-control-wrap">
+                                                    <select name="type" class="form-control" id="sale-price" required>
+                                                        <option>BOULANGERIE</option>
+                                                        <option>RESTAURANT</option>
+                                                        <option>BOULANGERIE ET RESTAURANT</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
 
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -53,22 +68,23 @@
                                                     <select name="unit" class="form-control" id="sale-price" required>
                                                         {% for u in units %}
                                                             {% if mp.unite.name == u.name %}
-                                                            <option selected>{{ u.name }}</option>
-                                                                {% else %}
-                                                            <option>{{ u.name }}</option>
-                                                                
+                                                                <option selected>{{ u.name }}</option>
+                                                            {% else %}
+                                                                <option>{{ u.name }}</option>
+
                                                             {% endif %}
                                                         {% endfor %}
                                                     </select>
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label class="form-label" for="product-title">Quantité critique</label>
                                                 <div class="form-control-wrap">
-                                                    <input type="number" name="qts" value="{{ mp.critic_qts }}" class="form-control"
+                                                    <input type="number" name="qts" value="{{ mp.critic_qts }}"
+                                                           class="form-control"
                                                            id="product-title" required>
                                                 </div>
                                             </div>

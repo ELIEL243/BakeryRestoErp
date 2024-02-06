@@ -430,7 +430,8 @@ def mp_list(request):
             unit_name = request.POST.get('unit')
             critic_qts = int(request.POST.get('qts'))
             unit = Unite.objects.get(name=unit_name)
-            MatierePremiere.objects.create(libelle=name, description=desc, unite=unit, critic_qts=critic_qts)
+            type_mp = request.POST.get('type')
+            MatierePremiere.objects.create(libelle=name, description=desc, unite=unit, critic_qts=critic_qts, type_mp=type_mp)
             messages.success(request, 'good !')
             return redirect('mp-list')
         else:
@@ -451,6 +452,7 @@ def mp_detail(request, pk):
             mp.description = request.POST.get('desc')
             mp.critic_qts = int(request.POST.get('qts'))
             mp.unit = Unite.objects.get(name=request.POST.get('unit'))
+            mp.type = request.POST.get('type')
             mp.save()
             messages.success(request, 'good !')
             return redirect('mp-list')

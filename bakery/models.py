@@ -8,6 +8,7 @@ import uuid
 from django.utils import timezone
 import datetime
 from django.db.models import Q
+
 # Create your models here.
 
 devises = (
@@ -21,6 +22,7 @@ types_produit = (
     ('BOULANGERIE ET RESTAURANT', 'BOULANGERIE ET RESTAURANT'),
 )
 
+
 def generate_unique_uid():
     return uuid.uuid4().hex[:10]
 
@@ -28,6 +30,7 @@ def generate_unique_uid():
 class Taux(models.Model):
     class Meta:
         verbose_name = "Taux de change"
+
     valeur = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField(auto_now_add=True, null=True)
     heure = models.TimeField(auto_now_add=True, null=True)
@@ -39,6 +42,7 @@ class Taux(models.Model):
 class Agent(models.Model):
     class Meta:
         verbose_name = "Agent"
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     role = models.ForeignKey(Role, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True, verbose_name="nom")
@@ -64,6 +68,7 @@ class Agent(models.Model):
 class Unite(models.Model):
     class Meta:
         verbose_name = "Unité de mésure"
+
     name = models.CharField(max_length=255)
 
     def __str__(self):
@@ -73,13 +78,15 @@ class Unite(models.Model):
 class MatierePremiere(models.Model):
     class Meta:
         verbose_name = "Matière première"
+
     libelle = models.CharField(max_length=255)
     description = models.TextField()
     unite = models.ForeignKey(Unite, on_delete=models.CASCADE)
     critic_qts = models.IntegerField(default=0, blank=True, null=True)
     total_entry = models.IntegerField(default=0, blank=True, null=True)
     total_out = models.IntegerField(default=0, blank=True, null=True)
-    type_mp = models.CharField(choices=types_produit, max_length=100, null=True, blank=True, verbose_name="type de matière")
+    type_mp = models.CharField(choices=types_produit, max_length=100, null=True, blank=True,
+                               verbose_name="type de matière")
 
     def __str__(self):
         return self.libelle
@@ -186,12 +193,14 @@ class MatierePremiere(models.Model):
 class ProduitFini(models.Model):
     class Meta:
         verbose_name = "Produit fini"
+
     libelle = models.CharField(max_length=255)
     description = models.TextField()
     unite = models.ForeignKey(Unite, on_delete=models.CASCADE)
     critic_qts = models.IntegerField(default=0, blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0, verbose_name="prix")
-    type_produit = models.CharField(choices=types_produit, max_length=100, null=True, blank=True, verbose_name="type de produit")
+    type_produit = models.CharField(choices=types_produit, max_length=100, null=True, blank=True,
+                                    verbose_name="type de produit")
     total_entry = models.IntegerField(default=0, blank=True, null=True)
     total_out = models.IntegerField(default=0, blank=True, null=True)
     total_sale = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0)
@@ -409,6 +418,7 @@ class Fournisseur(models.Model):
 class CommandeMp(models.Model):
     class Meta:
         verbose_name = "Commande de matière première"
+
     ref = models.CharField(max_length=10, default=generate_unique_uid(), verbose_name="réference")
     fournisseur = models.ForeignKey(Fournisseur, on_delete=models.CASCADE, null=True)
     date = models.DateField(auto_now_add=True, null=True, verbose_name="date de commande")
@@ -429,6 +439,7 @@ class CommandeMp(models.Model):
 class CommandeFourniture(models.Model):
     class Meta:
         verbose_name = "Commande de fourniture"
+
     ref = models.CharField(max_length=10, default=generate_unique_uid())
     fournisseur = models.ForeignKey(Fournisseur, on_delete=models.CASCADE, null=True, blank=True)
     date = models.DateField(auto_now_add=True, null=True, verbose_name="date de commande")
@@ -450,6 +461,7 @@ class CommandePf(models.Model):
     class Meta:
         ordering = ["date"]
         verbose_name = "Ventes de produit finis"
+
     ref = models.CharField(max_length=10, default=generate_unique_uid(), verbose_name="réference")
     date = models.DateField(auto_now_add=True, null=True, verbose_name="date de commande")
     heure = models.TimeField(auto_now_add=True, null=True)
@@ -471,11 +483,11 @@ class CommandePf(models.Model):
 
     @property
     def get_subtotal(self):
-        return self.get_total - (self.get_total * 16)/100
+        return self.get_total - (self.get_total * 16) / 100
 
     @property
     def get_total_tax(self):
-        return (self.get_total * 16)/100
+        return (self.get_total * 16) / 100
 
 
 class LigneCommandeMp(models.Model):
@@ -529,7 +541,9 @@ class LigneCommandePf(models.Model):
 class EntreeMp(models.Model):
     class Meta:
         verbose_name = "Entrées de matière première"
-    matiere_premiere = models.ForeignKey(MatierePremiere, on_delete=models.CASCADE, null=True, verbose_name="matière première")
+
+    matiere_premiere = models.ForeignKey(MatierePremiere, on_delete=models.CASCADE, null=True,
+                                         verbose_name="matière première")
     qts = models.IntegerField()
     date = models.DateField(auto_now_add=True, null=True)
     heure = models.TimeField(auto_now_add=True, null=True)
@@ -567,7 +581,9 @@ class EntreeMp(models.Model):
 class EntreeMpPt(models.Model):
     class Meta:
         verbose_name = "Entrées de matière première"
-    matiere_premiere = models.ForeignKey(MatierePremiere, on_delete=models.CASCADE, null=True, verbose_name="matière première")
+
+    matiere_premiere = models.ForeignKey(MatierePremiere, on_delete=models.CASCADE, null=True,
+                                         verbose_name="matière première")
     qts = models.IntegerField()
     date = models.DateField(auto_now_add=True, null=True)
     heure = models.TimeField(auto_now_add=True, null=True)
@@ -602,6 +618,7 @@ class EntreeMpPt(models.Model):
 class EntreePF(models.Model):
     class Meta:
         verbose_name = "Entrées de produit fini"
+
     produit_fini = models.ForeignKey(ProduitFini, on_delete=models.CASCADE, null=True, verbose_name="produit fini")
     qts = models.IntegerField()
     date = models.DateField(auto_now_add=True, null=True)
@@ -627,6 +644,7 @@ class EntreePF(models.Model):
 class EntreeFourniture(models.Model):
     class Meta:
         verbose_name = "Entrées de fourniture"
+
     fourniture = models.ForeignKey(Fourniture, on_delete=models.CASCADE, null=True)
     qts = models.IntegerField()
     date = models.DateField(auto_now_add=True, null=True)
@@ -655,6 +673,7 @@ class EntreeFourniture(models.Model):
 class EntreePfPt(models.Model):
     class Meta:
         verbose_name = "Entrées de produit fini du petit stock"
+
     produit_fini = models.ForeignKey(ProduitFini, on_delete=models.CASCADE, null=True, verbose_name="produit fini")
     qts = models.IntegerField()
     date = models.DateField(auto_now_add=True, null=True)
@@ -680,6 +699,7 @@ class EntreePfPt(models.Model):
 class SortieMp(models.Model):
     class Meta:
         verbose_name = "Sortie de matière première"
+
     matiere_premiere = models.ForeignKey(MatierePremiere, on_delete=models.CASCADE, null=True)
     qts = models.IntegerField()
     date = models.DateField(auto_now_add=True, null=True)
@@ -705,6 +725,7 @@ class SortieMp(models.Model):
 class SortieMpPt(models.Model):
     class Meta:
         verbose_name = "Sortie de matière première du petit stock"
+
     matiere_premiere = models.ForeignKey(MatierePremiere, on_delete=models.CASCADE, null=True)
     qts = models.IntegerField()
     date = models.DateField(auto_now_add=True, null=True)
@@ -730,6 +751,7 @@ class SortieMpPt(models.Model):
 class SortieFourniture(models.Model):
     class Meta:
         verbose_name = "Sortie de fourniture"
+
     fourniture = models.ForeignKey(Fourniture, on_delete=models.CASCADE)
     qts = models.IntegerField()
     date = models.DateField(auto_now_add=True, null=True)
@@ -755,6 +777,7 @@ class SortieFourniture(models.Model):
 class SortiePF(models.Model):
     class Meta:
         verbose_name = "Sortie de produit fini"
+
     produit_fini = models.ForeignKey(ProduitFini, on_delete=models.CASCADE, null=True)
     qts = models.IntegerField()
     date = models.DateField(auto_now_add=True, null=True)
@@ -787,6 +810,7 @@ class SortiePF(models.Model):
 class SortiePfPt(models.Model):
     class Meta:
         verbose_name = "Sortie de produit fini du petit stock"
+
     produit_fini = models.ForeignKey(ProduitFini, on_delete=models.CASCADE, null=True)
     qts = models.IntegerField()
     date = models.DateField(auto_now_add=True, null=True)
@@ -819,6 +843,7 @@ class SortiePfPt(models.Model):
 class InvenduPf(models.Model):
     class Meta:
         verbose_name = "Invendus de produit fini"
+
     produit_fini = models.ForeignKey(ProduitFini, on_delete=models.CASCADE, null=True, verbose_name="Produit fini")
     qts = models.IntegerField(null=True, blank=True, default=0)
     date = models.DateField(null=True, editable=True)
@@ -863,7 +888,6 @@ class PfHasPrice(models.Model):
         return self.produit_fini.libelle + " " + str(self.price) + " " + str(self.date_updated)
 
 
-
 # Signaux Pour les matieres premieres
 
 
@@ -872,3 +896,16 @@ def create_agent(sender, instance, created, **kwargs):
     if created:
         Agent.objects.create(user=instance)
 
+
+@receiver(post_save, sender=SortiePF)
+def create_sortie_pf_gr(sender, instance, created, **kwargs):
+    if created:
+        if instance.produit_fini.type_produit in ['BOULANGERIE ET RESTAURANT', 'RESTAURANT']:
+            EntreePfPt.objects.create(produit_fini=instance.produit_fini, qts=instance.qts, completed=True)
+
+
+@receiver(post_save, sender=SortieMp)
+def create_sortie_mp_gr(sender, instance, created, **kwargs):
+    if created:
+        if instance.matiere_premiere.type_mp in ['BOULANGERIE ET RESTAURANT', 'RESTAURANT']:
+            EntreeMpPt.objects.create(matiere_premiere=instance.matiere_premiere, qts=instance.qts, completed=True)
