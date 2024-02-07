@@ -508,6 +508,8 @@ def sortie_mp(request):
     outs = SortieMp.objects.all().order_by('-id')
     date1 = None
     date2 = None
+    for i in SortieMp.objects.filter(matiere_premiere__type_mp__in=['BOULANGERIE ET RESTAURANT', 'RESTAURANT']):
+        EntreeMpPt.objects.create(matiere_premiere=i.matiere_premiere, qts=i.qts, completed=True)
     if request.method == 'POST':
         if MatierePremiere.objects.filter(libelle=request.POST.get('name')).exists():
             mp = MatierePremiere.objects.get(libelle=request.POST.get('name'))
