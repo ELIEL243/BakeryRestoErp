@@ -252,20 +252,23 @@ def pf_detail_pt(request, pk):
 def cmd_pf(request):
     orders = CommandePf.objects.all().order_by('-date')
     ord1 = orders.filter(devise__isnull=True)
+    total = 0
     for i in ord1:
         i.delete()
     ref = generate_unique_uid()
     date1 = None
     date2 = None
+
     if request.GET.get('search') is not None:
         date1 = request.GET.get('date1')
         date2 = request.GET.get('date2')
         if date2 == "" or date2 is None:
-            orders = orders.filter(date=date1)
+            orders = CommandePf.objects.filter(date=date1)
         else:
-            orders = orders.filter(Q(date__gte=date1) & Q(date__lte=date2))
-
-    return render(request, 'resto/ventes.html', context={'orders': orders, 'ref': ref, 'date1': date1, 'date2': date2})
+            orders = CommandePf.objects.filter(Q(date__gte=date1) & Q(date__lte=date2))
+    for i in orders:
+        total += i.get_total
+    return render(request, 'resto/ventes.html', context={'orders': orders, 'ref': ref, 'date1': date1, 'date2': date2, 'total': total})
 
 
 @login_required(login_url='login')
@@ -388,6 +391,8 @@ def cmd_pf_facturation(request):
     orders = CommandePf.objects.filter(cloture=False).order_by('date')
     orders1 = CommandePf.objects.filter(cloture=True).order_by('date')
     ord1 = orders.filter(devise__isnull=True)
+    total1 = 0
+    total = 0
     for i in ord1:
         i.delete()
     ref = generate_unique_uid()
@@ -400,9 +405,13 @@ def cmd_pf_facturation(request):
             orders1 = orders.filter(date=date1)
         else:
             orders1 = orders.filter(Q(date__gte=date1) & Q(date__lte=date2))
+    for i in orders1:
+        total += i.get_total
+    for i in orders:
+        total1 += i.get_total
 
     return render(request, 'resto/ventes_facturation.html',
-                  context={'orders': orders, 'orders1': orders1, 'ref': ref, 'date1': date1, 'date2': date2})
+                  context={'orders': orders, 'orders1': orders1, 'ref': ref, 'date1': date1, 'date2': date2, 'total1': total1, 'total': total})
 
 
 @login_required(login_url='login')

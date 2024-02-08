@@ -72,6 +72,7 @@
                                                    data-export-title="Export">
                                                 <thead>
                                                 <tr>
+                                                    <th>No</th>
                                                     <th>Ref</th>
                                                     <th>Client</th>
                                                     <th>Total</th>
@@ -87,6 +88,7 @@
                                                 <tbody>
                                                 {% for order in orders %}
                                                     <tr>
+                                                    <td>{{ forloop.counter }}</td>
                                                         <td>#{{ order.ref }}</td>
                                                         <td>{% if order.client %}{{ order.client }}{% else %}
                                                             -----{% endif %}</td>
@@ -135,8 +137,9 @@
                                                     </tr>
                                                 {% endfor %}
                                                 </tbody>
-
                                             </table>
+                                                <h3 class="text-end">Total des ventes : <i class="text-danger">{{ total }} Fc</i></h3>
+
 
                                         </div>
                                     </div>
