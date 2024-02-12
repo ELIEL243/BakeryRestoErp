@@ -66,6 +66,31 @@
                         </ul>
                         
                     </li>
+                
+                    <li class="nk-menu-item has-sub">
+                        <a href="#" class="nk-menu-link nk-menu-toggle">
+                      <span class="nk-menu-icon"
+                      ><em class="icon ni ni-list-fill"></em>
+                      </span>
+                            <span class="nk-menu-text">Matières premières</span>
+                        </a>
+
+                        <ul class="nk-menu-sub">
+                            <li class="nk-menu-item">
+                                <a href="{% url 'mp-list-pack' %}" class="nk-menu-link"><span class="nk-menu-text">Liste et stock</span></a>
+                            </li>
+                            <li class="nk-menu-item">
+                                <a href="{% url 'entree-mp-pack' %}" class="nk-menu-link"><span class="nk-menu-text">Entrées</span></a>
+                            </li>
+                            
+                            <li class="nk-menu-item">
+                                <a href="{% url 'sortie-mp-pack' %}" class="nk-menu-link"><span class="nk-menu-text">Sorties</span></a>
+                            </li>
+
+                        </ul>
+
+                    </li>
+
 
                     <li class="nk-menu-item">
                         <a href="{% url 'entreprise-list' %}" class="nk-menu-link">

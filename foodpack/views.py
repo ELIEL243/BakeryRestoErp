@@ -221,3 +221,85 @@ def delete_entreprise(request, pk):
     messages.success(request, 'good !')
     return redirect('entreprise-list')
 
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['livraison de pack'])
+def mp_list_pack(request):
+    mps = MatierePremiere.objects.filter(type_mp__in=['BOULANGERIE ET PACK', 'PACK'])
+
+    return render(request, 'foodpack/mp_list.html', context={'mps': mps})
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['livraison de pack'])
+def entree_mp_pack(request):
+    mps = MatierePremiere.objects.filter(type_mp__in=['BOULANGERIE ET PACK', 'PACK'])
+    entries = EntreeMpPack.objects.all().order_by('-id')
+    date1 = None
+    date2 = None
+    if request.method == 'POST':
+        if MatierePremiere.objects.filter(libelle=request.POST.get('name')).exists():
+            mp = MatierePremiere.objects.get(libelle=request.POST.get('name'))
+            qts = int(request.POST.get('qts'))
+            EntreeMpPack.objects.create(matiere_premiere=mp, qts=qts)
+            messages.success(request, 'good !')
+            return redirect('entree-mp-pack')
+        else:
+            messages.error(request, 'echec !')
+    if request.GET.get('search') is not None:
+        date1 = request.GET.get('date1')
+        date2 = request.GET.get('date2')
+        if date2 == "" or date2 is None:
+            entries = EntreeMpPack.objects.filter(date=date1)
+        else:
+            entries = EntreeMpPack.objects.filter(Q(date__gte=date1) & Q(date__lte=date2))
+    return render(request, 'foodpack/entree_mp.html',
+                  context={'mps': mps, 'entries': entries, 'date1': date1, 'date2': date2})
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['livraison de pack'])
+def sortie_mp_pack(request):
+    mps = MatierePremiere.objects.filter(type_mp__in=['BOULANGERIE ET PACK', 'PACK'])
+    outs = SortieMpPack.objects.all().order_by('-id')
+    date1 = None
+    date2 = None
+    if request.method == 'POST':
+        if MatierePremiere.objects.filter(libelle=request.POST.get('name')).exists():
+            mp = MatierePremiere.objects.get(libelle=request.POST.get('name'))
+            qts = int(request.POST.get('qts'))
+            if mp.in_stock_pack >= qts:
+                SortieMpPack.objects.create(matiere_premiere=mp, qts=qts)
+                messages.success(request, 'good !')
+                return redirect('sortie-mp-pack')
+            else:
+                messages.error(request, 'stock !')
+                return redirect('sortie-mp-pack')
+        else:
+            messages.error(request, 'echec !')
+    if request.GET.get('search') is not None:
+        date1 = request.GET.get('date1')
+        date2 = request.GET.get('date2')
+        if date2 == "" or date2 is None:
+            outs = SortieMpPack.objects.filter(date=date1)
+        else:
+            outs = SortieMpPack.objects.filter(Q(date__gte=date1) & Q(date__lte=date2))
+    return render(request, 'foodpack/sortie_mp.html', context={'mps': mps, 'outs': outs, 'date1': date1, 'date2': date2})
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['livraison de pack'])
+def delete_entree_pack(request, pk):
+    EntreeMpPack.objects.get(pk=pk).delete()
+    messages.success(request, 'good !')
+    return redirect('entree-mp-pack')
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['livraison de pack'])
+def delete_sortie_pack(request, pk):
+    SortieMpPack.objects.get(pk=pk).delete()
+    messages.success(request, 'good !')
+    return redirect('sortie-mp-pack')
+
+

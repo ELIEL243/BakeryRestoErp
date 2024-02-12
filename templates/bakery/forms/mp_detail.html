@@ -49,21 +49,40 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label class="form-label" for="sale-price">Type de matière première</label>
+                                                <label class="form-label" for="sale-price">Type de matière
+                                                    première</label>
                                                 <div class="form-control-wrap">
                                                     <select name="type" class="form-control" id="sale-price" required>
                                                         {% if mp.type_mp == "BOULANGERIE" %}
-                                                        <option selected>BOULANGERIE</option>
-                                                        <option>RESTAURANT</option>
-                                                        <option>BOULANGERIE ET RESTAURANT</option>
+                                                            <option selected>BOULANGERIE</option>
+                                                            <option>RESTAURANT</option>
+                                                            <option>PACK</option>
+                                                            <option>BOULANGERIE ET RESTAURANT</option>
+                                                            <option>BOULANGERIE ET PACK</option>
                                                         {% elif mp.type_mp == "RESTAURANT" %}
                                                             <option>BOULANGERIE</option>
-                                                        <option selected>RESTAURANT</option>
-                                                        <option>BOULANGERIE ET RESTAURANT</option>
-                                                            {% else %}
+                                                            <option selected>RESTAURANT</option>
+                                                            <option>PACK</option>
+                                                            <option>BOULANGERIE ET RESTAURANT</option>
+                                                            <option>BOULANGERIE ET PACK</option>
+                                                        {% elif mp.type_mp == "PACK" %}
                                                             <option>BOULANGERIE</option>
-                                                        <option>RESTAURANT</option>
-                                                        <option selected>BOULANGERIE ET RESTAURANT</option>
+                                                            <option>RESTAURANT</option>
+                                                            <option selected>PACK</option>
+                                                            <option>BOULANGERIE ET RESTAURANT</option>
+                                                            <option>BOULANGERIE ET PACK</option>
+                                                        {% elif mp.type_mp == "BOULANGERIE ET PACK" %}
+                                                            <option>BOULANGERIE</option>
+                                                            <option>RESTAURANT</option>
+                                                            <option>PACK</option>
+                                                            <option>BOULANGERIE ET RESTAURANT</option>
+                                                            <option selected>BOULANGERIE ET PACK</option>
+                                                        {% else %}
+                                                            <option>BOULANGERIE</option>
+                                                            <option>RESTAURANT</option>
+                                                            <option>PACK</option>
+                                                            <option selected>BOULANGERIE ET RESTAURANT</option>
+                                                            <option>BOULANGERIE ET PACK</option>
                                                         {% endif %}
                                                     </select>
                                                 </div>

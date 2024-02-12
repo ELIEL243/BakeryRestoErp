@@ -1,6 +1,8 @@
 import datetime
 from django.db import models
 
+from bakery.models import MatierePremiere
+
 # Create your models here.
 
 
@@ -135,3 +137,56 @@ class InvenduPack(models.Model):
 
     def __str__(self):
         return self.pack.libelle + " " + str(self.qts)
+
+
+class SortieMpPack(models.Model):
+    class Meta:
+        verbose_name = "Sortie de matière première au service pack"
+
+    matiere_premiere = models.ForeignKey(MatierePremiere, on_delete=models.CASCADE, null=True)
+    qts = models.IntegerField()
+    date = models.DateField(auto_now_add=True, null=True)
+    heure = models.TimeField(auto_now_add=True, null=True)
+    completed = models.BooleanField(default=False)
+    added_at = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return self.matiere_premiere.libelle + " " + str(self.qts)
+
+    @property
+    def in_stock(self):
+        total = 0
+        entries = EntreeMpPack.objects.filter(added_at__lt=self.added_at, matiere_premiere=self.matiere_premiere)
+        outs = SortieMpPack.objects.filter(added_at__lt=self.added_at, matiere_premiere=self.matiere_premiere)
+        for entry in entries:
+            total += entry.qts
+        for o in outs:
+            total -= o.qts
+        return total - self.qts
+
+
+class EntreeMpPack(models.Model):
+    class Meta:
+        verbose_name = "Entrées de matière première."
+
+    matiere_premiere = models.ForeignKey(MatierePremiere, on_delete=models.CASCADE, null=True,
+                                         verbose_name="matière première")
+    qts = models.IntegerField()
+    date = models.DateField(auto_now_add=True, null=True)
+    heure = models.TimeField(auto_now_add=True, null=True)
+    completed = models.BooleanField(default=False)
+    added_at = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return self.matiere_premiere.libelle + " " + str(self.qts)
+
+    @property
+    def in_stock(self):
+        total = 0
+        entries = EntreeMpPack.objects.filter(added_at__lt=self.added_at, matiere_premiere=self.matiere_premiere)
+        outs = SortieMpPack.objects.filter(added_at__lt=self.added_at, matiere_premiere=self.matiere_premiere)
+        for entry in entries:
+            total += entry.qts
+        for o in outs:
+            total -= o.qts
+        return total + self.qts

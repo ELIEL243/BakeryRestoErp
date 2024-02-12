@@ -9,6 +9,7 @@ from django.utils import timezone
 import datetime
 from django.db.models import Q
 
+
 # Create your models here.
 
 devises = (
@@ -19,7 +20,9 @@ devises = (
 types_produit = (
     ('BOULANGERIE', 'BOULANGERIE'),
     ('RESTAURANT', 'RESTAURANT'),
+    ('PACK', 'PACK'),
     ('BOULANGERIE ET RESTAURANT', 'BOULANGERIE ET RESTAURANT'),
+    ('BOULANGERIE ET PACK', 'BOULANGERIE ET PACK'),
 )
 
 
@@ -114,6 +117,18 @@ class MatierePremiere(models.Model):
         return total
 
     @property
+    def in_stock_pack(self):
+        total = 0
+        from foodpack.models import EntreeMpPack, SortieMpPack
+        entries = EntreeMpPack.objects.filter(matiere_premiere=self)
+        outs = SortieMpPack.objects.filter(matiere_premiere=self)
+        for entry in entries:
+            total += entry.qts
+        for out in outs:
+            total -= out.qts
+        return total
+
+    @property
     def qts_out(self):
         total = 0
         outs = SortieMp.objects.filter(matiere_premiere=self, date=datetime.datetime.today().date())
@@ -130,6 +145,15 @@ class MatierePremiere(models.Model):
         return total
 
     @property
+    def qts_out_pack(self):
+        total = 0
+        from foodpack.models import SortieMpPack
+        outs = SortieMpPack.objects.filter(matiere_premiere=self, date=datetime.datetime.today().date())
+        for out in outs:
+            total += out.qts
+        return total
+
+    @property
     def qts_enters(self):
         total = 0
         entries = EntreeMp.objects.filter(matiere_premiere=self, date=datetime.datetime.today().date())
@@ -141,6 +165,15 @@ class MatierePremiere(models.Model):
     def qts_enters_pt(self):
         total = 0
         entries = EntreeMpPt.objects.filter(matiere_premiere=self, date=datetime.datetime.today().date())
+        for entry in entries:
+            total += entry.qts
+        return total
+
+    @property
+    def qts_enters_pack(self):
+        total = 0
+        from foodpack.models import EntreeMpPack
+        entries = EntreeMpPack.objects.filter(matiere_premiere=self, date=datetime.datetime.today().date())
         for entry in entries:
             total += entry.qts
         return total
@@ -902,6 +935,8 @@ def create_sortie_pf_gr(sender, instance, created, **kwargs):
     if created:
         if instance.produit_fini.type_produit in ['BOULANGERIE ET RESTAURANT', 'RESTAURANT']:
             EntreePfPt.objects.create(produit_fini=instance.produit_fini, qts=instance.qts, completed=True)
+        elif instance.produit_fini.type_produit in ['BOULANGERIE ET PACK', 'PACK']:
+            pass
 
 
 @receiver(post_save, sender=SortieMp)
@@ -909,3 +944,6 @@ def create_sortie_mp_gr(sender, instance, created, **kwargs):
     if created:
         if instance.matiere_premiere.type_mp in ['BOULANGERIE ET RESTAURANT', 'RESTAURANT']:
             EntreeMpPt.objects.create(matiere_premiere=instance.matiere_premiere, qts=instance.qts, completed=True)
+        elif instance.matiere_premiere.type_mp in ['BOULANGERIE ET PACK', 'PACK']:
+            from foodpack.models import EntreeMpPack
+            EntreeMpPack.objects.create(matiere_premiere=instance.matiere_premiere, qts=instance.qts, completed=True)

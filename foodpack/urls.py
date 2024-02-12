@@ -2,6 +2,15 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
+    # Routes concernant les Mp
+    path('mp_list_pack/', mp_list_pack, name='mp-list-pack'),
+    path('entree_mp_pack/', entree_mp_pack, name='entree-mp-pack'),
+    path('delete_entree_mp_pack/<str:pk>/', delete_entree_pack, name='delete-entree-mp-pack'),
+    path('sortie_mp_pack/', sortie_mp_pack, name='sortie-mp-pack'),
+    path('delete_sortie_pack/<str:pk>/', delete_sortie_pack, name='delete-sortie-pack'),
+
+    # Concernant les packs
+
     path('home_foodpack/', home_foodpack, name='home-foodpack'),
     path('pack_list/', pack_list, name='pack-list'),
     path('pack_detail/<str:pk>/', pack_detail, name='pack-detail'),
