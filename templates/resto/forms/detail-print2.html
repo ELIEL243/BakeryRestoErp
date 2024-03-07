@@ -337,7 +337,7 @@
                                             <tbody>
                                             <tr>
                                                 <td colspan="2">
-                                                    {{ order.client.name }}<br/>
+                                                    {% if order.client %}Client: {{ order.client }}{% endif %}<br/>
                                                 </td>
                                                 <td>{{ order.date_commande }}</td>
                                             </tr>
