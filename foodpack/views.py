@@ -225,7 +225,14 @@ def delete_entreprise(request, pk):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['livraison de pack'])
 def mp_list_pack(request):
-    mps = MatierePremiere.objects.filter(type_mp__in=['BOULANGERIE ET PACK', 'PACK'])
+    mps1 = []
+    for i in MatierePremiere.objects.all():
+        for j in EntreeMpPack.objects.all():
+            if i == j.matiere_premiere:
+                mps1.append(j.matiere_premiere.libelle)
+        if i.type_mp in ['BOULANGERIE ET PACK', 'PACK']:
+            mps1.append(i.libelle)
+    mps = MatierePremiere.objects.filter(libelle__in=mps1)
 
     return render(request, 'foodpack/mp_list.html', context={'mps': mps})
 
@@ -233,7 +240,14 @@ def mp_list_pack(request):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['livraison de pack'])
 def entree_mp_pack(request):
-    mps = MatierePremiere.objects.filter(type_mp__in=['BOULANGERIE ET PACK', 'PACK'])
+    mps1 = []
+    for i in MatierePremiere.objects.all():
+        for j in EntreeMpPack.objects.all():
+            if i == j.matiere_premiere:
+                mps1.append(j.matiere_premiere.libelle)
+        if i.type_mp in ['BOULANGERIE ET PACK', 'PACK']:
+            mps1.append(i.libelle)
+    mps = MatierePremiere.objects.filter(libelle__in=mps1)
     entries = EntreeMpPack.objects.all().order_by('-id')
     date1 = None
     date2 = None

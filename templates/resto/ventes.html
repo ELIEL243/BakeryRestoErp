@@ -39,7 +39,7 @@
                                                 <div class="form-control-wrap">
                                                     <div class="input-daterange input-group">
                                                         <div class="input-group-addon">Du</div>
-                                                        <input type="date" name="date1" value="{% if date1 %}{{ date1 }}{% endif %}" class="form-control" required/>
+                                                        <input type="date" name="date1" value="{% if date1 %}{{ date1 }}{% endif %}" class="form-control"/>
                                                         <div class="input-group-addon">Au</div>
                                                         <input type="date" name="date2" value="{% if date2 %}{{ date2 }}{% endif %}" class="form-control"/>
                                                         <div class="input-group-addon">
@@ -52,6 +52,11 @@
                                                             <a id="submit-btn" href="{% url 'cmd-pf' %}" class="btn btn-info"><em
                                                             class="icon ni ni-repeat-fill"></em><span>Rafraichir</span></a>            
                                                         </div>
+                                                    
+                                                        <div class="input-group-addon">
+                                                                        <button type="submit" name="rapport" class="btn btn-warning"><em
+                                                                                class="icon ni ni-repeat-fill"></em><span>Générer le rapport</span></button>
+                                                                    </div>
                                                         
                                                     </div>
                                                     

@@ -1,0 +1,90 @@
+{% extends 'resto/base_resto.html' %}
+{% load static %}
+{% block content %}
+    <div class="nk-wrap">
+    
+    <div class="nk-wrap">
+    
+    {% include 'resto/reponsive-sidebar.html' %}
+        <div class="nk-content">
+            <div class="nk-block">
+
+            <div class="invoice invoice-print">
+            <div class="invoice-action">
+                                            <a onclick="printPromot()" class="btn btn-icon btn-lg btn-white btn-dim btn-outline-primary" target="_blank"><em class="icon ni ni-printer-fill"></em></a>
+                                        </div>
+            <div class="invoice-wrap" id="invoice">
+                <div class="invoice-brand text-center">
+                    <img src="{% static 'images/pain.png' %}" alt="">
+                </div>
+                <div class="invoice-head">
+                    <div class="invoice-contact">
+                        <span class="overline-title">Rapport des ventes</span>
+                        
+                    </div>
+                    <div class="invoice-desc">
+                        <h3 class="title">Rapport des ventes</h3>
+                        <ul class="list-plain">
+                            <li class="invoice-date"><span>Du</span>:<span>{{ date }}</span></li>
+                            
+                        </ul>
+                    </div>
+                </div><!-- .invoice-head -->
+                <div class="invoice-bills">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                                    <th>Ref</th>
+                                                    <th>Client</th>
+                                                    <th>Total</th>
+                                                    <th>Devise</th>
+                                                    <th>Table</th>
+                                                    <th>Date</th>
+                                                    <th>Heure</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for order in orders %}
+                                                    <tr>
+                                                        <td>{{ forloop.revcounter }}</td>
+                                                        <td>#{{ order.ref }}</td>
+                                                        <td>{% if order.client %}{{ order.client }}{% else %}
+                                                            -----{% endif %}</td>
+                                                        <td>{{ order.get_total }}</td>
+                                                        <td>{{ order.devise }}</td>
+                                                        <td>{{ order.table_number }}</td>
+                                                        <td>{{ order.date }}</td>
+                                                        <td>{{ order.heure }}</td>
+                                                       
+                                                    </tr>
+                                                {% endfor %}
+                            </tbody>
+
+                        </table>
+
+                    <h3 class="text-end">Total : {{ total1 }}</h3>
+                    </div>
+                </div><!-- .invoice-bills -->
+            </div><!-- .invoice-wrap -->
+        </div>
+            </div>
+
+        </div>
+    </div>
+        
+    </div>
+
+    <li><a href="#" class="hidden btn btn-primary eg-swal-av2" id="success" style="display: none">Advanced 02</a></li>
+    <li><a href="#" class="hidden btn btn-primary eg-swal-av22" id="error" style="display: none">Advanced 02</a></li>
+    <script>
+        function printPromot() {
+            window.print();
+        }
+    </script>
+
+    
+{% endblock %}
+

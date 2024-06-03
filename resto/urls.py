@@ -31,6 +31,7 @@ urlpatterns = [
     path('ventes-fact/', cmd_pf_facturation, name='cmd-pf-fact'),
     path('confirm-paiement/<str:pk>/', confirm_paiement, name='confirm-paiement'),
     path('detail_cmd_pf_fact/<str:pk>/', detail_cmd_pf_facturation, name='detail-cmd-pf-fact'),
+    path('rapport_ventes/<str:date1>/', rapport_ventes, name='rapport-ventes'),
     path('detail_cmd_pf_uncloture/<str:pk>/', detail_cmd_pf_uncloture, name='detail-cmd-pf-uncloture'),
     path('confirm_order/', confirm_order, name='confirm-order')
 

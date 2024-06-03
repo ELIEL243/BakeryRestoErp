@@ -9,7 +9,6 @@ from django.utils import timezone
 import datetime
 from django.db.models import Q
 
-
 # Create your models here.
 
 devises = (
@@ -739,6 +738,7 @@ class SortieMp(models.Model):
     heure = models.TimeField(auto_now_add=True, null=True)
     completed = models.BooleanField(default=False)
     added_at = models.DateTimeField(auto_now_add=True, null=True)
+    destination = models.CharField(max_length=255, null=True)
 
     def __str__(self):
         return self.matiere_premiere.libelle + " " + str(self.qts)
@@ -819,6 +819,7 @@ class SortiePF(models.Model):
     devise = models.CharField(max_length=25, choices=devises, default=devises[1][0])
     completed = models.BooleanField(default=False)
     added_at = models.DateTimeField(auto_now_add=True, null=True)
+    destination = models.CharField(max_length=255, null=True)
 
     def __str__(self):
         return self.produit_fini.libelle + " " + str(self.qts)
@@ -935,15 +936,15 @@ def create_sortie_pf_gr(sender, instance, created, **kwargs):
     if created:
         if instance.produit_fini.type_produit in ['BOULANGERIE ET RESTAURANT', 'RESTAURANT']:
             EntreePfPt.objects.create(produit_fini=instance.produit_fini, qts=instance.qts, completed=True)
-        elif instance.produit_fini.type_produit in ['BOULANGERIE ET PACK', 'PACK']:
+        else:
             pass
 
 
 @receiver(post_save, sender=SortieMp)
 def create_sortie_mp_gr(sender, instance, created, **kwargs):
     if created:
-        if instance.matiere_premiere.type_mp in ['BOULANGERIE ET RESTAURANT', 'RESTAURANT']:
+        if instance.destination == "PETIT STOCK":
             EntreeMpPt.objects.create(matiere_premiere=instance.matiere_premiere, qts=instance.qts, completed=True)
-        elif instance.matiere_premiere.type_mp in ['BOULANGERIE ET PACK', 'PACK']:
+        elif instance.destination == "FOOD PACK":
             from foodpack.models import EntreeMpPack
             EntreeMpPack.objects.create(matiere_premiere=instance.matiere_premiere, qts=instance.qts, completed=True)

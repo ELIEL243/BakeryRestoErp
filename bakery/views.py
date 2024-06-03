@@ -512,8 +512,9 @@ def sortie_mp(request):
         if MatierePremiere.objects.filter(libelle=request.POST.get('name')).exists():
             mp = MatierePremiere.objects.get(libelle=request.POST.get('name'))
             qts = int(request.POST.get('qts'))
+            destination = request.POST.get('destination')
             if mp.in_stock >= qts:
-                SortieMp.objects.create(matiere_premiere=mp, qts=qts)
+                SortieMp.objects.create(matiere_premiere=mp, qts=qts, destination=destination)
                 messages.success(request, 'good !')
                 return redirect('sortie-mp')
             else:

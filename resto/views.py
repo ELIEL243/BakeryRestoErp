@@ -183,7 +183,7 @@ def sortie_pf_pt(request):
         if ProduitFini.objects.filter(libelle=request.POST.get('name')).exists():
             pf = ProduitFini.objects.get(libelle=request.POST.get('name'))
             qts = int(request.POST.get('qts'))
-            if pf.in_stock >= qts:
+            if pf.in_stock_pt >= qts:
                 SortiePfPt.objects.create(produit_fini=pf, qts=qts, price=pf.price)
                 messages.success(request, 'good !')
                 return redirect('sortie-pf-pt')
@@ -259,9 +259,19 @@ def cmd_pf(request):
     date1 = None
     date2 = None
 
+    if request.GET.get('rapport') is not None:
+        print(date1)
+        date1 = request.session['date1']
+        if date1 is None:
+            date1 = datetime.datetime.today().date()
+        else:
+            date1 = request.session['date1']
+        return redirect('rapport-ventes', date1)
+
     if request.GET.get('search') is not None:
         date1 = request.GET.get('date1')
         date2 = request.GET.get('date2')
+        request.session['date1'] = date1
         if date2 == "" or date2 is None:
             orders = CommandePf.objects.filter(date=date1).order_by('-date_time')
         else:
@@ -286,7 +296,7 @@ def delete_cmd_pf(request, pk):
     order = CommandePf.objects.get(pk=pk)
     order.delete()
     messages.success(request, 'good !')
-    return redirect('cmd-pf')
+    return redirect('cmd-pf-fact')
 
 
 # Vues concernant la facturation
@@ -317,7 +327,7 @@ def add_cmd_pf(request):
                 line.qts += int(qts)
                 line.price = pf.price
                 line.save()
-                SortiePfPt.objects.create(produit_fini=line.produit_fini, qts=line.qts, price=line.price, completed=True)
+                #SortiePfPt.objects.create(produit_fini=line.produit_fini, qts=line.qts, price=line.price, completed=True)
                 messages.success(request, "Succes")
             else:
                 messages.error(request, "Echec")
@@ -325,11 +335,21 @@ def add_cmd_pf(request):
             type_p = request.POST.get('type')
             if type_p == "A crédit":
                 order.paid = False
+                order.ref = generate_unique_uid()
                 order.client = request.POST.get('client')
             else:
                 order.paid = True
+                order.ref = generate_unique_uid()
             order.etat = True
             order.save()
+
+            for i in LigneCommandePf.objects.filter(commande=order):
+                if i.qts >= i.produit_fini.in_stock_pt:
+                    SortiePfPt.objects.create(produit_fini=i.produit_fini, qts=i.produit_fini.in_stock_pt, price=i.produit_fini.price)
+                    print("Là")
+                elif i.qts < i.produit_fini.in_stock_pt:
+                    SortiePfPt.objects.create(produit_fini=i.produit_fini, qts=i.qts, price=i.produit_fini.price)
+                    print(f"Ici {i.qts}")
 
             messages.success(request, "good")
             return redirect('add-facturation')
@@ -398,8 +418,18 @@ def cmd_pf_facturation(request):
     ref = generate_unique_uid()
     date1 = None
     date2 = None
+
+    if request.GET.get('rapport') is not None:
+        print(date1)
+        date1 = request.session['date1']
+        if date1 is None:
+            date1 = datetime.datetime.today().date()
+        else:
+            date1 = request.session['date1']
+        return redirect('rapport-ventes', date1)
     if request.GET.get('search') is not None:
         date1 = request.GET.get('date1')
+        request.session['date1'] = date1
         date2 = request.GET.get('date2')
         if date2 == "" or date2 is None:
             orders1 = CommandePf.objects.filter(date=date1, cloture=True).order_by('date_time')
@@ -409,7 +439,6 @@ def cmd_pf_facturation(request):
         total += i.get_total
     for i in orders:
         total1 += i.get_total
-
     return render(request, 'resto/ventes_facturation.html',
                   context={'orders': orders, 'orders1': orders1, 'ref': ref, 'date1': date1, 'date2': date2, 'total1': total1, 'total': total})
 
@@ -432,9 +461,21 @@ def detail_cmd_pf_facturation(request, pk):
     return render(request, 'resto/forms/detail_cmd_pf_fact.html', context={'lines': lines, 'order': order})
 
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['caisse restaurant'])
+def rapport_ventes(request, date1):
+    if date1 is None:
+        date1 = datetime.datetime.today().date()
+    orders = CommandePf.objects.filter(date=date1, cloture=True).order_by('date_time')
+    total = 0
+    for i in orders:
+        total += i.get_total
+    return render(request, 'resto/forms/rapport-vente.html', context={'orders': orders, 'date': date1, 'total1': total})
+
+
 def confirm_order(request):
     messages.success(request, "good !")
-    return redirect('add-facturation')
+    return redirect('cmd-pf-fact')
 
 
 @login_required(login_url='login')

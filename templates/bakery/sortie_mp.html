@@ -3,16 +3,16 @@
 {% block content %}
     {% include 'bakery/bakery_sidebar.html' %}
     <div class="nk-wrap">
-    {% include 'bakery/reponsive-sidebar.html' %}
-    
-    {% include 'bakery/profile.html' %}
+        {% include 'bakery/reponsive-sidebar.html' %}
+
+        {% include 'bakery/profile.html' %}
         <div class="nk-content">
             <div class="nk-content ">
                 <div class="container-fluid">
                     <div class="nk-content-inner">
                         <div class="nk-content-body">
-                        
-                           {% include 'bakery/partials/check_critics.html' %}
+
+                            {% include 'bakery/partials/check_critics.html' %}
                             <div class="nk-block-head nk-block-head-sm">
                                 <div class="nk-block-between">
                                     <div class="nk-block-head-content">
@@ -55,6 +55,19 @@
                                                 </div>
                                             </div>
 
+                                            <div class="col-lg-2">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="sale-price">Destination</label>
+                                                    <div class="form-control-wrap">
+                                                        <select name="destination" class="form-control" id="sale-price"
+                                                                required>
+                                                            <option>PETIT STOCK</option>
+                                                            <option>FOOD PACK</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
 
                                             <div class="col-lg-2">
                                                 <div class="form-group">
@@ -62,42 +75,49 @@
                                                     <button type="submit" id="submit-btn" name="submit-entry"
                                                             class="btn btn-success bg-green-500"
                                                             style="margin-top: 31px"><em
-                                                            class="icon ni ni-plus"></em><span>valider la sortie</span></button>
+                                                            class="icon ni ni-plus"></em><span>valider la sortie</span>
+                                                    </button>
 
                                                 </div>
                                             </div>
                                         </div>
                                         <hr>
-                                        
+
                                     </form>
-                                
+
                                     <form method="get">
                                         <div class="row justify-center text-center">
                                             <div class="col-lg-8">
-                                            <div class="form-group">
-                                                <label class="form-label text-center">Rechercher par date</label>
-                                                <div class="form-control-wrap">
-                                                    <div class="input-daterange input-group">
-                                                        <div class="input-group-addon">Du</div>
-                                                        <input type="date" name="date1" value="{% if date1 %}{{ date1 }}{% endif %}" class="form-control" required/>
-                                                        <div class="input-group-addon">Au</div>
-                                                        <input type="date" name="date2" value="{% if date2 %}{{ date2 }}{% endif %}" class="form-control"/>
-                                                        <div class="input-group-addon">
-                                                            <button type="submit" id="submit-btn" name="search"
-                                                            class="btn btn-primary"><em
-                                                            class="icon ni ni-search"></em><span>Rechercher</span></button>            
+                                                <div class="form-group">
+                                                    <label class="form-label text-center">Rechercher par date</label>
+                                                    <div class="form-control-wrap">
+                                                        <div class="input-daterange input-group">
+                                                            <div class="input-group-addon">Du</div>
+                                                            <input type="date" name="date1"
+                                                                   value="{% if date1 %}{{ date1 }}{% endif %}"
+                                                                   class="form-control" required/>
+                                                            <div class="input-group-addon">Au</div>
+                                                            <input type="date" name="date2"
+                                                                   value="{% if date2 %}{{ date2 }}{% endif %}"
+                                                                   class="form-control"/>
+                                                            <div class="input-group-addon">
+                                                                <button type="submit" id="submit-btn" name="search"
+                                                                        class="btn btn-primary"><em
+                                                                        class="icon ni ni-search"></em><span>Rechercher</span>
+                                                                </button>
+                                                            </div>
+
+                                                            <div class="input-group-addon">
+                                                                <a id="submit-btn" href="{% url 'sortie-mp' %}"
+                                                                   class="btn btn-info"><em
+                                                                        class="icon ni ni-repeat-fill"></em><span>Rafraichir</span></a>
+                                                            </div>
+
                                                         </div>
-                                                        
-                                                        <div class="input-group-addon">
-                                                            <a id="submit-btn" href="{% url 'sortie-mp' %}" class="btn btn-info"><em
-                                                            class="icon ni ni-repeat-fill"></em><span>Rafraichir</span></a>            
-                                                        </div>
-                                                        
+
+
                                                     </div>
-                                                    
-                                                
                                                 </div>
-                                            </div>
                                             </div>
                                         </div>
                                     </form>
@@ -148,7 +168,7 @@
                                                                                             class="icon ni ni-trash"></em><span
                                                                                             class="text-danger">Supprimer</span></a>
                                                                                 </li>
-                                                                                
+
                                                                             </ul>
                                                                         </div>
                                                                     </div>
@@ -163,7 +183,7 @@
                                             </table>
 
                                         </div>
-                                 </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -188,21 +208,21 @@
                 </script>
             {% elif message.tags == 'error' %}
                 {% if message.message == 'echec !' %}
-                <script>
-                    window.onload = function () {
-                        document.getElementById('error').click();
-                    };
-                </script>
-                    {% else %}
-                <script>
-                    window.onload = function () {
-                        document.getElementById('error2').click();
-                    };
-                </script>
-                    
-                    
-                    {% endif %}
-                
+                    <script>
+                        window.onload = function () {
+                            document.getElementById('error').click();
+                        };
+                    </script>
+                {% else %}
+                    <script>
+                        window.onload = function () {
+                            document.getElementById('error2').click();
+                        };
+                    </script>
+
+
+                {% endif %}
+
             {% endif %}
         {% endfor %}
 
