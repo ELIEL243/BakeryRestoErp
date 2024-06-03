@@ -250,11 +250,8 @@ def pf_detail_pt(request, pk):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['petit stock restaurant'])
 def cmd_pf(request):
-    orders = CommandePf.objects.all().order_by('-date_time')
-    ord1 = orders.filter(devise__isnull=True)
+    orders = CommandePf.objects.filter(etat=True).order_by('-date_time')
     total = 0
-    for i in ord1:
-        i.delete()
     ref = generate_unique_uid()
     date1 = None
     date2 = None
@@ -273,9 +270,9 @@ def cmd_pf(request):
         date2 = request.GET.get('date2')
         request.session['date1'] = date1
         if date2 == "" or date2 is None:
-            orders = CommandePf.objects.filter(date=date1).order_by('-date_time')
+            orders = CommandePf.objects.filter(date=date1, etat=True).order_by('-date_time')
         else:
-            orders = CommandePf.objects.filter(Q(date__gte=date1) & Q(date__lte=date2)).order_by('-date_time')
+            orders = CommandePf.objects.filter(Q(date__gte=date1) & Q(date__lte=date2), etat=True).order_by('-date_time')
     for i in orders:
         total += i.get_total
     return render(request, 'resto/ventes.html', context={'orders': orders, 'ref': ref, 'date1': date1, 'date2': date2, 'total': total})
@@ -408,13 +405,10 @@ def detail_print_pf(request, pk):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['caisse restaurant'])
 def cmd_pf_facturation(request):
-    orders = CommandePf.objects.filter(cloture=False).order_by('date_time')
-    orders1 = CommandePf.objects.filter(cloture=True).order_by('date_time')
-    ord1 = orders.filter(devise__isnull=True)
+    orders = CommandePf.objects.filter(cloture=False, etat=True).order_by('date_time')
+    orders1 = CommandePf.objects.filter(cloture=True, etat=True).order_by('date_time')
     total1 = 0
     total = 0
-    for i in ord1:
-        i.delete()
     ref = generate_unique_uid()
     date1 = None
     date2 = None
@@ -432,9 +426,9 @@ def cmd_pf_facturation(request):
         request.session['date1'] = date1
         date2 = request.GET.get('date2')
         if date2 == "" or date2 is None:
-            orders1 = CommandePf.objects.filter(date=date1, cloture=True).order_by('date_time')
+            orders1 = CommandePf.objects.filter(date=date1, cloture=True, etat=True).order_by('date_time')
         else:
-            orders1 = CommandePf.objects.filter(Q(date__gte=date1) & Q(date__lte=date2), cloture=True).order_by('date_time')
+            orders1 = CommandePf.objects.filter(Q(date__gte=date1) & Q(date__lte=date2), cloture=True, etat=True).order_by('date_time')
     for i in orders1:
         total += i.get_total
     for i in orders:
