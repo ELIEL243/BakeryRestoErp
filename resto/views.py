@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import login_required
 import uuid
 from auth_user.decorators import allowed_users
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
+from django.views.decorators.cache import cache_page
 # Create your views here.
 
 
@@ -249,6 +249,7 @@ def pf_detail_pt(request, pk):
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['petit stock restaurant'])
+@cache_page(60 * 15)
 def cmd_pf(request):
     orders = CommandePf.objects.filter(etat=True, cloture=True).order_by('-date_time')
     p = Paginator(orders, 10)  # creating a paginator object
@@ -436,6 +437,7 @@ def detail_print_pf(request, pk):
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['caisse restaurant'])
+@cache_page(60 * 15)
 def cmd_pf_facturation(request):
     orders = CommandePf.objects.filter(cloture=False, etat=True).order_by('date_time')
     orders1 = CommandePf.objects.filter(cloture=True, etat=True).order_by('-date_time')
