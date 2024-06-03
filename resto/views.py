@@ -250,7 +250,7 @@ def pf_detail_pt(request, pk):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['petit stock restaurant'])
 def cmd_pf(request):
-    orders = CommandePf.objects.filter(etat=True).order_by('-date_time')
+    orders = CommandePf.objects.filter(etat=True, cloture=True).order_by('-date_time')
     p = Paginator(orders, 10)  # creating a paginator object
     # getting the desired page number from url
     page_number = request.GET.get('page')
@@ -280,7 +280,7 @@ def cmd_pf(request):
         date2 = request.GET.get('date2')
         request.session['date1'] = date1
         if date2 == "" or date2 is None:
-            orders = CommandePf.objects.filter(date=date1, etat=True).order_by('-date_time')
+            orders = CommandePf.objects.filter(date=date1, etat=True, cloture=True).order_by('-date_time')
             p = Paginator(orders, 10)  # creating a paginator object
             # getting the desired page number from url
             page_number = request.GET.get('page')
@@ -293,7 +293,7 @@ def cmd_pf(request):
                 # if page is empty then return last page
                 page_obj = p.page(p.num_pages)
         else:
-            orders = CommandePf.objects.filter(Q(date__gte=date1) & Q(date__lte=date2), etat=True).order_by('-date_time')
+            orders = CommandePf.objects.filter(Q(date__gte=date1) & Q(date__lte=date2), etat=True, cloture=True).order_by('-date_time')
             p = Paginator(orders, 10)  # creating a paginator object
             # getting the desired page number from url
             page_number = request.GET.get('page')
