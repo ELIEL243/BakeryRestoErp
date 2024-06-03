@@ -153,6 +153,7 @@ def invendu_pack(request):
             invendu.price = invendu.qts * pack.price
             invendu.date = date
             invendu.save()
+            EntreePack.objects.create(pack=pack, qts=invendu.qts)
             messages.success(request, 'good !')
             return redirect('invendu-pack')
         else:

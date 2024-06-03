@@ -16,7 +16,7 @@ from resto.models import *
 from django.contrib.auth.decorators import login_required
 import uuid
 from auth_user.decorators import allowed_users
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
 
@@ -251,11 +251,21 @@ def pf_detail_pt(request, pk):
 @allowed_users(allowed_roles=['petit stock restaurant'])
 def cmd_pf(request):
     orders = CommandePf.objects.filter(etat=True).order_by('-date_time')
+    p = Paginator(orders, 10)  # creating a paginator object
+    # getting the desired page number from url
+    page_number = request.GET.get('page')
     total = 0
     ref = generate_unique_uid()
     date1 = None
     date2 = None
-
+    try:
+        page_obj = p.get_page(page_number)  # returns the desired page object
+    except PageNotAnInteger:
+        # if page_number is not an integer then assign the first page
+        page_obj = p.page(1)
+    except EmptyPage:
+        # if page is empty then return last page
+        page_obj = p.page(p.num_pages)
     if request.GET.get('rapport') is not None:
         print(date1)
         date1 = request.session['date1']
@@ -265,17 +275,39 @@ def cmd_pf(request):
             date1 = request.session['date1']
         return redirect('rapport-ventes', date1)
 
-    if request.GET.get('search') is not None:
+    if request.GET.get('search') is not None and request.GET.get('date1') != "":
         date1 = request.GET.get('date1')
         date2 = request.GET.get('date2')
         request.session['date1'] = date1
         if date2 == "" or date2 is None:
             orders = CommandePf.objects.filter(date=date1, etat=True).order_by('-date_time')
+            p = Paginator(orders, 10)  # creating a paginator object
+            # getting the desired page number from url
+            page_number = request.GET.get('page')
+            try:
+                page_obj = p.get_page(page_number)
+            except PageNotAnInteger:
+                # if page_number is not an integer then assign the first page
+                page_obj = p.page(1)
+            except EmptyPage:
+                # if page is empty then return last page
+                page_obj = p.page(p.num_pages)
         else:
             orders = CommandePf.objects.filter(Q(date__gte=date1) & Q(date__lte=date2), etat=True).order_by('-date_time')
+            p = Paginator(orders, 10)  # creating a paginator object
+            # getting the desired page number from url
+            page_number = request.GET.get('page')
+            try:
+                page_obj = p.get_page(page_number)
+            except PageNotAnInteger:
+                # if page_number is not an integer then assign the first page
+                page_obj = p.page(1)
+            except EmptyPage:
+                # if page is empty then return last page
+                page_obj = p.page(p.num_pages)
     for i in orders:
         total += i.get_total
-    return render(request, 'resto/ventes.html', context={'orders': orders, 'ref': ref, 'date1': date1, 'date2': date2, 'total': total})
+    return render(request, 'resto/ventes.html', context={'nbr_pages': p.num_pages, 'page_obj': page_obj, 'ref': ref, 'date1': date1, 'date2': date2, 'total': total})
 
 
 @login_required(login_url='login')
@@ -406,12 +438,24 @@ def detail_print_pf(request, pk):
 @allowed_users(allowed_roles=['caisse restaurant'])
 def cmd_pf_facturation(request):
     orders = CommandePf.objects.filter(cloture=False, etat=True).order_by('date_time')
-    orders1 = CommandePf.objects.filter(cloture=True, etat=True).order_by('date_time')
+    orders1 = CommandePf.objects.filter(cloture=True, etat=True).order_by('-date_time')
+    p = Paginator(orders1, 10)  # creating a paginator object
+    # getting the desired page number from url
+    page_number = request.GET.get('page')
     total1 = 0
     total = 0
     ref = generate_unique_uid()
     date1 = None
     date2 = None
+
+    try:
+        page_obj = p.get_page(page_number)  # returns the desired page object
+    except PageNotAnInteger:
+        # if page_number is not an integer then assign the first page
+        page_obj = p.page(1)
+    except EmptyPage:
+        # if page is empty then return last page
+        page_obj = p.page(p.num_pages)
 
     if request.GET.get('rapport') is not None:
         print(date1)
@@ -421,20 +465,42 @@ def cmd_pf_facturation(request):
         else:
             date1 = request.session['date1']
         return redirect('rapport-ventes', date1)
-    if request.GET.get('search') is not None:
+    if request.GET.get('search') is not None and request.GET.get('date1') != "":
         date1 = request.GET.get('date1')
         request.session['date1'] = date1
         date2 = request.GET.get('date2')
         if date2 == "" or date2 is None:
-            orders1 = CommandePf.objects.filter(date=date1, cloture=True, etat=True).order_by('date_time')
+            orders1 = CommandePf.objects.filter(date=date1, cloture=True, etat=True).order_by('-date_time')
+            p = Paginator(orders1, 10)  # creating a paginator object
+            # getting the desired page number from url
+            page_number = request.GET.get('page')
+            try:
+                page_obj = p.get_page(page_number)
+            except PageNotAnInteger:
+                # if page_number is not an integer then assign the first page
+                page_obj = p.page(1)
+            except EmptyPage:
+                # if page is empty then return last page
+                page_obj = p.page(p.num_pages)
         else:
             orders1 = CommandePf.objects.filter(Q(date__gte=date1) & Q(date__lte=date2), cloture=True, etat=True).order_by('date_time')
+            p = Paginator(orders1, 10)  # creating a paginator object
+            # getting the desired page number from url
+            page_number = request.GET.get('page')
+            try:
+                page_obj = p.get_page(page_number)
+            except PageNotAnInteger:
+                # if page_number is not an integer then assign the first page
+                page_obj = p.page(1)
+            except EmptyPage:
+                # if page is empty then return last page
+                page_obj = p.page(p.num_pages)
     for i in orders1:
         total += i.get_total
     for i in orders:
         total1 += i.get_total
     return render(request, 'resto/ventes_facturation.html',
-                  context={'orders': orders, 'orders1': orders1, 'ref': ref, 'date1': date1, 'date2': date2, 'total1': total1, 'total': total})
+                  context={'orders': orders, 'nbr_pages': p.num_pages, 'page_obj': page_obj, 'ref': ref, 'date1': date1, 'date2': date2, 'total1': total1, 'total': total})
 
 
 @login_required(login_url='login')

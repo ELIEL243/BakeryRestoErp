@@ -30,50 +30,58 @@
                                         </div>
                                     </div><!-- .nk-block-head-content -->
                                 </div><!-- .nk-block-between -->
-                            <div class="nk-block-content row gy-4 mt-2">
-                            <form method="get">
+                                <div class="nk-block-content row gy-4 mt-2">
+                                    <form method="get">
                                         <div class="row justify-center text-center">
                                             <div class="col-lg-8">
-                                            <div class="form-group">
-                                                <label class="form-label text-center">Rechercher par date</label>
-                                                <div class="form-control-wrap">
-                                                    <div class="input-daterange input-group">
-                                                        <div class="input-group-addon">Du</div>
-                                                        <input type="date" name="date1" value="{% if date1 %}{{ date1 }}{% endif %}" class="form-control"/>
-                                                        <div class="input-group-addon">Au</div>
-                                                        <input type="date" name="date2" value="{% if date2 %}{{ date2 }}{% endif %}" class="form-control"/>
-                                                        <div class="input-group-addon">
-                                                            <button type="submit" id="submit-btn" name="search"
-                                                            class="btn btn-primary"><em
-                                                            class="icon ni ni-search"></em><span>Rechercher</span></button>            
+                                                <div class="form-group">
+                                                    <label class="form-label text-center">Rechercher par date</label>
+                                                    <div class="form-control-wrap">
+                                                        <div class="input-daterange input-group">
+                                                            <div class="input-group-addon">Du</div>
+                                                            <input type="date" name="date1"
+                                                                   value="{% if date1 %}{{ date1 }}{% endif %}"
+                                                                   class="form-control"/>
+                                                            <div class="input-group-addon">Au</div>
+                                                            <input type="date" name="date2"
+                                                                   value="{% if date2 %}{{ date2 }}{% endif %}"
+                                                                   class="form-control"/>
+                                                            <div class="input-group-addon">
+                                                                <button type="submit" id="submit-btn" name="search"
+                                                                        class="btn btn-primary"><em
+                                                                        class="icon ni ni-search"></em><span>Rechercher</span>
+                                                                </button>
+                                                            </div>
+
+                                                            <div class="input-group-addon">
+                                                                <a id="submit-btn" href="{% url 'cmd-pf' %}"
+                                                                   class="btn btn-info"><em
+                                                                        class="icon ni ni-repeat-fill"></em><span>Rafraichir</span></a>
+                                                            </div>
+
+                                                            <div class="input-group-addon">
+                                                                <button type="submit" name="rapport"
+                                                                        class="btn btn-warning"><em
+                                                                        class="icon ni ni-repeat-fill"></em><span>Générer le rapport</span>
+                                                                </button>
+                                                            </div>
+
                                                         </div>
-                                                        
-                                                        <div class="input-group-addon">
-                                                            <a id="submit-btn" href="{% url 'cmd-pf' %}" class="btn btn-info"><em
-                                                            class="icon ni ni-repeat-fill"></em><span>Rafraichir</span></a>            
-                                                        </div>
-                                                    
-                                                        <div class="input-group-addon">
-                                                                        <button type="submit" name="rapport" class="btn btn-warning"><em
-                                                                                class="icon ni ni-repeat-fill"></em><span>Générer le rapport</span></button>
-                                                                    </div>
-                                                        
+
+
                                                     </div>
-                                                    
-                                                
                                                 </div>
-                                            </div>
                                             </div>
                                         </div>
                                     </form>
-                            </div>
-                                
+                                </div>
+
                             </div><!-- .nk-block-head -->
                             <div class="nk-block">
                                 <div class="card card-bordered">
                                     <div class="card-inner-group">
                                         <div class="card-inner p-0">
-                                            <table class="datatable-init-export nowrap table table-striped"
+                                            <table class="nowrap table table-striped"
                                                    data-export-title="Export">
                                                 <thead>
                                                 <tr>
@@ -91,15 +99,15 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                {% for order in orders %}
+                                                {% for order in page_obj.object_list %}
                                                     <tr>
-                                                    <td>{{ forloop.counter }}</td>
+                                                        <td>{{ forloop.counter }}</td>
                                                         <td>#{{ order.ref }}</td>
                                                         <td>{% if order.client %}{{ order.client }}{% else %}
                                                             -----{% endif %}</td>
                                                         <td>{{ order.get_total }}</td>
                                                         <td>{{ order.devise }}</td>
-                                                    <td>{{ order.table_number }}</td>
+                                                        <td>{{ order.table_number }}</td>
                                                         <td>{{ order.date }}</td>
                                                         <td>{{ order.heure }}</td>
                                                         <td>
@@ -125,7 +133,7 @@
                                                                                             class="icon ni ni-eye"></em><span
                                                                                             class="text-info">Detail</span></a>
                                                                                 </li>
-                                                                                
+
                                                                                 <li>
                                                                                     <a href="{% url 'delete-cmd-pf' order.pk %}"><em
                                                                                             class="icon ni ni-trash"></em><span
@@ -143,7 +151,66 @@
                                                 {% endfor %}
                                                 </tbody>
                                             </table>
-                                                <h3 class="text-end">Total des ventes : <i class="text-danger">{{ total }} Fc</i></h3>
+
+
+                                            <div class="g">
+                                                <ul class="pagination justify-content-center justify-content-md-start">
+                                                    {% if page_obj.has_previous %}
+                                                        <li class="page-item"><a class="page-link"
+                                                                                 href="?page={{ page_obj.previous_page_number }}{% if date1 %}&date1={{ date1 }}{% endif %}{% if date2 %}&date2={{ date2 }}{% endif %}{% if date1 or date2 %}&search={% endif %}">Précedent</a>
+                                                        </li>
+                                                        {% if page_obj.number > 3 %}
+                                                            <li class="page-item"><a class="page-link"
+                                                                                     href="?page=1{% if date1 %}&date1={{ date1 }}{% endif %}{% if date2 %}&date2={{ date2 }}{% endif %}{% if date1 or date2 %}&search={% endif %}">1</a>
+                                                            </li>
+                                                            {% if page_obj.number > 4 %}
+                                                                <span>...</span>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endif %}
+
+                                                    {% for num in page_obj.paginator.page_range %}
+                                                    {% if page_obj.number == num %}
+                                                        <li class="page-item active"><a class="page-link active"
+                                                                                        href="?page={{ num }}{% if date1 %}&date1={{ date1 }}{% endif %}{% if date2 %}&date2={{ date2 }}{% endif %}{% if date1 or date2 %}&search={% endif %}">{{ num }}</a>
+                                                        </li>
+                                                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                                        <li class="page-item"><a class="page-link"
+                                                                                        href="?page={{ num }}{% if date1 %}&date1={{ date1 }}{% endif %}{% if date2 %}&date2={{ date2 }}{% endif %}{% if date1 or date2 %}&search={% endif %}">{{ num }}</a>
+                                                        </li>
+                                                        {% endif %}
+                                                {% endfor %}
+                                                
+                                                    {% if page_obj.has_next %}
+                                                       {% if page_obj.number < page_obj.paginator.num_pages|add:'-3' %}
+                                                           <span>...</span>
+                                                           <li class="page-item"><a class="page-link"
+                                                                                        href="?page={{ page_obj.paginator.num_pages }}{% if date1 %}&date1={{ date1 }}{% endif %}{% if date2 %}&date2={{ date2 }}{% endif %}{% if date1 or date2 %}&search={% endif %}">{{ page_obj.paginator.num_pages }}</a>
+                                                        </li>
+                                                           {% elif page_obj.number < page_obj.paginator.num_pages|add:'-2' %}
+                                                           <li class="page-item"><a class="page-link"
+                                                                                        href="?page={{ page_obj.paginator.num_pages }}{% if date1 %}&date1={{ date1 }}{% endif %}{% if date2 %}&date2={{ date2 }}{% endif %}{% if date1 or date2 %}&search={% endif %}">{{ page_obj.paginator.num_pages }}</a>
+                                                        </li>
+                                                           
+                                                           {% endif %}
+                                                           
+                                                        <li class="page-item"><a class="page-link"
+                                                                                 href="?page={{ page_obj.next_page_number }}{% if date1 %}&date1={{ date1 }}{% endif %}{% if date2 %}&date2={{ date2 }}{% endif %}{% if date1 or date2 %}&search={% endif %}">Suivant</a>
+                                                        </li>
+
+                                                    {% endif %}
+
+                                                </ul><!-- .pagination -->
+                                            </div>
+
+                                            <div class="g">
+                                                <div class="pagination-goto d-flex justify-content-center justify-content-md-start gx-3">
+                                                    <div>Page {{ page_obj.number }}</div>
+                                                    <div>sur {{ nbr_pages }}</div>
+                                                </div>
+                                            </div>
+                                            <h3 class="text-end">Total des ventes : <i class="text-danger">{{ total }}
+                                                Fc</i></h3>
 
 
                                         </div>
