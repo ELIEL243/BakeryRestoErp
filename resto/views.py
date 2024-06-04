@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.shortcuts import render, redirect
 import datetime
 import calendar
@@ -380,7 +381,7 @@ def add_cmd_pf(request):
                 elif i.qts < i.produit_fini.in_stock_pt:
                     SortiePfPt.objects.create(produit_fini=i.produit_fini, qts=i.qts, price=i.produit_fini.price)
                     print(f"Ici {i.qts}")
-
+            cache.clear()
             messages.success(request, "good")
             return redirect('add-facturation')
             #return redirect('detail-print-pf', pk=order.pk)
@@ -431,7 +432,7 @@ def detail_print_pf(request, pk):
     order.cloture = True
     order.save()
     lines = LigneCommandePf.objects.filter(commande=order)
-
+    cache.clear()
     return render(request, 'resto/forms/detail-print2.html', context={'lines': lines, 'order': order})
 
 
@@ -537,6 +538,7 @@ def rapport_ventes(request, date1):
 
 def confirm_order(request):
     messages.success(request, "good !")
+    cache.clear()
     return redirect('cmd-pf-fact')
 
 
