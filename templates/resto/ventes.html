@@ -77,6 +77,8 @@
                                 </div>
 
                             </div><!-- .nk-block-head -->
+                            {% load cache %}
+                            {% cache 500 request.user %}
                             <div class="nk-block">
                                 <div class="card card-bordered">
                                     <div class="card-inner-group">
@@ -217,6 +219,7 @@
                                     </div>
                                 </div>
                             </div>
+                            {% endcache %}
                         </div>
                     </div>
                 </div>

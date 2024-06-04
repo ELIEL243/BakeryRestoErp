@@ -250,7 +250,7 @@ def pf_detail_pt(request, pk):
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['petit stock restaurant'])
-@cache_page(60 * 15)
+#@cache_page(60 * 15)
 def cmd_pf(request):
     orders = CommandePf.objects.filter(etat=True, cloture=True).order_by('-date_time')
     p = Paginator(orders, 10)  # creating a paginator object
@@ -381,7 +381,7 @@ def add_cmd_pf(request):
                 elif i.qts < i.produit_fini.in_stock_pt:
                     SortiePfPt.objects.create(produit_fini=i.produit_fini, qts=i.qts, price=i.produit_fini.price)
                     print(f"Ici {i.qts}")
-            cache.clear()
+            #cache.clear()
             messages.success(request, "good")
             return redirect('add-facturation')
             #return redirect('detail-print-pf', pk=order.pk)
@@ -438,7 +438,7 @@ def detail_print_pf(request, pk):
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['caisse restaurant'])
-@cache_page(60 * 15)
+#@cache_page(60 * 15)
 def cmd_pf_facturation(request):
     orders = CommandePf.objects.filter(cloture=False, etat=True).order_by('date_time')
     orders1 = CommandePf.objects.filter(cloture=True, etat=True).order_by('-date_time')
@@ -538,7 +538,7 @@ def rapport_ventes(request, date1):
 
 def confirm_order(request):
     messages.success(request, "good !")
-    cache.clear()
+    #cache.clear()
     return redirect('cmd-pf-fact')
 
 
