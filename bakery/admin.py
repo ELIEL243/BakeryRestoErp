@@ -100,6 +100,12 @@ class SortiePfAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_filter = ('produit_fini', 'date',)
 
 
+class SortiePfPtAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ('produit_fini', 'qts', 'date', 'heure', 'price', 'devise',)
+    search_fields = ('produit_fini', 'date',)
+    list_filter = ('produit_fini', 'date',)
+
+
 class InvenduAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('produit_fini', 'qts', 'date', 'heure', 'price', 'devise',)
     search_fields = ('produit_fini', 'date',)
@@ -125,6 +131,7 @@ admin.site.register(EntreePfPt)
 admin.site.register(EntreePF, EntrePfAdmin)
 admin.site.register(EntreeFourniture, EntreeFournitureAdmin)
 admin.site.register(SortiePF, SortiePfAdmin)
+admin.site.register(SortiePfPt, SortiePfAdmin)
 admin.site.register(SortieMp, SortieMpAdmin)
 admin.site.register(SortieFourniture, SortieFournitureAdmin)
 admin.site.register(Taux, TauxAdmin)

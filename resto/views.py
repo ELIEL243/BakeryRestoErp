@@ -267,7 +267,7 @@ def entree_pf_pt(request):
 @allowed_users(allowed_roles=['petit stock restaurant'])
 def sortie_pf_pt(request):
     pfs = ProduitFini.objects.filter(type_produit__in=['BOULANGERIE ET RESTAURANT', 'RESTAURANT'])
-    outs = SortiePfPt.objects.all().order_by('-id')
+    outs = SortiePfPt.objects.filter(qts__gt=0).order_by('-id')
     date1 = None
     date2 = None
     p = Paginator(outs, 10)  # creating a paginator object

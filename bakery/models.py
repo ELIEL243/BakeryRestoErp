@@ -101,7 +101,8 @@ class MatierePremiere(models.Model):
         for entry in entries:
             total += entry.qts
         for out in outs:
-            total -= out.qts
+            if out.qts <= total:
+                total -= out.qts
         return total
 
     @property
@@ -112,7 +113,8 @@ class MatierePremiere(models.Model):
         for entry in entries:
             total += entry.qts
         for out in outs:
-            total -= out.qts
+            if out.qts <= total:
+                total -= out.qts
         return total
 
     @property
@@ -124,7 +126,8 @@ class MatierePremiere(models.Model):
         for entry in entries:
             total += entry.qts
         for out in outs:
-            total -= out.qts
+            if out.qts <= total:
+                total -= out.qts
         return total
 
     @property
@@ -252,7 +255,8 @@ class ProduitFini(models.Model):
         for entry in entries:
             total += entry.qts
         for out in outs:
-            total -= out.qts
+            if out.qts <= total:
+                total -= out.qts
         return total
 
     @property
@@ -263,7 +267,8 @@ class ProduitFini(models.Model):
         for entry in entries:
             total += entry.qts
         for out in outs:
-            total -= out.qts
+            if out.qts <= total:
+                total -= out.qts
         return total
 
     @property
@@ -395,7 +400,8 @@ class Fourniture(models.Model):
         for entry in entries:
             total += entry.qts
         for out in outs:
-            total -= out.qts
+            if out.qts <= total:
+                total -= out.qts
         return total
 
     @property
@@ -606,7 +612,8 @@ class EntreeMp(models.Model):
         for entry in entries:
             total += entry.qts
         for o in outs:
-            total -= o.qts
+            if o.qts <= total:
+                total -= o.qts
         return total + self.qts
 
 
@@ -643,7 +650,8 @@ class EntreeMpPt(models.Model):
         for entry in entries:
             total += entry.qts
         for o in outs:
-            total -= o.qts
+            if o.qts <= total:
+                total -= o.qts
         return total + self.qts
 
 
@@ -669,7 +677,8 @@ class EntreePF(models.Model):
         for entry in entries:
             total += entry.qts
         for o in outs:
-            total -= o.qts
+            if o.qts <= total:
+                total -= o.qts
         return total + self.qts
 
 
@@ -698,7 +707,8 @@ class EntreeFourniture(models.Model):
         for entry in entries:
             total += entry.qts
         for o in outs:
-            total -= o.qts
+            if o.qts <= total:
+                total -= o.qts
         return total + self.qts
 
 
@@ -724,7 +734,8 @@ class EntreePfPt(models.Model):
         for entry in entries:
             total += entry.qts
         for o in outs:
-            total -= o.qts
+            if o.qts <= total:
+                total -= o.qts
         return total + self.qts
 
 
@@ -751,7 +762,8 @@ class SortieMp(models.Model):
         for entry in entries:
             total += entry.qts
         for o in outs:
-            total -= o.qts
+            if o.qts <= total:
+                total -= o.qts
         return total - self.qts
 
 
@@ -777,7 +789,8 @@ class SortieMpPt(models.Model):
         for entry in entries:
             total += entry.qts
         for o in outs:
-            total -= o.qts
+            if o.qts <= total:
+                total -= o.qts
         return total - self.qts
 
 
@@ -803,7 +816,8 @@ class SortieFourniture(models.Model):
         for entry in entries:
             total += entry.qts
         for o in outs:
-            total -= o.qts
+            if o.qts <= total:
+                total -= o.qts
         return total - self.qts
 
 
@@ -832,7 +846,8 @@ class SortiePF(models.Model):
         for entry in entries:
             total += entry.qts
         for o in outs:
-            total -= o.qts
+            if o.qts <= total:
+                total -= o.qts
         return total - self.qts
 
     @property
@@ -865,7 +880,8 @@ class SortiePfPt(models.Model):
         for entry in entries:
             total += entry.qts
         for o in outs:
-            total -= o.qts
+            if o.qts <= total:
+                total -= o.qts
         return total - self.qts
 
     @property
