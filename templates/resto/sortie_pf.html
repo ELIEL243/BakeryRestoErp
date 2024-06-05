@@ -107,7 +107,7 @@
                                 <div class="card card-bordered">
                                     <div class="card-inner-group">
                                         <div class="card-inner p-0">
-                                            <table class="datatable-init-export nowrap table table-striped"
+                                            <table class="nowrap table table-striped"
                                                    data-export-title="Export">
                                                 <thead>
                                                 <tr>
@@ -123,7 +123,7 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                {% for out in outs %}
+                                                {% for out in page_obj.object_list %}
                                                     <tr>
                                                         <td>{{ forloop.counter }}</td>
                                                         <td>{{ out.produit_fini.libelle }}</td>
@@ -160,7 +160,7 @@
                                                 </tbody>
 
                                             </table>
-
+                                            {% include 'paginator.html' %}
                                         </div>
                                  </div>
                                 </div>

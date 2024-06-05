@@ -52,6 +52,16 @@ def entree_mp_pt(request):
     entries = EntreeMpPt.objects.all().order_by('-id')
     date1 = None
     date2 = None
+    p = Paginator(entries, 10)  # creating a paginator object
+    page_number = request.GET.get('page')
+    try:
+        page_obj = p.get_page(page_number)  # returns the desired page object
+    except PageNotAnInteger:
+        # if page_number is not an integer then assign the first page
+        page_obj = p.page(1)
+    except EmptyPage:
+        # if page is empty then return last page
+        page_obj = p.page(p.num_pages)
     if request.method == 'POST':
         if MatierePremiere.objects.filter(libelle=request.POST.get('name')).exists():
             mp = MatierePremiere.objects.get(libelle=request.POST.get('name'))
@@ -66,10 +76,30 @@ def entree_mp_pt(request):
         date2 = request.GET.get('date2')
         if date2 == "" or date2 is None:
             entries = EntreeMpPt.objects.filter(date=date1)
+            p = Paginator(entries, 10)  # creating a paginator object
+            page_number = request.GET.get('page')
+            try:
+                page_obj = p.get_page(page_number)  # returns the desired page object
+            except PageNotAnInteger:
+                # if page_number is not an integer then assign the first page
+                page_obj = p.page(1)
+            except EmptyPage:
+                # if page is empty then return last page
+                page_obj = p.page(p.num_pages)
         else:
             entries = EntreeMpPt.objects.filter(Q(date__gte=date1) & Q(date__lte=date2))
+            p = Paginator(entries, 10)  # creating a paginator object
+            page_number = request.GET.get('page')
+            try:
+                page_obj = p.get_page(page_number)  # returns the desired page object
+            except PageNotAnInteger:
+                # if page_number is not an integer then assign the first page
+                page_obj = p.page(1)
+            except EmptyPage:
+                # if page is empty then return last page
+                page_obj = p.page(p.num_pages)
     return render(request, 'resto/entree_mp.html',
-                  context={'mps': mps, 'entries': entries, 'date1': date1, 'date2': date2})
+                  context={'mps': mps, 'date1': date1, 'date2': date2, 'page_obj': page_obj})
 
 
 @login_required(login_url='login')
@@ -79,6 +109,16 @@ def sortie_mp_pt(request):
     outs = SortieMpPt.objects.all().order_by('-id')
     date1 = None
     date2 = None
+    p = Paginator(outs, 10)  # creating a paginator object
+    page_number = request.GET.get('page')
+    try:
+        page_obj = p.get_page(page_number)  # returns the desired page object
+    except PageNotAnInteger:
+        # if page_number is not an integer then assign the first page
+        page_obj = p.page(1)
+    except EmptyPage:
+        # if page is empty then return last page
+        page_obj = p.page(p.num_pages)
     if request.method == 'POST':
         if MatierePremiere.objects.filter(libelle=request.POST.get('name')).exists():
             mp = MatierePremiere.objects.get(libelle=request.POST.get('name'))
@@ -97,9 +137,29 @@ def sortie_mp_pt(request):
         date2 = request.GET.get('date2')
         if date2 == "" or date2 is None:
             outs = SortieMpPt.objects.filter(date=date1)
+            p = Paginator(outs, 10)  # creating a paginator object
+            page_number = request.GET.get('page')
+            try:
+                page_obj = p.get_page(page_number)  # returns the desired page object
+            except PageNotAnInteger:
+                # if page_number is not an integer then assign the first page
+                page_obj = p.page(1)
+            except EmptyPage:
+                # if page is empty then return last page
+                page_obj = p.page(p.num_pages)
         else:
             outs = SortieMpPt.objects.filter(Q(date__gte=date1) & Q(date__lte=date2))
-    return render(request, 'resto/sortie_mp.html', context={'mps': mps, 'outs': outs, 'date1': date1, 'date2': date2})
+            p = Paginator(outs, 10)  # creating a paginator object
+            page_number = request.GET.get('page')
+            try:
+                page_obj = p.get_page(page_number)  # returns the desired page object
+            except PageNotAnInteger:
+                # if page_number is not an integer then assign the first page
+                page_obj = p.page(1)
+            except EmptyPage:
+                # if page is empty then return last page
+                page_obj = p.page(p.num_pages)
+    return render(request, 'resto/sortie_mp.html', context={'mps': mps, 'date1': date1, 'date2': date2, 'page_obj': page_obj})
 
 
 @login_required(login_url='login')
@@ -153,6 +213,16 @@ def entree_pf_pt(request):
     entries = EntreePfPt.objects.all().order_by('-id')
     date1 = None
     date2 = None
+    p = Paginator(entries, 10)  # creating a paginator object
+    page_number = request.GET.get('page')
+    try:
+        page_obj = p.get_page(page_number)  # returns the desired page object
+    except PageNotAnInteger:
+        # if page_number is not an integer then assign the first page
+        page_obj = p.page(1)
+    except EmptyPage:
+        # if page is empty then return last page
+        page_obj = p.page(p.num_pages)
     if request.method == 'POST':
         if ProduitFini.objects.filter(libelle=request.POST.get('name')).exists():
             pf = ProduitFini.objects.get(libelle=request.POST.get('name'))
@@ -167,10 +237,30 @@ def entree_pf_pt(request):
         date2 = request.GET.get('date2')
         if date2 == "" or date2 is None:
             entries = EntreePfPt.objects.filter(date=date1)
+            p = Paginator(entries, 10)  # creating a paginator object
+            page_number = request.GET.get('page')
+            try:
+                page_obj = p.get_page(page_number)  # returns the desired page object
+            except PageNotAnInteger:
+                # if page_number is not an integer then assign the first page
+                page_obj = p.page(1)
+            except EmptyPage:
+                # if page is empty then return last page
+                page_obj = p.page(p.num_pages)
         else:
             entries = EntreePfPt.objects.filter(Q(date__gte=date1) & Q(date__lte=date2))
+            p = Paginator(entries, 10)  # creating a paginator object
+            page_number = request.GET.get('page')
+            try:
+                page_obj = p.get_page(page_number)  # returns the desired page object
+            except PageNotAnInteger:
+                # if page_number is not an integer then assign the first page
+                page_obj = p.page(1)
+            except EmptyPage:
+                # if page is empty then return last page
+                page_obj = p.page(p.num_pages)
     return render(request, 'resto/entree_pf.html',
-                  context={'pfs': pfs, 'entries': entries, 'date1': date1, 'date2': date2})
+                  context={'pfs': pfs, 'date1': date1, 'date2': date2, 'page_obj': page_obj})
 
 
 @login_required(login_url='login')
@@ -180,6 +270,16 @@ def sortie_pf_pt(request):
     outs = SortiePfPt.objects.all().order_by('-id')
     date1 = None
     date2 = None
+    p = Paginator(outs, 10)  # creating a paginator object
+    page_number = request.GET.get('page')
+    try:
+        page_obj = p.get_page(page_number)  # returns the desired page object
+    except PageNotAnInteger:
+        # if page_number is not an integer then assign the first page
+        page_obj = p.page(1)
+    except EmptyPage:
+        # if page is empty then return last page
+        page_obj = p.page(p.num_pages)
     if request.method == 'POST':
         if ProduitFini.objects.filter(libelle=request.POST.get('name')).exists():
             pf = ProduitFini.objects.get(libelle=request.POST.get('name'))
@@ -198,9 +298,29 @@ def sortie_pf_pt(request):
         date2 = request.GET.get('date2')
         if date2 == "" or date2 is None:
             outs = SortiePfPt.objects.filter(date=date1)
+            p = Paginator(outs, 10)  # creating a paginator object
+            page_number = request.GET.get('page')
+            try:
+                page_obj = p.get_page(page_number)  # returns the desired page object
+            except PageNotAnInteger:
+                # if page_number is not an integer then assign the first page
+                page_obj = p.page(1)
+            except EmptyPage:
+                # if page is empty then return last page
+                page_obj = p.page(p.num_pages)
         else:
             outs = SortiePfPt.objects.filter(Q(date__gte=date1) & Q(date__lte=date2))
-    return render(request, 'resto/sortie_pf.html', context={'pfs': pfs, 'outs': outs, 'date1': date1, 'date2': date2})
+            p = Paginator(outs, 10)  # creating a paginator object
+            page_number = request.GET.get('page')
+            try:
+                page_obj = p.get_page(page_number)  # returns the desired page object
+            except PageNotAnInteger:
+                # if page_number is not an integer then assign the first page
+                page_obj = p.page(1)
+            except EmptyPage:
+                # if page is empty then return last page
+                page_obj = p.page(p.num_pages)
+    return render(request, 'resto/sortie_pf.html', context={'pfs': pfs, 'date1': date1, 'date2': date2, 'page_obj': page_obj})
 
 
 @login_required(login_url='login')
@@ -381,7 +501,7 @@ def add_cmd_pf(request):
                 elif i.qts < i.produit_fini.in_stock_pt:
                     SortiePfPt.objects.create(produit_fini=i.produit_fini, qts=i.qts, price=i.produit_fini.price)
                     print(f"Ici {i.qts}")
-            #cache.clear()
+            cache.clear()
             messages.success(request, "good")
             return redirect('add-facturation')
             #return redirect('detail-print-pf', pk=order.pk)
@@ -538,7 +658,7 @@ def rapport_ventes(request, date1):
 
 def confirm_order(request):
     messages.success(request, "good !")
-    #cache.clear()
+    cache.clear()
     return redirect('cmd-pf-fact')
 
 

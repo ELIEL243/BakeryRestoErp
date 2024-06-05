@@ -1,10 +1,189 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<table class="datatable-init-export nowrap table table-striped"
+       data-export-title="Export">
+    <thead>
+    <tr>
+        <th>No</th>
+        <th>Ref</th>
+        <th>Client</th>
+        <th>Total</th>
+        <th>Devise</th>
+        <th>Table</th>
+        <th>Date</th>
+        <th>Heure</th>
+        <th>Statut</th>
+        <th></th>
+
+    </tr>
+    </thead>
+    <tbody>
+    {% for order in orders %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>#{{ order.ref }}</td>
+            <td>{% if order.client %}{{ order.client }}{% else %}
+                -----{% endif %}</td>
+            <td>{{ order.get_total }}</td>
+            <td>{{ order.devise }}</td>
+            <td>{{ order.table_number }}</td>
+            <td>{{ order.date }}</td>
+            <td>{{ order.heure }}</td>
+            <td>
+                {% if order.paid == True %}
+                    <span class="tb-status text-success">Payée</span>
+                {% else %}
+                    <span class="tb-status text-danger">A crédit</span>
+                {% endif %}
+
+            </td>
+            <td class="center">
+                <ul class="nk-tb-actions gx-1 my-n1">
+                    <li class="me-n1">
+                        <div class="dropdown">
+                            <a href="#"
+                               class="dropdown-toggle btn btn-icon btn-trigger"
+                               data-bs-toggle="dropdown"><em
+                                    class="icon ni ni-more-h"></em></a>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <ul class="link-list-opt no-bdr">
+                                    <li>
+                                        <a href="{% url 'detail-cmd-pf' order.pk %}"><em
+                                                class="icon ni ni-eye"></em><span
+                                                class="text-info">Detail</span></a>
+                                    </li>
+
+                                    <li>
+                                        <a href="{% url 'delete-cmd-pf' order.pk %}"><em
+                                                class="icon ni ni-trash"></em><span
+                                                class="text-danger">Archiver</span></a>
+                                    </li>
+
+
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<h3 class="text-end">Total des ventes : <i class="text-danger">{{ total }} Fc</i></h3>
+
+
+<table class="nowrap table table-striped"
+       data-export-title="Export">
+    <thead>
+    <tr>
+        <th>No</th>
+        <th>Ref</th>
+        <th>Client</th>
+        <th>Total</th>
+        <th>Devise</th>
+        <th>Table</th>
+        <th>Date</th>
+        <th>Heure</th>
+        <th>Statut</th>
+        <th></th>
+
+    </tr>
+    </thead>
+    <tbody>
+    {% for order in page_obj.object_list %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>#{{ order.ref }}</td>
+            <td>{% if order.client %}{{ order.client }}{% else %}
+                -----{% endif %}</td>
+            <td>{{ order.get_total }}</td>
+            <td>{{ order.devise }}</td>
+            <td>{{ order.table_number }}</td>
+            <td>{{ order.date }}</td>
+            <td>{{ order.heure }}</td>
+            <td>
+                {% if order.paid == True %}
+                    <span class="tb-status text-success">Payée</span>
+                {% else %}
+                    <span class="tb-status text-danger">A crédit</span>
+                {% endif %}
+
+            </td>
+            <td class="center">
+                <ul class="nk-tb-actions gx-1 my-n1">
+                    <li class="me-n1">
+                        <div class="dropdown">
+                            <a href="#"
+                               class="dropdown-toggle btn btn-icon btn-trigger"
+                               data-bs-toggle="dropdown"><em
+                                    class="icon ni ni-more-h"></em></a>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <ul class="link-list-opt no-bdr">
+                                    <li>
+                                        <a href="{% url 'detail-cmd-pf' order.pk %}"><em
+                                                class="icon ni ni-eye"></em><span
+                                                class="text-info">Detail</span></a>
+                                    </li>
+
+                                    <li>
+                                        <a href="{% url 'delete-cmd-pf' order.pk %}"><em
+                                                class="icon ni ni-trash"></em><span
+                                                class="text-danger">Archiver</span></a>
+                                    </li>
+
+
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+
+<div class="g">
+    <ul class="pagination justify-content-center justify-content-md-start">
+        {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link"
+                                     href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+            </li>
+            <li class="page-item"><a class="page-link active"
+                                     href="?page={{ page_obj.page_number }}">{{ page_obj.page_number }}</a></li>
+
+        {% elif page_obj.has_next %}
+            <li class="page-item"><a class="page-link active"
+                                     href="?page={{ page_obj.page_number }}">{{ page_obj.page_number }}</a></li>
+            <li class="page-item"><a class="page-link"
+                                     href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+            </li>
+
+        {% endif %}
+
+    </ul><!-- .pagination -->
+</div>
+
+<div class="g">
+    <div class="pagination-goto d-flex justify-content-center justify-content-md-start gx-3">
+        <div>Page {{ page_obj.page_number }}</div>
+        <div>sur {{ nbr_pages }}</div>
+    </div>
+</div>
+
+
+<li>
+    <a href="{% url 'detail-cmd-pf-fact' order.pk %}"><em
+            class="icon ni ni-eye"></em><span
+            class="text-info">Detail</span></a>
+</li>
+<li>
+    <a href="{% url 'detail-print-pf' order.pk %}"><em
+            class="icon ni ni-printer"></em><span
+            class="text-success">Imprimer la facture</span></a>
+</li>
+<li>
+    <a href="{% url 'confirm-paiement' order.pk %}"><em
+            class="icon ni ni-money"></em><span
+            class="text-success">Regler le paiement</span></a>
+</li>
