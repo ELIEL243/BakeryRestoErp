@@ -501,7 +501,7 @@ def add_cmd_pf(request):
                 elif i.qts < i.produit_fini.in_stock_pt:
                     SortiePfPt.objects.create(produit_fini=i.produit_fini, qts=i.qts, price=i.produit_fini.price)
                     print(f"Ici {i.qts}")
-            cache.clear()
+
             messages.success(request, "good")
             return redirect('add-facturation')
             #return redirect('detail-print-pf', pk=order.pk)
@@ -650,10 +650,14 @@ def rapport_ventes(request, date1):
     if date1 is None:
         date1 = datetime.datetime.today().date()
     orders = CommandePf.objects.filter(date=date1, cloture=True).order_by('date_time')
+    lines = []
+    for o in orders:
+        for i in LigneCommandePf.objects.filter(commande=o):
+            lines.append(i)
     total = 0
-    for i in orders:
+    for i in lines:
         total += i.get_total
-    return render(request, 'resto/forms/rapport-vente.html', context={'orders': orders, 'date': date1, 'total1': total})
+    return render(request, 'resto/forms/rapport-vente.html', context={'orders': orders, 'date': date1, 'total1': total, 'lines': lines})
 
 
 def confirm_order(request):

@@ -166,11 +166,13 @@
     </div><!-- .col -->
 </div>
 
+
+
 <div class="card card-full border-2 mt-3">
     <div class="card-inner p-0">
         <div class="card-title-group">
             <div class="card-title">
-                <h6 class="title">Entrées et sorties par période</h6>
+                <h3 class="title">Entrées et sorties par produit fini au Grand Stock</h3>
             </div>
 
         </div>
@@ -251,4 +253,87 @@
 </div>
 
 
+<div class="card card-full border-2 mt-3">
+    <div class="card-inner p-0">
+        <div class="card-title-group">
+            <div class="card-title">
+                <h3 class="title">Entrées et sorties par produit fini au Petit Stock</h3>
+            </div>
+
+        </div>
+            <div class="row justify-center text-center">
+                <div class="col-lg-8">
+                    <form method="get" hx-get="{% url 'filter-entry-out-pf-pt' %}"
+                          hx-target="#total-entry-out-pt" hx-swap="innerHTML" hx-trigger="change">
+                        <div class="row justify-center text-center">
+                            <div class="col-lg-10">
+                                <div class="form-group">
+                                    <label class="form-label text-center">Filtrer par date</label>
+                                    <div class="form-control-wrap">
+                                        <div class="input-daterange input-group">
+                                            <div class="input-group-addon">Du</div>
+                                            <input type="date" name="date1" value="{{ date1 }}"
+                                                   class="form-control" required/>
+                                            <div class="input-group-addon">Au</div>
+                                            <input type="date" name="date2" value="{% if date2 %}{{ date2 }}{% endif %}"
+                                                   class="form-control"/>
+
+
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        
+
+
+    </div>
+    <div class="nk-content">
+        <div class="container-fluid">
+            <div class="nk-content-inner">
+                <div class="nk-content-body">
+                    <div class="nk-block">
+                        <div class="card card-bordered">
+                            <div class="card-inner-group">
+                                <div class="card-inner p-0" id="total-entry-out-pt">
+                                    <table class="datatable-init-export nowrap table table-striped bordered"
+                                           data-export-title="Export">
+                                        <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Produit fini</th>
+                                            <th>Quantité entrée</th>
+                                            <th>Quantité sortie</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for pf in pfs %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ pf.libelle }}</td>
+                                                <td>{{ pf.qts_enters_pt }} {{ pf.unite.name }}(s)</td>
+                                                <td>{{ pf.qts_out_pt }} {{ pf.unite.name }}(s)</td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
 

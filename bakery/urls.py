@@ -20,6 +20,7 @@ urlpatterns = [
     path('filter_chf_pf/', filter_chf_pf, name='filter-chf-pf'),
     path('filter_sale_pf/', filter_total_sale_pf, name='filter-total-sale-pf'),
     path('filter_entry_out_pf/', filter_total_entry_out_pf, name='filter-entry-out-pf'),
+    path('filter_entry_out_pf/', filter_total_entry_out_pf_pt, name='filter-entry-out-pf-pt'),
 
     # Rootes des unités
     path('home_bakery/', home_bakery, name='home-bakery'),

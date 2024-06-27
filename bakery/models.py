@@ -351,20 +351,27 @@ class ProduitFini(models.Model):
         total_sale = 0
         outs = None
         invendus = None
+        lines = []
         if date2 == "" or date2 is None:
-            outs = SortiePF.objects.filter(produit_fini=self, date=date1)
-            invendus = InvenduPf.objects.filter(produit_fini=self, date=date1)
-            for o in outs:
-                total_sale += o.total_cost
-            for i in invendus:
-                total_sale -= i.price
+            cmds = CommandePf.objects.filter(date=date1)
+            for cmd in cmds:
+                try:
+                    line = LigneCommandePf.objects.get(commande=cmd, produit_fini=self)
+                    lines.append(line)
+                except LigneCommandePf.DoesNotExist:
+                    pass
+            for i in lines:
+                total_sale += i.get_total
         else:
-            outs = SortiePF.objects.filter(produit_fini=self).filter(Q(date__gte=date1) & Q(date__lte=date2))
-            invendus = InvenduPf.objects.filter(produit_fini=self).filter(Q(date__gte=date1) & Q(date__lte=date2))
-            for o in outs:
-                total_sale += o.total_cost
-            for i in invendus:
-                total_sale -= i.price
+            cmds = CommandePf.objects.filter(Q(date__gte=date1) & Q(date__lte=date2))
+            for cmd in cmds:
+                try:
+                    line = LigneCommandePf.objects.get(commande=cmd, produit_fini=self)
+                    lines.append(line)
+                except LigneCommandePf.DoesNotExist:
+                    pass
+            for i in lines:
+                total_sale += i.get_total
         return total_sale
 
     def total_sale_by_date_pt(self, date1, date2):
@@ -510,9 +517,17 @@ class CommandePf(models.Model):
     table_number = models.IntegerField(default=1)
     date_time = models.DateTimeField(auto_now_add=True, null=True)
     cloture = models.BooleanField(default=False)
+    temp_total = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0)
 
     @property
     def get_total(self):
+        lines = LigneCommandePf.objects.filter(commande=self)
+        total = 0
+        for line in lines:
+            total += line.get_total
+        return total
+
+    def get_total2(self):
         lines = LigneCommandePf.objects.filter(commande=self)
         total = 0
         for line in lines:

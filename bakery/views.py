@@ -4,6 +4,7 @@ import decimal
 from pathlib import Path
 from time import strftime
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from .utils import get_day_name, get_month_name
@@ -304,10 +305,14 @@ def stat_pf(request):
     actual_day = default_date.day
     years = [i for i in range(2020, 2100)]
     months = [i for i in range(1, 13)]
-    entries = ChiffreAffaire.objects.filter(date__year=default_date.year, date__month=default_date.month).annotate(day=ExtractDay('date')).values(
-        'day').annotate(total_price=Sum('total_price')).order_by('day')
+    cmds = CommandePf.objects.filter(date__year=default_date.year, date__month=default_date.month)
+    for i in cmds:
+        i.temp_total = int(i.get_total)
+    entries = cmds.annotate(day=ExtractDay('date')).values(
+        'day').annotate(total_price=Sum(1)).order_by('day')
     for i in entries:
         i["day"] = f'{i["day"]} {get_month_name(int(default_date.month))}'
+        print(i["total_price"])
     pfs = ProduitFini.objects.all()
     for i in pfs:
         i.total_sale = int(i.total_sale_by_date(first_day, last_day))
@@ -326,16 +331,19 @@ def filter_chf_pf(request):
     month = request.GET.get('month')
     is_year_only = False
     entries = None
+    cmds = CommandePf.objects.filter(date__year=year)
+    for i in cmds:
+        i.temp_total = i.get_total
     if month is None or month == "Aucun":
-        entries = ChiffreAffaire.objects.filter(date__year=year).annotate(month=ExtractMonth('date')).values(
-            'month').annotate(total_price=Sum('total_price')).order_by('month')
+        entries = cmds.filter(date__year=year).annotate(month=ExtractMonth('date')).values(
+            'month').annotate(total_price=Sum('temp_total')).order_by('month')
         for entry in entries:
             month_number = entry['month']
             month_name = get_month_name(month_number)
             entry['month'] = month_name
         is_year_only = True
     else:
-        entries = ChiffreAffaire.objects.filter(date__year=year, date__month=month).annotate(day=ExtractDay('date')).values('day').annotate(total_price=Sum('total_price')).order_by('day')
+        entries = cmds.filter(date__year=year, date__month=month).annotate(day=ExtractDay('date')).values('day').annotate(total_price=Sum('temp_total')).order_by('day')
         for i in entries:
             i["day"] = f'{i["day"]} {get_month_name(int(month))}'
     return render(request, 'bakery/partials/chf_pf.html', context={'total_cost': entries, 'is_year_only': is_year_only})
@@ -349,10 +357,10 @@ def filter_total_sale_pf(request):
     pfs = ProduitFini.objects.all()
     if date2 == "" or date2 is None:
         for i in pfs:
-            i.total_sale = int(i.total_sale_by_date(date1, date2))
+            i.total_sale = int(i.total_sale_by_date_pt(date1, date2))
     else:
         for i in pfs:
-            i.total_sale = int(i.total_sale_by_date(date1, date2))
+            i.total_sale = int(i.total_sale_by_date_pt(date1, date2))
     return render(request, 'bakery/partials/total_sale_pf.html', context={'pfs': pfs})
 
 
@@ -365,6 +373,18 @@ def filter_total_entry_out_pf(request):
     for i in pfs:
         i.total_out = i.qts_out_by_date(date1, date2)
         i.total_entry = i.qts_enter_by_date(date1, date2)
+    return render(request, 'bakery/partials/nbr_entry_out_pf.html', context={'pfs': pfs})
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['grand stock et boulangerie'])
+def filter_total_entry_out_pf_pt(request):
+    pfs = ProduitFini.objects.all()
+    date1 = request.GET.get('date1')
+    date2 = request.GET.get('date2')
+    for i in pfs:
+        i.total_out = i.qts_out_by_date_pt(date1, date2)
+        i.total_entry = i.qts_enter_by_date_pt(date1, date2)
     return render(request, 'bakery/partials/nbr_entry_out_pf.html', context={'pfs': pfs})
 
 
@@ -956,7 +976,13 @@ def delete_entree_pf(request, pk):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['grand stock et boulangerie'])
 def delete_sortie_pf(request, pk):
-    SortiePF.objects.get(pk=pk).delete()
+    sortie = SortiePF.objects.get(pk=pk)
+    try:
+        entree = EntreePfPt.objects.get(added_at=sortie.added_at)
+        entree.delete()
+    except ObjectDoesNotExist:
+        print("Impossible")
+    sortie.delete()
     messages.success(request, 'good !')
     return redirect('sortie-pf')
 
