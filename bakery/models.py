@@ -267,8 +267,7 @@ class ProduitFini(models.Model):
         for entry in entries:
             total += entry.qts
         for out in outs:
-            if out.qts <= total:
-                total -= out.qts
+            total -= out.qts
         return total
 
     @property
